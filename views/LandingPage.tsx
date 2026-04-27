@@ -85,15 +85,17 @@ const LandingPage: React.FC = () => {
   // Additional Panels State
   const [isPricingOpen, setIsPricingOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
 
   // Body Scroll Lock
   useEffect(() => {
-    if (isAuthOpen || isPricingOpen || isContactOpen) {
+    if (isAuthOpen || isPricingOpen || isContactOpen || isTermsOpen || isPrivacyOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
     }
-  }, [isAuthOpen, isPricingOpen, isContactOpen]);
+  }, [isAuthOpen, isPricingOpen, isContactOpen, isTermsOpen, isPrivacyOpen]);
 
   // Support Form State
   const [supportData, setSupportData] = useState({ name: '', email: '', message: '' });
@@ -374,8 +376,8 @@ const LandingPage: React.FC = () => {
             <div className="space-y-5">
               <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Company</h4>
               <ul className="space-y-3">
-                <li><a href="#" className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Privacy</a></li>
-                <li><a href="#" className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Terms</a></li>
+                <li><button onClick={() => setIsPrivacyOpen(true)} className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Privacy</button></li>
+                <li><button onClick={() => setIsTermsOpen(true)} className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Terms</button></li>
                 <li><button onClick={() => setIsContactOpen(true)} className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Contact Us</button></li>
               </ul>
             </div>
@@ -444,6 +446,148 @@ const LandingPage: React.FC = () => {
         isOpen={isContactOpen} 
         onClose={() => setIsContactOpen(false)} 
       />
+
+      {/* Terms Slide Panel */}
+      <TermsSlidePanel 
+        isOpen={isTermsOpen} 
+        onClose={() => setIsTermsOpen(false)} 
+      />
+
+      {/* Privacy Slide Panel */}
+      <PrivacySlidePanel 
+        isOpen={isPrivacyOpen} 
+        onClose={() => setIsPrivacyOpen(false)} 
+      />
+    </div>
+  );
+};
+
+const TermsSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+  return (
+    <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto`}>
+      <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
+        <div className="w-full max-w-4xl">
+          <div className="flex justify-between items-center mb-16">
+            <button onClick={onClose} className="group flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-black uppercase text-[10px] tracking-widest">
+              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-all">
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </div>
+              <span>Close</span>
+            </button>
+          </div>
+
+          <div className="mb-16">
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-4 text-slate-900">Terms of Service</h2>
+            <p className="text-slate-500 font-medium text-xl">Last Updated: April 27, 2026</p>
+          </div>
+
+          <div className="prose prose-slate max-w-none space-y-10">
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">1. Acceptance of Terms</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">By accessing or using SmartPrepAca, you agree to be bound by these Terms of Service. If you do not agree to all of these terms, you should not use our services.</p>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">2. Description of Service</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">SmartPrepAca provides an online examination and academic preparation platform. We reserve the right to modify or discontinue any part of the service at any time without prior notice.</p>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">3. User Conduct</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">You agree to use the platform for lawful purposes only. Prohibited conduct includes but is not limited to:</p>
+              <ul className="list-disc pl-6 space-y-2 text-slate-600 font-medium">
+                <li>Attempting to cheat or bypass examination security measures.</li>
+                <li>Sharing account credentials with third parties.</li>
+                <li>Using the service to transmit malicious software or spam.</li>
+                <li>Harvesting student or instructor data without authorization.</li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">4. Intellectual Property</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">All content on SmartPrepAca, including text, graphics, logos, and software, is the property of SmartPrepAca or its content suppliers and is protected by intellectual property laws.</p>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">5. Limitation of Liability</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">SmartPrepAca shall not be liable for any indirect, incidental, special, or consequential damages resulting from the use or inability to use the service.</p>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">6. Governing Law</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which SmartPrepAca operates, without regard to its conflict of law principles.</p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+  return (
+    <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto`}>
+      <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
+        <div className="w-full max-w-4xl">
+          <div className="flex justify-between items-center mb-16">
+            <button onClick={onClose} className="group flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-black uppercase text-[10px] tracking-widest">
+              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-all">
+                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+              </div>
+              <span>Close</span>
+            </button>
+          </div>
+
+          <div className="mb-16">
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-4 text-slate-900">Privacy Policy</h2>
+            <p className="text-slate-500 font-medium text-xl">Last Updated: April 27, 2026</p>
+          </div>
+
+          <div className="prose prose-slate max-w-none space-y-10">
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">1. Information We Collect</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">We collect information you provide directly to us, such as when you create an account, participate in an exam, or contact support. This may include:</p>
+              <ul className="list-disc pl-6 space-y-2 text-slate-600 font-medium">
+                <li>Name, email address, and phone number.</li>
+                <li>Institution and academic program details.</li>
+                <li>Quiz responses and performance data.</li>
+                <li>Payment information (processed securely through Paystack).</li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">2. How We Use Your Information</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">We use the information we collect to provide, maintain, and improve our services, including:</p>
+              <ul className="list-disc pl-6 space-y-2 text-slate-600 font-medium">
+                <li>Processing your registration and verifying your identity.</li>
+                <li>Generating and storing your exam results.</li>
+                <li>Enabling real-time monitoring for authorized instructors.</li>
+                <li>Communicating with you about your account and platform updates.</li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">3. Data Security</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">We implement a variety of security measures to maintain the safety of your personal information. However, no method of transmission over the Internet or electronic storage is 100% secure.</p>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">4. Sharing of Information</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">We do not sell or rent your personal information to third parties. We may share information with your institution or authorized instructors for academic purposes.</p>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">5. Your Rights</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">You have the right to access, correct, or delete your personal information. You can manage most of your data through your profile dashboard.</p>
+            </section>
+
+            <section className="space-y-4">
+              <h3 className="text-2xl font-black text-slate-900">6. Cookies</h3>
+              <p className="text-slate-600 leading-relaxed font-medium">We use cookies to improve your browsing experience and analyze site traffic. You can choose to disable cookies through your browser settings, though this may affect platform functionality.</p>
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
