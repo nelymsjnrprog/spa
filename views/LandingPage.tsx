@@ -339,16 +339,47 @@ const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      <footer className="py-16 px-6 border-t border-slate-100 bg-slate-50">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row justify-between items-center gap-8">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-black uppercase tracking-[0.2em] text-[#cbd5e1]">{APP_CONFIG.name}</span>
+      <footer className="bg-primary-600 text-white py-12 md:py-16 px-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12 mb-12">
+            {/* Column 1: Brand */}
+            <div className="space-y-4">
+              <h3 className="font-bold text-xl tracking-tight uppercase">SMARTPREPACA</h3>
+              <p className="text-white/70 text-sm font-medium leading-relaxed">The smart way to prepare and assess</p>
+            </div>
+
+            {/* Column 2: Product */}
+            <div className="space-y-5">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Product</h4>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Pricing</a></li>
+                <li><a href="#" className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Blog</a></li>
+              </ul>
+            </div>
+
+            {/* Column 3: Company */}
+            <div className="space-y-5">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Company</h4>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Privacy</a></li>
+                <li><a href="#" className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Terms</a></li>
+                <li><a href="#" className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Contact Us</a></li>
+              </ul>
+            </div>
+
+            {/* Column 4: Community */}
+            <div className="space-y-5">
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Community</h4>
+              <a href="#" className="inline-flex items-center gap-2.5 text-[14px] font-bold text-white bg-white/10 px-5 py-3 rounded-2xl hover:bg-white/20 transition-all border border-white/5">
+                <i className="fab fa-whatsapp text-lg"></i>
+                Join our WhatsApp
+              </a>
+            </div>
           </div>
-          <div className="flex gap-8 text-sm font-bold text-slate-500">
-            <a href="#" className="hover:text-[#1a732a]">Privacy</a>
-            <a href="#" className="hover:text-[#1a732a]">Terms</a>
+
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-[11px] font-bold text-white/50 tracking-wide">© 2026 SmartPrepAca. All rights reserved.</p>
           </div>
-          <p className="text-sm font-medium text-slate-400">© 2026 SmartPrepAca.</p>
         </div>
       </footer>
       <style>{`
