@@ -1,0 +1,20 @@
+{
+  "projects": {
+    "default": "smart-prep-db982",
+    "smartprep": "smart-prep-db982",
+    "defaulth": "smart-prep-db982"
+  },
+  "targets": {
+    "smart-prep-db982": {
+      "hosting": {
+        "smartprep": [
+          "smart-prep-db982"
+        ],
+        "vectorify": [
+          "vectorify-tool"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

@@ -1,0 +1,55 @@
+﻿node.exe : 
+(node:18508) 
+[DEP0040] 
+DeprecationWarning: 
+The `punycode` 
+module is 
+deprecated. Please 
+use a userland 
+alternative instead.
+At C:\Users\HP\AppDa
+ta\Roaming\npm\fireb
+ase.ps1:24 char:5
++     & "node$exe"  
+"$basedir/node_modul
+es/firebase-tools/li
+b/bin/fireb ...
++     ~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo  
+            : NotS  
+  pecified: ((nod   
+ e:18508) [D...n    
+ative instead.:    
+String) [], Rem    
+oteException
+    + FullyQualifie 
+   dErrorId : Nati  
+  veCommandError
+ 
+(Use `node 
+--trace-deprecation 
+...` to show where 
+the warning was 
+created)
+[2026-03-07T20:31:23.107Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[2026-03-07T20:31:23.109Z] > authorizing via signed-in user (zntsas@gmail.com)
+[2026-03-07T20:31:23.109Z] [iam] checking project smart-prep-db982 for permissions ["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[2026-03-07T20:31:23.111Z] Checked if tokens are valid: true, expires at: 1772919015284
+[2026-03-07T20:31:23.112Z] Checked if tokens are valid: true, expires at: 1772919015284
+[2026-03-07T20:31:23.113Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/smart-prep-db982:testIamPermissions [none]
+[2026-03-07T20:31:23.114Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/smart-prep-db982:testIamPermissions  x-goog-user-project=smart-prep-db982
+[2026-03-07T20:31:23.114Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/smart-prep-db982:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[2026-03-07T20:31:24.409Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/smart-prep-db982:testIamPermissions 200
+[2026-03-07T20:31:24.411Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/smart-prep-db982:testIamPermissions {"permissions":["datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[2026-03-07T20:31:24.414Z] Checked if tokens are valid: true, expires at: 1772919015284
+[2026-03-07T20:31:24.415Z] Checked if tokens are valid: true, expires at: 1772919015284
+[2026-03-07T20:31:24.416Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/smart-prep-db982 [none]
+[2026-03-07T20:31:25.079Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/smart-prep-db982 200
+[2026-03-07T20:31:25.080Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/smart-prep-db982 {"projectId":"smart-prep-db982","projectNumber":"701095143950","displayName":"Smart Prep","name":"projects/smart-prep-db982","resources":{"hostingSite":"smart-prep-db982"},"state":"ACTIVE","etag":"1_1bfbff85-269a-41be-bfb5-0489488bb29a"}
+
+Error: Deploy target vsefa not configured for project smart-prep-db982. Configure with:
+
+  firebase target:apply hosting vsefa <resources...>

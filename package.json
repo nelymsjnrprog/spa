@@ -1,0 +1,28 @@
+{
+  "name": "smart-prep",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --mode smartprep",
+    "build": "vite build --mode smartprep",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "canvg": "^4.0.3",
+    "dompurify": "^3.4.1",
+    "firebase": "^12.9.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.0",
+    "recharts": "^3.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

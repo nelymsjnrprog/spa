@@ -1,0 +1,36 @@
+/* tailwindcss v4 */
+@import "tailwindcss";
+
+@theme {
+  --color-background: #0d0d0d;
+  --color-accent: #6C63FF;
+  --font-inter: "Inter", sans-serif;
+  --font-geist: "Geist", sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-white font-inter antialiased;
+  }
+}
+
+@layer utilities {
+  .bg-checkerboard {
+    background-image: linear-gradient(45deg, #111 25%, transparent 25%),
+      linear-gradient(-45deg, #111 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #111 75%),
+      linear-gradient(-45deg, transparent 75%, #111 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background-color: #0d0d0d;
+  }
+}
+
+/* Custom Range Input */
+input[type="range"]::-webkit-slider-thumb {
+  @apply w-4 h-4 rounded-full bg-accent border-2 border-white/20 appearance-none cursor-pointer shadow-lg shadow-accent/20 hover:scale-125 transition-transform;
+}
+
+input[type="range"]::-moz-range-thumb {
+  @apply w-4 h-4 rounded-full bg-accent border-2 border-white/20 cursor-pointer shadow-lg shadow-accent/20 hover:scale-125 transition-transform;
+}

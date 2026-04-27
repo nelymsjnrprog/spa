@@ -1,0 +1,163 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==========================================
+    // GLOBAL HELPERS & CONSTANTS
+    // ==========================================
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      // Direct check for hardcoded system owner credentials
+      let isOwner = request.auth.uid == 'lcfFiLMTu3WULPpiXb4joCX1W3s1' || 
+                    (request.auth.token.email != null && request.auth.token.email.lower() == 'nelymsjnr@gmail.com');
+      
+      // Secondary check against the users collection role field
+      return isOwner || (
+        isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+      );
+    }
+
+    function isSuperAdmin() {
+      let isOwner = request.auth.uid == 'lcfFiLMTu3WULPpiXb4joCX1W3s1' || 
+                    (request.auth.token.email != null && request.auth.token.email.lower() == 'nelymsjnr@gmail.com');
+      let userDoc = /databases/$(database)/documents/users/$(request.auth.uid);
+      return isOwner || (
+        isAdmin() && (
+          !exists(userDoc) ||
+          get(userDoc).data.get('adminPermission', 'super_admin') == 'super_admin'
+        )
+      );
+    }
+
+    function isNotBlocked() {
+      let userDoc = /databases/$(database)/documents/users/$(request.auth.uid);
+      return !exists(userDoc) || get(userDoc).data.get('isBlocked', false) == false;
+    }
+
+    // Fix: hasValidSession is now safe for new students who have no currentSessionId field yet.
+    // If the field does not exist on the user doc, we allow the session to pass through.
+    function hasValidSession() {
+      let userDoc = /databases/$(database)/documents/users/$(request.auth.uid);
+      let userData = get(userDoc).data;
+      // If the user has no currentSessionId set yet (new student), bypass the check
+      return !exists(userDoc) ||
+             !('currentSessionId' in userData) ||
+             userData.currentSessionId == null ||
+             request.resource.data.sessionId == userData.currentSessionId;
+    }
+
+    function isSelf(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function hasLevelAccess() {
+      // Access is granted if:
+      // 1. User is an Admin (bypasses level-based payment locks)
+      // 2. OR Payment is NOT required for this level
+      // 3. OR the student has an 'active' membership status
+      
+      let userDoc = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+      let level = userDoc.get('level', '100');
+      let settings = get(/databases/$(database)/documents/membership_settings/config).data;
+      
+      let isPaymentRequired = (level == '100' && settings.form1.paymentRequired == true) ||
+                              (level == '200' && settings.form2.paymentRequired == true) ||
+                              (level == '300' && settings.form3.paymentRequired == true);
+
+      return isAdmin() || !isPaymentRequired || userDoc.get('membershipStatus', 'pending') == 'active';
+    }
+
+    // ==========================================
+    // COLLECTION RULES
+    // ==========================================
+
+    // User Profiles
+    match /users/{userId} {
+      allow get: if isSelf(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isSelf(userId) && 
+                    (request.resource.data.role == 'student' || isAdmin());
+      allow update: if isAdmin() || (isSelf(userId) && isNotBlocked() && request.resource.data.role == resource.data.role);
+      allow delete: if isAdmin();
+    }
+
+    // Quiz Modules (Exams)
+    match /quizzes/{quizId} {
+      allow get: if isSignedIn() && (isAdmin() || (resource.data.published == true && isNotBlocked() && hasLevelAccess()));
+      allow list: if isSignedIn() && (isAdmin() || (isNotBlocked() && hasLevelAccess())); 
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Question Bank
+    match /questions/{questionId} {
+      allow read, list: if isSignedIn() && (isAdmin() || hasLevelAccess());
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Student Submissions
+    match /submissions/{submissionId} {
+      allow get: if isSignedIn() && (isAdmin() || (request.auth.uid == resource.data.studentId && isNotBlocked() && hasLevelAccess()));
+      // Students can only list their own submissions; admins can list all
+      allow list: if isSignedIn() && (isAdmin() || (isNotBlocked() && hasLevelAccess()));
+      // Create: student must own the submission. New students (no currentSessionId) are also allowed.
+      allow create: if isSignedIn() && 
+                       request.resource.data.studentId == request.auth.uid && 
+                       isNotBlocked() && 
+                       hasLevelAccess() &&
+                       (isAdmin() || hasValidSession());
+      // Update: students can only update active submissions and only specific fields
+      allow update: if isAdmin() || (
+        isSignedIn() && 
+        request.auth.uid == resource.data.studentId && 
+        isNotBlocked() &&
+        hasLevelAccess() &&
+        hasValidSession() &&
+        resource.data.status == 'active' &&
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'answers', 'status', 'score', 'completedAt',
+          'violations', 'lastViolationAt', 'sessionId',
+          'lastActive', 'currentQuestionIndex',
+          'isIncompleteAttempt', 'correctCount', 'totalQuestions',
+          'studentLevel', 'studentInstitution'
+        ]))
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Institution Configuration
+    match /institutionConfig/{configId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Institutions List
+    match /institutions/{instId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Membership Settings
+    match /membership_settings/{docId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Payment Records
+    match /payments/{paymentId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn();
+    }
+
+    // Admin Logs
+    match /admin_logs/{logId} {
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
+    }
+  }
+}
