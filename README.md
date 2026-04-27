@@ -2,19 +2,41 @@
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
 </div>
 
-# Run and deploy your AI Studio app
+# SmartPrep – Academic Excellence Platform
 
-This contains everything you need to run your app locally.
+SmartPrep is a professional examination and academic prep platform designed for high-stakes testing, live monitoring, and student progress tracking.
 
-View your app in AI Studio: https://ai.studio/apps/ab8b5262-46c8-4b06-a966-15d304c556a0
+**This application was built and is maintained by Heteo.**
 
-## Run Locally
+## Key Features
+- **Secure Exam Room**: Prevent cheating with fullscreen enforcement and tab-switch detection.
+- **Live Monitoring**: Administrators can monitor student progress and exam violations in real-time.
+- **Progress Tracking**: Detailed results and performance analytics for students.
+- **Multi-Institution Support**: Manage multiple institutions and student levels effortlessly.
 
-**Prerequisites:**  Node.js
+## Getting Started
 
+### Prerequisites
+- Node.js (v18 or later)
+- Firebase Account
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### Installation
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/nelymsjnrprog/smartprep.git
+    ```
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+3.  **Run the development server**:
+    ```bash
+    npm run dev
+    ```
+
+### Deployment
+The application is optimized for Firebase Hosting. To deploy your latest changes:
+```bash
+npm run build
+firebase deploy
+```
