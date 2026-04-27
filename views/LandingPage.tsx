@@ -5,6 +5,8 @@ import { APP_CONFIG } from '../core/config';
 import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { db } from '../core/firebase';
 import AuthSlidePanel from './AuthSlidePanel';
+import { membershipService } from '../services/membershipService';
+import { MembershipSettings } from '../core/types';
 
 const ProductDemoScenes: React.FC<{ activeScene: number }> = ({ activeScene }) => {
   return (
@@ -87,6 +89,7 @@ const LandingPage: React.FC = () => {
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [membershipSettings, setMembershipSettings] = useState<MembershipSettings | null>(null);
 
   // Body Scroll Lock
   useEffect(() => {
@@ -96,6 +99,12 @@ const LandingPage: React.FC = () => {
       document.body.style.overflow = 'auto';
     }
   }, [isAuthOpen, isPricingOpen, isContactOpen, isTermsOpen, isPrivacyOpen]);
+
+  // Subscribe to membership settings
+  useEffect(() => {
+    const unsubscribe = membershipService.subscribeMembershipSettings(setMembershipSettings);
+    return () => unsubscribe();
+  }, []);
 
   // Support Form State
   const [supportData, setSupportData] = useState({ name: '', email: '', message: '' });
@@ -439,6 +448,7 @@ const LandingPage: React.FC = () => {
       <PricingSlidePanel 
         isOpen={isPricingOpen} 
         onClose={() => setIsPricingOpen(false)} 
+        settings={membershipSettings}
       />
 
       {/* Contact Slide Panel */}
@@ -592,11 +602,18 @@ const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   );
 };
 
-const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settings: MembershipSettings | null }> = ({ isOpen, onClose, settings }) => {
+  const levels = [
+    { id: '100', name: 'Level 100', key: 'form1', features: ['Standard Quiz Access', 'Results Tracking', 'Academic Support'] },
+    { id: '200', name: 'Level 200', key: 'form2', features: ['Advanced Quiz Access', 'Results Tracking', 'Mock Examinations'] },
+    { id: '300', name: 'Level 300', key: 'form3', features: ['Full Curriculum Access', 'Performance Analytics', 'Live Monitoring'] },
+    { id: 'Candidate', name: 'Candidate', key: 'candidate', features: ['Full Professional Prep', 'Private Simulation', 'Direct Feedback'] }
+  ];
+
   return (
     <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto`}>
       <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
-        <div className="w-full max-w-5xl">
+        <div className="w-full max-w-7xl">
           <div className="flex justify-between items-center mb-16">
             <button onClick={onClose} className="group flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-black uppercase text-[10px] tracking-widest">
               <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-all">
@@ -607,71 +624,54 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           </div>
 
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-6 text-slate-900">Pricing</h2>
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-6 text-slate-900">Pricing Plans</h2>
             <p className="text-slate-500 font-medium text-xl max-w-2xl mx-auto">
-              Simple, transparent plans designed to scale with your academic success.
+              Real-time subscription plans based on your academic level.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-            {/* Free Plan */}
-            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-10 flex flex-col h-full shadow-sm hover:shadow-xl transition-all duration-500">
-              <div className="mb-8">
-                <h3 className="text-lg font-black uppercase tracking-widest text-slate-400 mb-2">Free</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-black text-slate-900">GHS 0</span>
-                  <span className="text-slate-400 font-bold">/mo</span>
-                </div>
-              </div>
-              <ul className="space-y-4 mb-10 flex-1">
-                {['Access to Public Quizzes', 'Personal Results Dashboard', 'Basic Progress Tracking', 'Standard Support'].map((feat, i) => (
-                  <li key={i} className="flex items-center gap-3 text-slate-600 font-medium">
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                    {feat}
-                  </li>
-                ))}
-              </ul>
-              <button className="w-full py-4 rounded-2xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Get Started</button>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
+            {levels.map((lvl) => {
+              const lvlSettings = settings ? (settings as any)[lvl.key] : { price: 0, paymentRequired: false };
+              const isFree = !lvlSettings.paymentRequired;
 
-            {/* Pro Plan */}
-            <div className="bg-white border-4 border-primary-600 rounded-[2.5rem] p-10 flex flex-col h-full shadow-2xl relative transform md:scale-105 z-10">
-              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-primary-600 text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em]">Recommended</div>
-              <div className="mb-8">
-                <h3 className="text-lg font-black uppercase tracking-widest text-primary-600 mb-2">Pro</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-black text-slate-900">GHS 29</span>
-                  <span className="text-slate-400 font-bold">/mo</span>
+              return (
+                <div key={lvl.id} className={`bg-white border-2 rounded-[2.5rem] p-8 flex flex-col h-full transition-all duration-500 shadow-sm hover:shadow-xl ${lvl.id === 'Candidate' ? 'border-primary-600' : 'border-slate-50'}`}>
+                  <div className="mb-8">
+                    <h3 className="text-sm font-black uppercase tracking-widest text-primary-600 mb-2">{lvl.name}</h3>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-black text-slate-900">GHS {lvlSettings.price}</span>
+                      <span className="text-slate-400 font-bold">/term</span>
+                    </div>
+                    {isFree && <span className="inline-block mt-2 px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase rounded-full">Free Access Active</span>}
+                  </div>
+                  <ul className="space-y-3 mb-8 flex-1">
+                    {lvl.features.map((feat, i) => (
+                      <li key={i} className="flex items-center gap-3 text-slate-600 text-sm font-medium">
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
+                        {feat}
+                      </li>
+                    ))}
+                  </ul>
+                  <button className={`w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${isFree ? 'bg-slate-100 text-slate-500' : 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-600/10'}`}>
+                    {isFree ? 'Current Plan' : 'Choose Plan'}
+                  </button>
                 </div>
-              </div>
-              <ul className="space-y-4 mb-10 flex-1">
-                {['All Free Features', 'Full Exam Simulations', 'Real-time Monitoring', 'Priority Performance Insights', 'Advanced Analytics'].map((feat, i) => (
-                  <li key={i} className="flex items-center gap-3 text-slate-600 font-medium">
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                    {feat}
-                  </li>
-                ))}
-              </ul>
-              <button className="w-full py-4 rounded-2xl bg-primary-600 text-white font-black text-xs uppercase tracking-widest hover:bg-primary-700 transition-all shadow-lg shadow-primary-600/20">Upgrade Now</button>
-            </div>
+              );
+            })}
+          </div>
 
-            {/* Institution Plan */}
-            <div className="bg-white border border-slate-100 rounded-[2.5rem] p-10 flex flex-col h-full shadow-sm hover:shadow-xl transition-all duration-500">
-              <div className="mb-8">
-                <h3 className="text-lg font-black uppercase tracking-widest text-slate-400 mb-2">Institution</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-slate-900">Custom</span>
-                </div>
-              </div>
-              <ul className="space-y-4 mb-10 flex-1">
-                {['Department-wide Licensing', 'Admin Control Panel', 'Custom Exam Templates', 'Dedicated Success Manager', 'SSO Integration'].map((feat, i) => (
-                  <li key={i} className="flex items-center gap-3 text-slate-600 font-medium">
-                    <svg viewBox="0 0 24 24" className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                    {feat}
-                  </li>
-                ))}
-              </ul>
-              <button className="w-full py-4 rounded-2xl bg-slate-100 text-slate-600 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all">Contact Sales</button>
+          <div className="bg-slate-900 rounded-[3rem] p-10 md:p-16 text-center text-white mb-20 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-primary-600 opacity-10 rounded-full -mr-32 -mt-32"></div>
+            <div className="relative z-10">
+              <h3 className="text-lg font-black uppercase tracking-widest text-primary-500 mb-4">Institution</h3>
+              <h2 className="text-3xl md:text-5xl font-black mb-6">Need a custom solution?</h2>
+              <p className="text-slate-400 font-medium text-lg max-w-2xl mx-auto mb-10">
+                We offer tailored packages for nursing schools and academic institutions including multi-user licenses and administrative controls.
+              </p>
+              <button className="bg-white text-slate-900 px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all active:scale-95">
+                Contact for Pricing
+              </button>
             </div>
           </div>
 
