@@ -1,7 +1,0 @@
-{
-  "name": "VSEFA – Virtual Safe Aca",
-  "description": "A secure, role-based exam platform featuring scalable student testing environments and administrative quiz management tools with real-time analytics.",
-  "requestFramePermissions": [
-    "camera"
-  ]
-}
