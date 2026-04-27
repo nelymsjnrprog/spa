@@ -6,13 +6,72 @@
 
   <meta name="version" content="1.1.2">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-  <meta name="msapplication-TileColor" content="#0f172a">
+  <meta name="theme-color" content="#059669" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#059669" media="(prefers-color-scheme: dark)">
+  <meta name="msapplication-TileColor" content="#059669">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>%VITE_APP_NAME% – %VITE_INSTITUTION%</title>
+
+  <!-- Primary SEO Meta Tags -->
+  <title>SmartPrepAca – Online Exam Preparation & Academic Excellence Platform</title>
+  <meta name="title" content="SmartPrepAca – Online Exam Preparation & Academic Excellence Platform">
+  <meta name="description" content="SmartPrepAca is a professional online examination and academic preparation platform. Prepare for exams with secure quiz rooms, real-time monitoring, instant results, and adaptive learning. Join thousands of students excelling with SmartPrepAca.">
+  <meta name="keywords" content="SmartPrepAca, online exam, exam preparation, academic platform, quiz platform, nursing exam prep, RCN exam, RGN exam, online test, e-learning, student portal, exam practice, secure exam, live monitoring, education technology">
+  <meta name="author" content="Heteo">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://smart-prep-db982.web.app/">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://smart-prep-db982.web.app/">
+  <meta property="og:title" content="SmartPrepAca – Online Exam Preparation & Academic Excellence Platform">
+  <meta property="og:description" content="Prepare for exams with secure quiz rooms, real-time monitoring, instant results, and adaptive learning. Join thousands of students excelling with SmartPrepAca.">
+  <meta property="og:site_name" content="SmartPrepAca">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://smart-prep-db982.web.app/">
+  <meta property="twitter:title" content="SmartPrepAca – Online Exam Preparation & Academic Excellence Platform">
+  <meta property="twitter:description" content="Prepare for exams with secure quiz rooms, real-time monitoring, instant results, and adaptive learning. Join thousands of students excelling with SmartPrepAca.">
+
+  <!-- Structured Data (JSON-LD) for Google Rich Results -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "SmartPrepAca",
+    "url": "https://smart-prep-db982.web.app",
+    "description": "Professional online examination and academic preparation platform with secure quiz rooms, live monitoring, and instant results.",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "author": {
+      "@type": "Organization",
+      "name": "Heteo"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "SmartPrepAca",
+    "url": "https://smart-prep-db982.web.app",
+    "description": "Academic excellence platform built by Heteo for exam preparation and student progress tracking.",
+    "founder": {
+      "@type": "Organization",
+      "name": "Heteo"
+    }
+  }
+  </script>
+
   <script src="https://js.paystack.co/v2/inline.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="/tailwind-config.js"></script>
@@ -23,6 +82,22 @@
 </head>
 
 <body class="bg-slate-50 text-slate-900">
+  <!-- SEO: Noscript fallback content for crawlers that don't execute JavaScript -->
+  <noscript>
+    <div style="padding: 40px; text-align: center; font-family: Inter, sans-serif;">
+      <h1>SmartPrepAca – Online Exam Preparation Platform</h1>
+      <p>SmartPrepAca is a professional online examination and academic preparation platform. Prepare for exams with secure quiz rooms, real-time monitoring, instant results, and adaptive learning.</p>
+      <h2>Features</h2>
+      <ul style="list-style: none; padding: 0;">
+        <li>✅ Secure Exam Rooms with fullscreen enforcement and anti-cheating</li>
+        <li>✅ Live Monitoring for administrators to track student progress</li>
+        <li>✅ Instant Results and detailed performance analytics</li>
+        <li>✅ Multi-Institution Support for managing multiple student levels</li>
+        <li>✅ Adaptive Quiz Technology with timed exams and question shuffling</li>
+      </ul>
+      <p>Please enable JavaScript to use SmartPrepAca.</p>
+    </div>
+  </noscript>
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
 </body>
