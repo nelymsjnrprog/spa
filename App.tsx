@@ -24,10 +24,13 @@ import MembershipPricing from './admin/MembershipPricing';
 import LevelManagement from './admin/LevelManagement';
 import StudentDirectory from './admin/StudentDirectory';
 import AdminLogs from './admin/AdminLogs';
+import SupportCenter from './admin/SupportCenter';
+import LibraryManagement from './admin/LibraryManagement';
 import StudentDashboard from './student/Dashboard';
 import QuizRoom from './student/QuizRoom';
 import Results from './student/Results';
 import Profile from './student/Profile';
+import Library from './student/Library';
 import PaymentRequiredView from './student/PaymentRequiredView';
 import MembershipGuard from './components/MembershipGuard';
 
@@ -173,6 +176,20 @@ const App: React.FC = () => {
               </RoleGuard>
             </AuthGuard>
           } />
+          <Route path="/admin/support" element={
+            <AuthGuard>
+              <RoleGuard allowedRole="admin">
+                <SupportCenter />
+              </RoleGuard>
+            </AuthGuard>
+          } />
+          <Route path="/admin/library" element={
+            <AuthGuard>
+              <RoleGuard allowedRole="admin">
+                <LibraryManagement />
+              </RoleGuard>
+            </AuthGuard>
+          } />
 
           {/* Student Routes */}
           <Route path="/student" element={
@@ -198,6 +215,15 @@ const App: React.FC = () => {
               <RoleGuard allowedRole="student">
                 <MembershipGuard>
                   <Results />
+                </MembershipGuard>
+              </RoleGuard>
+            </AuthGuard>
+          } />
+          <Route path="/student/library" element={
+            <AuthGuard>
+              <RoleGuard allowedRole="student">
+                <MembershipGuard>
+                  <Library />
                 </MembershipGuard>
               </RoleGuard>
             </AuthGuard>

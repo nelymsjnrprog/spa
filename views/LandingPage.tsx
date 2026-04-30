@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
-import { APP_CONFIG } from '../core/config';
-import { collection, query, where, getDocs, limit } from 'firebase/firestore';
-import { db } from '../core/firebase';
 import AuthSlidePanel from './AuthSlidePanel';
 import { membershipService } from '../services/membershipService';
 import { MembershipSettings } from '../core/types';
+import ContactSlidePanel from '../components/ContactSlidePanel';
+import { quizService } from '../services/quizService';
+import { supportService } from '../services/supportService';
 
 const ProductDemoScenes: React.FC<{ activeScene: number }> = ({ activeScene }) => {
   return (
@@ -83,6 +83,7 @@ const LandingPage: React.FC = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
   const [pendingQuizCode, setPendingQuizCode] = useState<string | undefined>(undefined);
+  const [pendingLevel, setPendingLevel] = useState<string | undefined>(undefined);
 
   // Additional Panels State
   const [isPricingOpen, setIsPricingOpen] = useState(false);
@@ -107,23 +108,30 @@ const LandingPage: React.FC = () => {
   }, []);
 
   // Support Form State
-  const [supportData, setSupportData] = useState({ name: '', email: '', message: '' });
+  const [supportData, setSupportData] = useState({ name: '', email: '', subject: '', message: '' });
   const [supportSubmitted, setSupportSubmitted] = useState(false);
+  const [isSubmittingSupport, setIsSubmittingSupport] = useState(false);
 
-  const handleSupportSubmit = (e: React.FormEvent) => {
+  const handleSupportSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you'd send this to a backend or Firestore
-    console.log('Support request:', supportData);
-    setSupportSubmitted(true);
-    setTimeout(() => {
-      setSupportSubmitted(false);
-      setSupportData({ name: '', email: '', message: '' });
-    }, 5000);
+    setIsSubmittingSupport(true);
+    try {
+      await supportService.submitInquiry(supportData);
+      setSupportSubmitted(true);
+      setSupportData({ name: '', email: '', subject: '', message: '' });
+      setTimeout(() => setSupportSubmitted(false), 5000);
+    } catch (error) {
+      console.error("Error submitting support inquiry:", error);
+      alert("Failed to send message. Please try again later.");
+    } finally {
+      setIsSubmittingSupport(false);
+    }
   };
 
-  const openAuth = (mode: 'login' | 'signup', code?: string) => {
+  const openAuth = (mode: 'login' | 'signup', code?: string, level?: string) => {
     setAuthMode(mode);
     setPendingQuizCode(code);
+    setPendingLevel(level);
     setIsAuthOpen(true);
   };
 
@@ -136,43 +144,36 @@ const LandingPage: React.FC = () => {
 
   const handleBannerJoin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const code = bannerQuizCode.trim().toUpperCase();
+    const code = bannerQuizCode.trim();
     if (!code) return;
 
+    if (!/^\d{6}$/.test(code)) {
+      alert('Please enter a valid 6-digit numeric quiz code.');
+      return;
+    }
+
     try {
-      const q = query(
-        collection(db, 'quizzes'),
-        where('code', '==', code),
-        where('isActive', '==', true),
-        limit(1)
-      );
-      const querySnapshot = await getDocs(q);
+      const quiz = await quizService.getQuizByCode(code);
       
-      if (querySnapshot.empty) {
+      if (!quiz) {
         alert('Invalid or inactive quiz code. Please check with your teacher.');
         return;
       }
 
-      const quizDoc = querySnapshot.docs[0];
-      const quizData = quizDoc.data();
-      
       // Check expiry
-      if (quizData.expiresAt) {
-        const expiresAt = quizData.expiresAt.toDate();
-        if (expiresAt < new Date()) {
-          alert('This quiz code has expired.');
-          return;
-        }
+      if (quiz.availableUntil && quiz.availableUntil < Date.now()) {
+        alert('This quiz session has already ended.');
+        return;
       }
 
-      // Device detection
-      const deviceId = localStorage.getItem('smartprep_device_id');
-      if (deviceId && user) {
-        // Known device and logged in, take to quiz
-        navigate(`/student/quiz/${quizDoc.id}`);
+      // Smart Student Detection
+      if (user) {
+        // Already logged in, jump straight to quiz
+        navigate(`/student/quiz/${quiz.id}`);
       } else {
-        // Not detected or not logged in, open auth panel with quiz code
-        openAuth('login', code);
+        // Not logged in, save destination and show login
+        sessionStorage.setItem('pendingQuizId', quiz.id);
+        openAuth('login');
       }
     } catch (error) {
       console.error("Error checking quiz code:", error);
@@ -188,13 +189,7 @@ const LandingPage: React.FC = () => {
     }
   };
 
-  const handleJoinQuiz = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (quizCode.trim()) {
-      // Mock navigation to a quiz
-      alert(`Joining quiz with code: ${quizCode}`);
-    }
-  };
+
 
 
 
@@ -222,35 +217,38 @@ const LandingPage: React.FC = () => {
             onClick={() => openAuth('signup')}
             className="bg-[#1a732a] text-white px-4 py-2 md:px-5 md:py-2.5 rounded-lg text-[14px] md:text-[15px] font-semibold hover:bg-[#145920] transition-all shadow-sm active:scale-95"
           >
-            Register
+            Sign Up
           </button>
         </div>
       </nav>
 
       {/* Join Quiz Banner Section */}
       <div className="pt-24 px-6 bg-white">
-        <div className="max-w-4xl mx-auto bg-[#2D4A6B] rounded-2xl p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 transition-all hover:shadow-primary-900/10">
-          <div className="text-center md:text-left">
+        <div className="max-w-4xl mx-auto bg-[#2D4A6B] rounded-2xl p-8 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all hover:shadow-primary-900/10">
+          <div className="text-left">
             <h2 className="text-2xl font-bold text-white mb-1">Join a Quiz</h2>
             <p className="text-slate-300 text-sm font-medium">Access your session instantly</p>
           </div>
-          <form onSubmit={handleBannerJoin} className="w-full max-w-sm flex items-center bg-white p-1 rounded-full border-4 border-[#ffffff20]">
+          <form onSubmit={handleBannerJoin} className="w-full max-w-sm flex items-center bg-white p-1 rounded-lg border-4 border-[#ffffff20]">
             <span className="pl-4 text-slate-400 font-mono text-xl">#</span>
             <input 
               type="text" 
-              placeholder="Enter quiz code here"
+              placeholder="Enter 6-digit code"
               value={bannerQuizCode}
-              onChange={(e) => setBannerQuizCode(e.target.value)}
+              onChange={(e) => setBannerQuizCode(e.target.value.replace(/\D/g, '').substring(0, 6))}
+              maxLength={6}
               className="flex-1 min-w-0 px-2 py-3 outline-none text-lg font-mono font-bold text-[#2D4A6B] placeholder:font-sans placeholder:font-normal placeholder:text-slate-300"
             />
-            <button 
-              type="submit"
-              className="bg-[#1a732a] text-white w-12 h-12 shrink-0 rounded-full flex items-center justify-center hover:bg-[#145920] transition-all shadow-lg active:scale-90"
-            >
-              <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="3">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </button>
+            {bannerQuizCode.length > 0 && (
+              <button 
+                type="submit"
+                className="bg-[#1a732a] text-white w-12 h-12 shrink-0 rounded-r-lg flex items-center justify-center hover:bg-[#145920] transition-all shadow-lg active:scale-90"
+              >
+                <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            )}
           </form>
         </div>
       </div>
@@ -342,6 +340,14 @@ const LandingPage: React.FC = () => {
                       className="w-full bg-white border border-slate-200 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-[#1a732a] focus:border-transparent transition-all outline-none font-medium" 
                     />
                   </div>
+                  <input 
+                    type="text" 
+                    placeholder="Subject" 
+                    required
+                    value={supportData.subject}
+                    onChange={e => setSupportData({...supportData, subject: e.target.value})}
+                    className="w-full bg-white border border-slate-200 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-[#1a732a] focus:border-transparent transition-all outline-none font-medium" 
+                  />
                   <textarea 
                     placeholder="How can we help you?" 
                     required
@@ -352,9 +358,10 @@ const LandingPage: React.FC = () => {
                   ></textarea>
                   <button 
                     type="submit"
-                    className="w-full bg-[#1a1a1a] text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl active:scale-[0.98]"
+                    disabled={isSubmittingSupport}
+                    className="w-full bg-[#1a1a1a] text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Send Message
+                    {isSubmittingSupport ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
               )}
@@ -442,6 +449,7 @@ const LandingPage: React.FC = () => {
         onClose={() => setIsAuthOpen(false)} 
         initialMode={authMode} 
         quizCode={pendingQuizCode}
+        initialLevel={pendingLevel}
       />
 
       {/* Pricing Slide Panel */}
@@ -449,6 +457,10 @@ const LandingPage: React.FC = () => {
         isOpen={isPricingOpen} 
         onClose={() => setIsPricingOpen(false)} 
         settings={membershipSettings}
+        onSelectPlan={(level) => {
+          setIsPricingOpen(false);
+          openAuth('signup', undefined, level);
+        }}
       />
 
       {/* Contact Slide Panel */}
@@ -602,7 +614,7 @@ const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
   );
 };
 
-const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settings: MembershipSettings | null }> = ({ isOpen, onClose, settings }) => {
+const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settings: MembershipSettings | null; onSelectPlan: (level: string) => void }> = ({ isOpen, onClose, settings, onSelectPlan }) => {
   const levels = [
     { id: '100', name: 'Level 100', key: 'form1', features: ['Standard Quiz Access', 'Results Tracking', 'Academic Support'] },
     { id: '200', name: 'Level 200', key: 'form2', features: ['Advanced Quiz Access', 'Results Tracking', 'Mock Examinations'] },
@@ -653,7 +665,10 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
                       </li>
                     ))}
                   </ul>
-                  <button className={`w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${isFree ? 'bg-slate-100 text-slate-500' : 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-600/10'}`}>
+                  <button 
+                    onClick={() => !isFree && onSelectPlan(lvl.id)}
+                    className={`w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${isFree ? 'bg-slate-100 text-slate-500 cursor-default' : 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-600/10 active:scale-95'}`}
+                  >
                     {isFree ? 'Current Plan' : 'Choose Plan'}
                   </button>
                 </div>
@@ -697,111 +712,7 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
   );
 };
 
-const ContactSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const [submitted, setSubmitted] = useState(false);
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 5000);
-  };
 
-  return (
-    <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto`}>
-      <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
-        <div className="w-full max-w-5xl">
-          <div className="flex justify-between items-center mb-16">
-            <button onClick={onClose} className="group flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-black uppercase text-[10px] tracking-widest">
-              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-all">
-                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-              </div>
-              <span>Close</span>
-            </button>
-          </div>
-
-          <div className="mb-20 text-center md:text-left">
-            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-4 text-slate-900">Contact Us</h2>
-            <p className="text-slate-500 font-medium text-xl">Get in touch with the SmartPrepAca team.</p>
-          </div>
-
-          <div className="flex flex-col md:flex-row gap-16 lg:gap-24">
-            {/* Left: Form */}
-            <div className="flex-1 space-y-8">
-              <div>
-                <p className="text-slate-900 font-bold text-lg mb-2">Have a question or issue?</p>
-                <p className="text-slate-500">We'd love to hear from you. Fill out the form below and we'll be in touch.</p>
-              </div>
-
-              {submitted ? (
-                <div className="bg-primary-50 border border-primary-100 p-8 rounded-3xl text-center animate-in zoom-in-95 duration-500">
-                  <div className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-lg shadow-primary-600/20">
-                    <svg viewBox="0 0 24 24" className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900 mb-2">Message Sent!</h3>
-                  <p className="text-slate-500 font-medium">Thank you for reaching out. We'll get back to you shortly.</p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
-                      <input type="text" placeholder="John Doe" required className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-primary-600 transition-all font-medium" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email Address</label>
-                      <input type="email" placeholder="john@example.com" required className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-primary-600 transition-all font-medium" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Subject</label>
-                    <input type="text" placeholder="How can we help?" required className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-primary-600 transition-all font-medium" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Message</label>
-                    <textarea rows={6} placeholder="Tell us more about your inquiry..." required className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-primary-600 transition-all font-medium resize-none"></textarea>
-                  </div>
-                  <button type="submit" className="w-full bg-primary-600 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary-700 transition-all shadow-xl shadow-primary-600/10 active:scale-[0.98]">
-                    Send Message
-                  </button>
-                </form>
-              )}
-            </div>
-
-            {/* Right: Support */}
-            <div className="md:w-80 lg:w-96 space-y-10">
-              <div>
-                <h3 className="text-2xl font-black text-slate-900 mb-6">Speak to someone directly</h3>
-                <div className="space-y-6">
-                  {[
-                    { name: "Philip Bright Mensah", role: "Customer Support", phone: "+233 541 411 697" },
-                    { name: "Obed Normanyo", role: "Customer Support", phone: "+233 546 684 609" },
-                    { name: "Prince Amoah", role: "Technical Support", phone: "+233 202 731 183" }
-                  ].map((contact, i) => (
-                    <div key={i} className="bg-white border border-slate-100 p-6 rounded-3xl shadow-sm hover:shadow-md transition-all group">
-                      <div className="flex items-start justify-between mb-4">
-                        <div>
-                          <p className="font-black text-slate-900 group-hover:text-primary-600 transition-colors">{contact.name}</p>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{contact.role}</p>
-                        </div>
-                        <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-primary-50 group-hover:text-primary-600 transition-all">
-                          <i className="fas fa-phone-alt"></i>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="font-mono font-bold text-slate-600">{contact.phone}</span>
-                        <a href={`tel:${contact.phone.replace(/\s+/g, '')}`} className="bg-slate-100 text-slate-900 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-600 hover:text-white transition-all">Call</a>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 
 

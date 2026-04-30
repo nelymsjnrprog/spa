@@ -159,5 +159,20 @@ service cloud.firestore {
       allow read, create: if isAdmin();
       allow update, delete: if false;
     }
+
+    // Support Inquiries
+    match /Support/{inquiryId} {
+      allow create: if true; // Public contact form
+      allow read, delete: if isAdmin();
+      allow update: if false;
+    }
+
+    // Library Resources
+    match /Library/{resourceId} {
+      // Students can only read published resources
+      allow read: if isSignedIn() && (isAdmin() || resource.data.published == true);
+      allow list: if isSignedIn() && isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
   }
 }

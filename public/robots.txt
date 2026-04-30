@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://smart-prep-db982.web.app/sitemap.xml
+Sitemap: https://smartprepaca.com/sitemap.xml

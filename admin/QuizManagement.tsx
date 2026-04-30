@@ -24,6 +24,7 @@ const QuizManagement: React.FC = () => {
   const [time, setTime] = useState(30);
   const [optionsCount, setOptionsCount] = useState(4); // Default to 4 options
   const [lockCode, setLockCode] = useState('');
+  const [quizCode, setQuizCode] = useState('');
   const [restrictScreenshot, setRestrictScreenshot] = useState(false);
   const [restrictCopyPaste, setRestrictCopyPaste] = useState(false);
   const [restrictTabSwitch, setRestrictTabSwitch] = useState(false);
@@ -33,7 +34,6 @@ const QuizManagement: React.FC = () => {
   const [watermarkEnabled, setWatermarkEnabled] = useState(false);
   const [movingWatermark, setMovingWatermark] = useState(false);
   const [blurOnTabLeave, setBlurOnTabLeave] = useState(false);
-  const [canvasRendering, setCanvasRendering] = useState(false);
   const [shuffleQuestions, setShuffleQuestions] = useState(false);
   const [shuffleOptions, setShuffleOptions] = useState(false);
 
@@ -82,6 +82,7 @@ const QuizManagement: React.FC = () => {
         setTime(draft.time || 30);
         setOptionsCount(draft.optionsCount || 4);
         setLockCode(draft.lockCode || '');
+        setQuizCode(draft.quizCode || '');
         setRestrictScreenshot(!!draft.restrictScreenshot);
         setRestrictCopyPaste(!!draft.restrictCopyPaste);
         setRestrictTabSwitch(!!draft.restrictTabSwitch);
@@ -91,7 +92,6 @@ const QuizManagement: React.FC = () => {
         setWatermarkEnabled(!!draft.watermarkEnabled);
         setMovingWatermark(!!draft.movingWatermark);
         setBlurOnTabLeave(!!draft.blurOnTabLeave);
-        setCanvasRendering(!!draft.canvasRendering);
         setShuffleQuestions(!!draft.shuffleQuestions);
         setShuffleOptions(!!draft.shuffleOptions);
         setShowResults(draft.showResults ?? true);
@@ -132,8 +132,11 @@ const QuizManagement: React.FC = () => {
       setFilteredQuizzes(quizzes);
     } else {
       const assigned = profile.assignedInstitutions || [];
+      const isMultiInst = assigned.length >= 2;
       setFilteredQuizzes(quizzes.filter(q => {
         const inst = (q.institution || '').trim().toLowerCase();
+        // If it's a global quiz (inst === ""), and admin is multi-inst, allow management
+        if (inst === "" && isMultiInst) return true;
         return assigned.some(i => i.trim().toLowerCase() === inst);
       }));
     }
@@ -154,10 +157,10 @@ const QuizManagement: React.FC = () => {
   // Persistence Effect
   useEffect(() => {
     const formData = {
-      title, desc, time, optionsCount, lockCode, restrictScreenshot,
+      title, desc, time, optionsCount, lockCode, quizCode, restrictScreenshot,
       restrictCopyPaste, restrictTabSwitch, enforceFullscreen,
       disableTextSelection, disableRightClick, watermarkEnabled,
-      movingWatermark, blurOnTabLeave, canvasRendering, showResults,
+      movingWatermark, blurOnTabLeave, showResults,
       availableFrom, availableUntil, institution, level, allowedUsers,
       questionsPerPage, shuffleQuestions, shuffleOptions, minSubmissionPercentage, defaultMarkPerQuestion,
       isModalOpen: showModal, editingQuizId: editingQuiz?.id
@@ -173,7 +176,7 @@ const QuizManagement: React.FC = () => {
     title, desc, time, optionsCount, lockCode, restrictScreenshot,
     restrictCopyPaste, restrictTabSwitch, enforceFullscreen,
     disableTextSelection, disableRightClick, watermarkEnabled,
-    movingWatermark, blurOnTabLeave, canvasRendering, showResults,
+    movingWatermark, blurOnTabLeave, showResults,
     availableFrom, availableUntil, institution, allowedUsers,
     questionsPerPage, shuffleQuestions, shuffleOptions, minSubmissionPercentage, defaultMarkPerQuestion,
     showModal, editingQuiz
@@ -196,6 +199,7 @@ const QuizManagement: React.FC = () => {
     setTime(quiz.timeLimit);
     setOptionsCount(quiz.defaultOptionsCount || 4);
     setLockCode(quiz.lockCode || '');
+    setQuizCode(quiz.quizCode || '');
     setRestrictScreenshot(!!quiz.restrictScreenshot);
     setRestrictCopyPaste(!!quiz.restrictCopyPaste);
     setRestrictTabSwitch(!!quiz.restrictTabSwitch);
@@ -205,7 +209,6 @@ const QuizManagement: React.FC = () => {
     setWatermarkEnabled(!!quiz.watermarkEnabled);
     setMovingWatermark(!!quiz.movingWatermark);
     setBlurOnTabLeave(!!quiz.blurOnTabLeave);
-    setCanvasRendering(!!quiz.canvasRendering);
     setShuffleQuestions(!!quiz.shuffleQuestions);
     setShuffleOptions(!!quiz.shuffleOptions);
 
@@ -224,6 +227,12 @@ const QuizManagement: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile) return;
+    
+    if (quizCode && !/^\d{6}$/.test(quizCode)) {
+      alert("Quiz Join Code must be exactly 6 numeric digits.");
+      return;
+    }
+
     try {
       const quizData = {
         subjectTitle,
@@ -233,6 +242,7 @@ const QuizManagement: React.FC = () => {
         timeLimit: time,
         defaultOptionsCount: optionsCount,
         lockCode: lockCode.trim() || "",
+        quizCode: quizCode.trim() || "",
         restrictScreenshot,
         restrictCopyPaste,
         restrictTabSwitch,
@@ -242,7 +252,6 @@ const QuizManagement: React.FC = () => {
         watermarkEnabled,
         movingWatermark,
         blurOnTabLeave,
-        canvasRendering,
         showResults,
         availableFrom: availableFrom ? new Date(availableFrom).getTime() : undefined,
         availableUntil: availableUntil ? new Date(availableUntil).getTime() : undefined,
@@ -280,6 +289,7 @@ const QuizManagement: React.FC = () => {
     setTime(30);
     setOptionsCount(4);
     setLockCode('');
+    setQuizCode('');
     setRestrictScreenshot(false);
     setRestrictCopyPaste(false);
     setRestrictTabSwitch(false);
@@ -289,7 +299,6 @@ const QuizManagement: React.FC = () => {
     setWatermarkEnabled(false);
     setMovingWatermark(false);
     setBlurOnTabLeave(false);
-    setCanvasRendering(false);
     setShowResults(true);
     setAvailableFrom('');
     setAvailableUntil('');
@@ -395,7 +404,9 @@ const QuizManagement: React.FC = () => {
     }
   };
 
-  if (!authLoading && effectivePerm !== 'super_admin') {
+  const canAccessManagement = isSuperAdmin || (profile?.assignedInstitutions && profile.assignedInstitutions.length >= 2);
+
+  if (!authLoading && !canAccessManagement) {
     return <Navigate to="/admin" replace />;
   }
 
@@ -469,6 +480,9 @@ const QuizManagement: React.FC = () => {
                   )}
                 </div>
 
+                {quiz.subjectTitle && (
+                  <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mb-1.5 leading-none">{quiz.subjectTitle}</p>
+                )}
                 <h3 className="text-lg sm:text-2xl font-black text-slate-900 mb-1 leading-tight pr-6">{quiz.title}</h3>
                 <p className="text-xs sm:text-sm text-slate-500 line-clamp-2 mb-4 sm:mb-6 font-medium">{quiz.description}</p>
 
@@ -584,15 +598,26 @@ const QuizManagement: React.FC = () => {
                       <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Lock Code (Optional)</label>
                       <input type="text" value={lockCode} onChange={e => setLockCode(e.target.value)} className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-sm" placeholder="e.g. SECRET123" />
                     </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Quiz Join Code (6 Digits)</label>
+                      <input 
+                        type="text" 
+                        value={quizCode} 
+                        onChange={e => setQuizCode(e.target.value.replace(/\D/g, '').substring(0, 6))} 
+                        className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-sm font-mono" 
+                        placeholder="e.g. 123456" 
+                        maxLength={6}
+                      />
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Available From</label>
+                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Available From (Optional)</label>
                       <input type="datetime-local" value={availableFrom} onChange={e => setAvailableFrom(e.target.value)} className="w-full p-3 sm:p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-xs sm:text-sm" title="Available from date" placeholder="Select start date" />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Available Until</label>
+                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Available Until (Optional)</label>
                       <input type="datetime-local" value={availableUntil} onChange={e => setAvailableUntil(e.target.value)} className="w-full p-3 sm:p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-xs sm:text-sm" title="Available until date" placeholder="Select end date" />
                     </div>
                   </div>
@@ -612,7 +637,7 @@ const QuizManagement: React.FC = () => {
                         onChange={(e) => setInstitution(e.target.value)}
                         className="w-full px-4 py-4 rounded-xl bg-white border border-slate-200 focus:ring-2 focus:ring-primary-500 transition-all text-sm appearance-none select-custom-arrow"
                       >
-                        {adminService.getEffectivePermission(profile) === 'super_admin' ? (
+                        {isSuperAdmin ? (
                           <>
                             <option value="">All Institutions (VSEFA)</option>
                             {institutions.map(inst => (
@@ -620,9 +645,14 @@ const QuizManagement: React.FC = () => {
                             ))}
                           </>
                         ) : (
-                          profile?.assignedInstitutions?.map(inst => (
-                            <option key={inst} value={inst}>{inst}</option>
-                          ))
+                          <>
+                            {profile?.assignedInstitutions && profile.assignedInstitutions.length >= 2 && (
+                              <option value="">All Institutions (Global)</option>
+                            )}
+                            {profile?.assignedInstitutions?.map(inst => (
+                              <option key={inst} value={inst}>{inst}</option>
+                            ))}
+                          </>
                         )}
                       </select>
                     </div>
@@ -761,7 +791,6 @@ const QuizManagement: React.FC = () => {
                       { label: 'Watermark', state: watermarkEnabled, toggle: () => setWatermarkEnabled(!watermarkEnabled), onIcon: 'fa-stamp', offIcon: 'fa-ghost' },
                       { label: 'Moving Watermark', state: movingWatermark, toggle: () => setMovingWatermark(!movingWatermark), onIcon: 'fa-running', offIcon: 'fa-stop' },
                       { label: 'Blur on Tab Leave', state: blurOnTabLeave, toggle: () => setBlurOnTabLeave(!blurOnTabLeave), onIcon: 'fa-mask', offIcon: 'fa-eye' },
-                      { label: 'Canvas Questions', state: canvasRendering, toggle: () => setCanvasRendering(!canvasRendering), onIcon: 'fa-paint-brush', offIcon: 'fa-font' },
                       { label: 'Shuffle Questions', state: shuffleQuestions, toggle: () => setShuffleQuestions(!shuffleQuestions), onIcon: 'fa-random', offIcon: 'fa-list-ol' },
                       { label: 'Shuffle Options', state: shuffleOptions, toggle: () => setShuffleOptions(!shuffleOptions), onIcon: 'fa-layer-group', offIcon: 'fa-align-left' },
                     ].map(({ label, state, toggle, onIcon, offIcon }) => (

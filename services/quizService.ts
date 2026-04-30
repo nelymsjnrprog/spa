@@ -65,6 +65,18 @@ export const quizService = {
     });
   },
 
+  async getQuizByCode(code: string): Promise<Quiz | null> {
+    const q = query(
+      collection(db, 'quizzes'),
+      where('quizCode', '==', code),
+      where('published', '==', true),
+      limit(1)
+    );
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return null;
+    return { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Quiz;
+  },
+
   async createQuiz(data: Partial<Quiz>, uid: string): Promise<string> {
     const docRef = await addDoc(collection(db, 'quizzes'), {
       ...data,

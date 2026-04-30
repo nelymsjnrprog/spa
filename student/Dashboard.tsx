@@ -187,7 +187,7 @@ const StudentDashboard: React.FC = () => {
           <div className="px-5 py-3.5 bg-white rounded-2xl shadow-sm border border-slate-200/80 flex items-center gap-2.5">
             <span className="text-base leading-none" role="img" aria-label="wave">👋</span>
             <p className="text-sm font-medium text-slate-600">
-              Hey, <span className="font-semibold text-slate-800">Prince</span>
+              Hey, <span className="font-semibold text-slate-800">{profile?.displayName?.split(' ')[0] || 'Student'}</span>
             </p>
           </div>
         </div>

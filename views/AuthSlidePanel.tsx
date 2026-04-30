@@ -11,12 +11,13 @@ interface AuthSlidePanelProps {
   isOpen: boolean;
   onClose: () => void;
   initialMode: 'login' | 'signup';
-  quizCode?: string;
+  quizCode?: string; // legacy prop, kept for backward compat
+  initialLevel?: string;
 }
 
 const PAYSTACK_PUBLIC_KEY = 'pk_live_20856a01dfd3a8f81f74e388d57b75546313eadd';
 
-const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initialMode, quizCode }) => {
+const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initialMode, quizCode: _quizCode, initialLevel }) => {
   const [mode, setMode] = useState<'login' | 'signup' | 'forgot'>(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,6 +33,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
   const [institutions, setInstitutions] = useState<Institution[]>([]);
   const [membershipSettings, setMembershipSettings] = useState<MembershipSettings | null>(null);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -40,7 +42,10 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
     setMode(initialMode);
     setStep(1);
     setError('');
-  }, [initialMode, isOpen]);
+    if (initialLevel) {
+      setLevel(initialLevel);
+    }
+  }, [initialMode, isOpen, initialLevel]);
 
   useEffect(() => {
     if (isOpen) {
@@ -169,8 +174,8 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
     }
 
     if (mode === 'signup' && step === 3) {
-        if (password.length < 8) {
-            setError("Password must be at least 8 characters long.");
+        if (password.length < 6) {
+            setError("Password must be at least 6 characters long.");
             return;
         }
         const emailDomain = email.split('@')[1]?.toLowerCase();
@@ -199,18 +204,15 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
         return;
       }
       onClose();
-      if (quizCode) {
-        try {
-          const q = query(collection(db, 'quizzes'), where('code', '==', quizCode.toUpperCase()), limit(1));
-          const snap = await getDocs(q);
-          if (!snap.empty) {
-            navigate(`/student/quiz/${snap.docs[0].id}`);
-            return;
-          }
-        } catch (e) {
-          console.error("Redirect to quiz failed:", e);
-        }
+
+      // Check for smart redirect to quiz
+      const pendingQuizId = sessionStorage.getItem('pendingQuizId');
+      if (pendingQuizId) {
+        sessionStorage.removeItem('pendingQuizId');
+        navigate(`/student/quiz/${pendingQuizId}`);
+        return;
       }
+
       navigate('/dispatch');
     } catch (err: any) {
       setError(err.message);
@@ -245,7 +247,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                )}
             </div>
             <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-4 text-slate-900">
-                {mode === 'login' ? 'Welcome Back' : mode === 'signup' ? (step === 1 ? 'Start Journey' : step === 2 ? 'Academic Details' : 'Final Step') : 'Reset Password'}
+                {mode === 'login' ? 'Welcome' : mode === 'signup' ? (step === 1 ? 'Start Journey' : step === 2 ? 'Academic Details' : 'Final Step') : 'Reset Password'}
             </h2>
             <p className="text-slate-500 font-medium text-lg">
                 {mode === 'login' ? 'Sign in to access your dashboard' : mode === 'signup' ? 'Join the premium student registry' : 'We will send a recovery link to your email'}
@@ -315,7 +317,23 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</label>
-                            <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all tracking-widest" required />
+                            <div className="relative">
+                                <input 
+                                    type={showPassword ? "text" : "password"} 
+                                    value={password} 
+                                    onChange={e => setPassword(e.target.value)} 
+                                    placeholder="••••••••" 
+                                    className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all tracking-widest" 
+                                    required 
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                                >
+                                    <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                                </button>
+                            </div>
                         </div>
                         {isPaymentRequired && (
                             <div className="bg-[#1a732a]/5 border border-[#1a732a]/10 rounded-2xl p-6 text-center">
@@ -339,7 +357,23 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</label>
                         <button type="button" onClick={() => setMode('forgot')} className="text-[10px] font-black uppercase tracking-widest text-[#1a732a]">Forgot?</button>
                     </div>
-                    <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all tracking-widest" required />
+                    <div className="relative">
+                        <input 
+                            type={showPassword ? "text" : "password"} 
+                            value={password} 
+                            onChange={e => setPassword(e.target.value)} 
+                            placeholder="••••••••" 
+                            className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all tracking-widest" 
+                            required 
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                        >
+                            <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                        </button>
+                    </div>
                 </div>
               </div>
             )}

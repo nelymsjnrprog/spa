@@ -69,6 +69,7 @@ export interface Quiz {
   createdAt: number;
   // Added to support dynamic question option counts (2, 3, 4)
   defaultOptionsCount: number;
+  quizCode?: string;
   lockCode?: string;
   restrictScreenshot?: boolean;
   restrictCopyPaste?: boolean;
@@ -79,7 +80,6 @@ export interface Quiz {
   watermarkEnabled?: boolean;
   movingWatermark?: boolean;
   blurOnTabLeave?: boolean;
-  canvasRendering?: boolean;
   minSubmissionPercentage?: number;
   defaultMarkPerQuestion?: number;
 
@@ -135,4 +135,19 @@ export interface Submission {
   totalQuestions?: number;
   studentLevel?: string;
   studentInstitution?: string;
+}
+
+export interface LibraryResource {
+  id: string;
+  title: string;
+  description?: string;
+  level: string; // '100' | '200' | '300' | 'candidate'
+  fileUrl: string; // Firebase Storage download URL (PDF)
+  thumbnailUrl?: string; // Optional cover image URL
+  fileName: string; // Original filename
+  fileSize?: number; // bytes
+  uploadedBy: string; // Admin UID
+  uploadedByName?: string; // Admin display name
+  uploadedAt: any; // Firestore serverTimestamp
+  published: boolean;
 }

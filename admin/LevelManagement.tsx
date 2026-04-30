@@ -45,7 +45,6 @@ const LevelManagement: React.FC = () => {
    const [watermarkEnabled, setWatermarkEnabled] = useState(false);
    const [movingWatermark, setMovingWatermark] = useState(false);
    const [blurOnTabLeave, setBlurOnTabLeave] = useState(false);
-   const [canvasRendering, setCanvasRendering] = useState(false);
    const [shuffleQuestions, setShuffleQuestions] = useState(false);
    const [shuffleOptions, setShuffleOptions] = useState(false);
    const [showResults, setShowResults] = useState(true);
@@ -287,7 +286,6 @@ const LevelManagement: React.FC = () => {
       setWatermarkEnabled(!!quiz.watermarkEnabled);
       setMovingWatermark(!!quiz.movingWatermark);
       setBlurOnTabLeave(!!quiz.blurOnTabLeave);
-      setCanvasRendering(!!quiz.canvasRendering);
       setShuffleQuestions(!!quiz.shuffleQuestions);
       setShuffleOptions(!!quiz.shuffleOptions);
       setShowResults(quiz.showResults ?? true);
@@ -322,7 +320,6 @@ const LevelManagement: React.FC = () => {
             watermarkEnabled,
             movingWatermark,
             blurOnTabLeave,
-            canvasRendering,
             showResults,
             availableFrom: availableFrom ? new Date(availableFrom).getTime() : undefined,
             availableUntil: availableUntil ? new Date(availableUntil).getTime() : undefined,
@@ -372,7 +369,6 @@ const LevelManagement: React.FC = () => {
       setWatermarkEnabled(false);
       setMovingWatermark(false);
       setBlurOnTabLeave(false);
-      setCanvasRendering(false);
       setShowResults(true);
       setAvailableFrom('');
       setAvailableUntil('');
@@ -836,7 +832,6 @@ const LevelManagement: React.FC = () => {
                                      { label: 'WATERMARK', state: watermarkEnabled, toggle: () => setWatermarkEnabled(!watermarkEnabled), onIcon: 'fa-stamp', offIcon: 'fa-ghost' },
                                      { label: 'MOVING WATERMARK', state: movingWatermark, toggle: () => setMovingWatermark(!movingWatermark), onIcon: 'fa-running', offIcon: 'fa-stop' },
                                      { label: 'BLUR ON TAB LEAVE', state: blurOnTabLeave, toggle: () => setBlurOnTabLeave(!blurOnTabLeave), onIcon: 'fa-mask', offIcon: 'fa-eye' },
-                                     { label: 'CANVAS QUESTIONS', state: canvasRendering, toggle: () => setCanvasRendering(!canvasRendering), onIcon: 'fa-paint-brush', offIcon: 'fa-font' },
                                      { label: 'SHUFFLE QUESTIONS', state: shuffleQuestions, toggle: () => setShuffleQuestions(!shuffleQuestions), onIcon: 'fa-random', offIcon: 'fa-list-ol' },
                                      { label: 'SHUFFLE OPTIONS', state: shuffleOptions, toggle: () => setShuffleOptions(!shuffleOptions), onIcon: 'fa-layer-group', offIcon: 'fa-align-left' },
                                   ].map(({ label, state, toggle, onIcon, offIcon }) => (

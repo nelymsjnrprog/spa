@@ -19,22 +19,26 @@ import { UserRole } from "../core/types";
  * Translate Firebase Auth errors into user-friendly messages.
  */
 const translateError = (code: string): string => {
-  console.error("Firebase Error Code:", code);
   switch (code) {
     case "auth/user-not-found":
+      return "Account not found. Please check your email or sign up.";
     case "auth/wrong-password":
     case "auth/invalid-credential":
-      return "Password or Email Incorrect";
+      return "Incorrect email or password.";
     case "auth/email-already-in-use":
-      return "User already exists. Sign in?";
+      return "An account with this email already exists.";
     case "auth/weak-password":
       return "Password is too weak.";
     case "auth/invalid-email":
       return "Invalid email address.";
+    case "auth/too-many-requests":
+      return "Too many failed attempts. Please try again later.";
+    case "auth/user-disabled":
+      return "This account has been disabled. Please contact support.";
     case "auth/network-request-failed":
-      return "Network error retry again";
+      return "Network error. Please check your connection and try again.";
     default:
-      return `Error (${code}): An unexpected error occurred. Please ensure Auth and Firestore are enabled in the new Firebase project.`;
+      return "An unexpected error occurred. Please try again later.";
   }
 };
 

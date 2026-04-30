@@ -33,6 +33,7 @@ const AdminRoles: React.FC = () => {
    const [createInstitutions, setCreateInstitutions] = useState<string[]>([]);
    const [createError, setCreateError] = useState('');
    const [createSuccess, setCreateSuccess] = useState('');
+   const [showCreatePassword, setShowCreatePassword] = useState(false);
 
    const effectivePerm = adminService.getEffectivePermission(profile);
    const isSuperAdmin = effectivePerm === 'super_admin';
@@ -130,8 +131,8 @@ const AdminRoles: React.FC = () => {
          setCreateError('Please fill in all fields.');
          return;
       }
-      if (createPassword.length < 8) {
-         setCreateError('Password must be at least 8 characters.');
+      if (createPassword.length < 6) {
+         setCreateError('Password must be at least 6 characters.');
          return;
       }
       // Ask for superadmin's password to re-authenticate after creating the new account
@@ -441,7 +442,23 @@ const AdminRoles: React.FC = () => {
                            </div>
                            <div>
                               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Password</label>
-                              <input type="password" value={createPassword} onChange={e => setCreatePassword(e.target.value)} placeholder="Min 8 characters" required className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none tracking-widest" />
+                              <div className="relative">
+                                 <input 
+                                    type={showCreatePassword ? "text" : "password"} 
+                                    value={createPassword} 
+                                    onChange={e => setCreatePassword(e.target.value)} 
+                                    placeholder="Min 6 characters" 
+                                    required 
+                                    className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none tracking-widest" 
+                                 />
+                                 <button
+                                    type="button"
+                                    onClick={() => setShowCreatePassword(!showCreatePassword)}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                                 >
+                                    <i className={`fas ${showCreatePassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                                 </button>
+                              </div>
                            </div>
                            <div>
                               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Permission Level</label>

@@ -4,18 +4,26 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import { adminService } from '../services/adminService';
 import { institutionService, Institution } from '../services/institutionService';
+import ContactSlidePanel from '../components/ContactSlidePanel';
 import { APP_CONFIG } from '../core/config';
+import { supportService, SupportInquiry } from '../services/supportService';
 
 export const Navbar: React.FC = () => {
   const { profile, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [institutions, setInstitutions] = React.useState<Institution[]>([]);
+  const [inquiryCount, setInquiryCount] = React.useState(0);
+  const [contactOpen, setContactOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (profile?.role === 'admin') {
-      const unsub = institutionService.subscribeToInstitutions(setInstitutions);
-      return () => unsub();
+      const unsubInst = institutionService.subscribeToInstitutions(setInstitutions);
+      const unsubSupport = supportService.subscribeToInquiries((data) => setInquiryCount(data.length));
+      return () => {
+        unsubInst();
+        unsubSupport();
+      };
     }
   }, [profile]);
 
@@ -36,7 +44,8 @@ export const Navbar: React.FC = () => {
   }, [institutions, isSuperAdmin, profile]);
 
   return (
-    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 safe-pt">
+    <>
+      <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 safe-pt">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-14 sm:h-16">
           <div className="flex items-center space-x-2 min-w-0">
@@ -74,6 +83,7 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
       </div>
+    </nav>
 
       {/* Sidebar Overlay */}
       {sidebarOpen && (
@@ -104,9 +114,9 @@ export const Navbar: React.FC = () => {
             <>
               <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-2">Primary Systems</div>
               <SidebarLink to="/admin" icon="fa-th-large" label="Dashboard" onClick={() => setSidebarOpen(false)} />
-              {isSuperAdmin && (
+              {isSuperAdmin || (profile?.assignedInstitutions && profile.assignedInstitutions.length >= 2) ? (
                 <SidebarLink to="/admin/quizzes" icon="fa-layer-group" label="Module Management" onClick={() => setSidebarOpen(false)} />
-              )}
+              ) : null}
 
               
               <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Institution Management</div>
@@ -123,10 +133,32 @@ export const Navbar: React.FC = () => {
                 <p className="px-4 text-[10px] text-slate-400 italic">No institutions configured.</p>
               )}
 
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Resources</div>
+              <SidebarLink to="/admin/library" icon="fa-book" label="Library Management" onClick={() => setSidebarOpen(false)} />
+
               <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Directives</div>
 
               <SidebarLink to="/admin/security" icon="fa-shield-halved" label="Security Ops" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="/admin/settings" icon="fa-sliders" label="System Settings" onClick={() => setSidebarOpen(false)} />
+
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Customer Service</div>
+              <Link 
+                to="/admin/support" 
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center justify-between px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-slate-600 font-bold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 sm:w-8 flex justify-center text-xl sm:text-lg text-slate-300 group-hover:text-primary-500 transition-colors">
+                    <i className="fas fa-headset"></i>
+                  </div>
+                  <span className="text-base sm:text-sm">Support Center</span>
+                </div>
+                {inquiryCount > 0 && (
+                  <span className="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse shadow-lg shadow-red-200">
+                    {inquiryCount}
+                  </span>
+                )}
+              </Link>
             </>
           )}
 
@@ -134,8 +166,8 @@ export const Navbar: React.FC = () => {
             <>
               <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-2">Student Services</div>
               <SidebarLink to="/student" icon="fa-th-large" label="Dashboard" onClick={() => setSidebarOpen(false)} />
+              <SidebarLink to="/student/library" icon="fa-book-open" label="Library" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="#" icon="fa-comments" label="Chat" onClick={() => setSidebarOpen(false)} />
-              <SidebarLink to="#" icon="fa-headset" label="Support" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="/student/profile" icon="fa-user-cog" label="Account Settings" onClick={() => setSidebarOpen(false)} />
             </>
           )}
@@ -146,7 +178,13 @@ export const Navbar: React.FC = () => {
         <div className="p-4 border-t border-slate-50 bg-slate-50/50">
         </div>
       </aside>
-    </nav>
+    <ContactSlidePanel 
+      isOpen={contactOpen} 
+      onClose={() => setContactOpen(false)} 
+      initialName={profile?.displayName || ''} 
+      initialEmail={profile?.email || ''} 
+    />
+    </>
   );
 };
 

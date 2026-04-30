@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
-import { Navbar, Container, Card } from '../ui/Layout';
 import { membershipService } from '../services/membershipService';
 
-// Paystack configuration (matching Login.tsx)
+// Paystack configuration
 const PAYSTACK_PUBLIC_KEY = 'pk_live_20856a01dfd3a8f81f74e388d57b75546313eadd';
 
 const PaymentRequiredView: React.FC = () => {
@@ -13,7 +12,7 @@ const PaymentRequiredView: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Redirect to dashboard if access is granted (e.g. after payment)
+  // Redirect to dashboard if access is granted
   React.useEffect(() => {
     if (!isLocked && profile) {
       navigate('/student', { replace: true });
@@ -90,83 +89,82 @@ const PaymentRequiredView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Navbar />
-      <Container>
-        <div className="max-w-2xl mx-auto py-12 px-4 shadow-sm">
-          <div className="text-center mb-10">
-            <div className="w-20 h-20 bg-amber-50 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-amber-100">
-              <i className="fas fa-lock text-3xl text-amber-500"></i>
-            </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight mb-3">Level Access Restricted</h1>
-            <p className="text-slate-500 font-medium">Your level now requires a one-time membership payment to continue using premium features.</p>
+    <div className="min-h-screen bg-[#f0f4f1] font-['Sora'] flex items-center justify-center p-6 sm:p-8 overflow-x-hidden">
+      <style>{`
+        @keyframes rise {
+          from { opacity: 0; transform: translateY(24px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .rise-anim { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+      `}</style>
+
+      <div className="w-full max-w-sm bg-white rounded-[24px] overflow-hidden shadow-[0_20px_60px_rgba(15,110,86,0.12),0_4px_16px_rgba(0,0,0,0.06)] rise-anim">
+        {/* Hero Section */}
+        <div className="relative bg-gradient-to-br from-[#0a5c45] via-[#1D9E75] to-[#27c48f] p-8 pb-12 overflow-hidden text-white">
+          {/* Decorative Elements */}
+          <div className="absolute -top-10 -right-10 w-44 h-44 rounded-full bg-white/5 blur-xl"></div>
+          <div className="absolute -bottom-10 -left-6 w-52 h-52 rounded-full bg-white/5 blur-xl"></div>
+
+          {/* Level Chip */}
+          <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-1.5 mb-5 backdrop-blur-md">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-white/90">Level {profile?.level || '100'} Membership</span>
           </div>
 
+          <h1 className="font-['DM_Serif_Display'] text-4xl sm:text-5xl leading-tight mb-2 relative z-10">
+            Unlock
+          </h1>
+          <p className="text-sm text-white/70 leading-relaxed max-w-[260px] relative z-10">
+            One-time payment gives you term access to everything at your level.
+          </p>
+
+          {/* Floating Lock Icon */}
+          <div className="absolute -bottom-6 right-8 w-12 h-12 bg-white rounded-xl shadow-lg flex items-center justify-center z-20">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#0F6E56" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Body Section */}
+        <div className="p-7 sm:p-8">
           {error && (
-            <div className="bg-red-50 text-red-600 p-4 rounded-2xl text-xs font-bold border border-red-100 mb-8 flex items-center animate-in fade-in zoom-in-95">
-              <i className="fas fa-exclamation-circle mr-3"></i> 
-              <span className="uppercase tracking-wider leading-relaxed">{error}</span>
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg animate-in fade-in slide-in-from-top-2">
+              <p className="text-red-700 text-[10px] font-black uppercase tracking-widest">{error}</p>
             </div>
           )}
 
-          <Card className="p-0 overflow-hidden border-none shadow-2xl shadow-slate-200/50 mb-8 transform hover:scale-[1.01] transition-transform">
-            <div className="bg-gradient-to-br from-primary-600 to-emerald-700 p-8 text-white text-center relative overflow-hidden">
-               {/* Decorative Circles */}
-               <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-               <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-emerald-400/10 rounded-full blur-3xl"></div>
-
-              <p className="text-xs font-black uppercase tracking-[0.2em] opacity-80 mb-2">Level {profile?.level || '100'} Membership</p>
-              <h2 className="text-5xl font-black mb-2">{levelSettings?.price || '0.00'} <span className="text-lg opacity-70">GHS</span></h2>
-              <p className="text-sm font-medium opacity-90 italic">One-time payment for lifetime access</p>
-            </div>
-            <div className="p-8 space-y-6 bg-white">
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <i className="fas fa-check text-emerald-600 text-xs"></i>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-800 uppercase tracking-tighter">Unlimited Access</p>
-                    <p className="text-xs text-slate-500 leading-relaxed font-medium">Access all quizzes, study materials, and mock exams for your level.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <i className="fas fa-check text-emerald-600 text-xs"></i>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-800 uppercase tracking-tighter">Real-time Performance</p>
-                    <p className="text-xs text-slate-500 leading-relaxed font-medium">Detailed reports and progress tracking for every submission.</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <button
-                  onClick={handlePayment}
-                  disabled={loading}
-                  className="w-full block text-center py-4 bg-primary-600 hover:bg-primary-700 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-primary-200 transition-all active:scale-95 disabled:opacity-50"
-                >
-                  {loading ? (
-                    <i className="fas fa-circle-notch animate-spin text-lg"></i>
-                  ) : (
-                    'Pay Now to Unlock'
-                  )}
-                </button>
-              </div>
-            </div>
-          </Card>
-
-          <div className="text-center">
-             <button 
-                onClick={handleLogout}
-                className="text-slate-400 font-bold text-xs hover:text-slate-600 transition-colors uppercase tracking-widest flex items-center justify-center mx-auto"
-             >
-                <i className="fas fa-sign-out-alt mr-2"></i>Switch Account
-             </button>
+          <div className="flex items-end gap-1 mb-1.5">
+            <span className="font-['DM_Serif_Display'] text-5xl text-[#0a2e22]">{levelSettings?.price || '0'}</span>
+            <span className="text-lg font-bold text-[#1D9E75] mb-2 ml-1">GHS</span>
           </div>
+          <div className="flex items-center gap-2 mb-8">
+            <div className="w-4 h-[1px] bg-[#9aada4]"></div>
+            <p className="text-xs text-[#9aada4] font-medium">One-time payment · Term access</p>
+          </div>
+
+          <button
+            onClick={handlePayment}
+            disabled={loading}
+            className="w-full relative group bg-gradient-to-br from-[#0F6E56] to-[#1D9E75] text-white py-4 rounded-xl font-bold text-sm tracking-wider shadow-[0_8px_20px_rgba(29,158,117,0.3)] hover:shadow-[0_12px_28px_rgba(29,158,117,0.4)] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            {loading ? (
+              <i className="fas fa-circle-notch animate-spin text-lg"></i>
+            ) : (
+              'PAY'
+            )}
+          </button>
+
+          <button
+            onClick={handleLogout}
+            className="mt-6 w-full text-center text-[10px] font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+          >
+            <i className="fas fa-sign-out-alt"></i>
+            Switch Account
+          </button>
         </div>
-      </Container>
+      </div>
     </div>
   );
 };

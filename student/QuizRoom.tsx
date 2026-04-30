@@ -682,55 +682,7 @@ const QuizRoom: React.FC = () => {
     }, 150);
   };
 
-  // Canvas Rendering Component
-  const CanvasQuestion: React.FC<{ text: string; className?: string }> = ({ text, className }) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    useEffect(() => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
 
-      // Dynamic scaling for resolution
-      const dpr = window.devicePixelRatio || 1;
-      const fontSize = isMobile ? 14 : 18;
-      ctx.font = `bold ${fontSize}px sans-serif`;
-
-      // Wrap text logic
-      const words = text.split(' ');
-      const maxWidth = canvas.width / dpr - 40;
-      let line = '';
-      let lines = [];
-
-      for (let n = 0; n < words.length; n++) {
-        let testLine = line + words[n] + ' ';
-        let metrics = ctx.measureText(testLine);
-        if (metrics.width > maxWidth && n > 0) {
-          lines.push(line);
-          line = words[n] + ' ';
-        } else {
-          line = testLine;
-        }
-      }
-      lines.push(line);
-
-      canvas.width = (canvas.parentElement?.clientWidth || 600) * dpr;
-      canvas.height = (lines.length * (fontSize + 10) + 40) * dpr;
-      canvas.style.width = '100%';
-      canvas.style.height = `${canvas.height / dpr}px`;
-
-      ctx.scale(dpr, dpr);
-      ctx.fillStyle = '#1e293b'; // slate-800
-      ctx.font = `bold ${fontSize}px sans-serif`;
-      ctx.textBaseline = 'top';
-
-      lines.forEach((l, i) => {
-        ctx.fillText(l, 20, 20 + i * (fontSize + 10));
-      });
-    }, [text, isMobile]);
-
-    return <canvas ref={canvasRef} className={className} />;
-  };
 
   return (
     <div id="secure-exam-container" className="min-h-screen bg-slate-900 overflow-hidden relative">
@@ -898,13 +850,10 @@ const QuizRoom: React.FC = () => {
 
                   <div className="mb-6 lg:mb-10 mt-2 lg:mt-0">
                     <span className="text-primary-600 font-black text-[11px] uppercase tracking-widest mb-1 lg:mb-2 block">Question {startIdx + pIdx + 1}</span>
-                    {quiz?.canvasRendering ? (
-                      <CanvasQuestion text={q.text} className="w-full" />
-                    ) : (
-                      <h3 className="text-base lg:text-xl font-bold text-slate-900 leading-snug break-words">
-                        {q.text}
-                      </h3>
-                    )}
+                    <h3 className="text-base lg:text-xl font-bold text-slate-900 leading-snug break-words">
+                      {q.text}
+                    </h3>
+
                   </div>
 
                   <div className="space-y-2 lg:space-y-2.5">
@@ -937,11 +886,8 @@ const QuizRoom: React.FC = () => {
                             </div>
                             
                             <div className="flex-1 min-w-0">
-                              {quiz?.canvasRendering ? (
-                                <CanvasQuestion text={opt || '—'} className="w-full pointer-events-none" />
-                              ) : (
                                 <p className="text-sm lg:text-[15px] font-medium leading-snug">{opt || `Option ${label}`}</p>
-                              )}
+
                             </div>
 
                             <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${

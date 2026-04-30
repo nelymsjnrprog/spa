@@ -122,11 +122,18 @@ export const adminService = {
     callerPassword: string
   ): Promise<void> {
     const credential = await createUserWithEmailAndPassword(auth, email, password);
+    const newUserUid = credential.user.uid;
     const newUser = credential.user;
+    
+    // Update display name while still signed in as the new user
     await updateProfile(newUser, { displayName });
 
-    await setDoc(doc(db, "users", newUser.uid), {
-      uid: newUser.uid,
+    // Re-authenticate as the superadmin BEFORE creating the Firestore profile
+    // This ensures the security rules allow the 'admin' role to be set
+    await signInWithEmailAndPassword(auth, callerEmail, callerPassword);
+
+    await setDoc(doc(db, "users", newUserUid), {
+      uid: newUserUid,
       displayName,
       email: email.toLowerCase(),
       institution: 'Admin',
@@ -140,9 +147,6 @@ export const adminService = {
       membershipStatus: 'active',
       createdAt: Date.now(),
     });
-
-    // Re-authenticate as the superadmin
-    await signInWithEmailAndPassword(auth, callerEmail, callerPassword);
   },
 
   // ==================== ACTION LOGGING ====================
