@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Container, Card } from '../ui/Layout';
+import { Navbar, Container, Card, Modal } from '../ui/Layout';
 import { userService } from '../services/userService';
 import { adminService } from '../services/adminService';
 import { collection, getDocs, query, where, limit, orderBy } from 'firebase/firestore';
@@ -20,7 +20,10 @@ const StudentDirectory: React.FC = () => {
   const [levelFilter, setLevelFilter] = useState('');
   const [institutionFilter, setInstitutionFilter] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [confirmModal, setConfirmModal] = useState<{ type: 'delete' | 'block' | 'unblock' | 'promote' | 'mark_paid' | 'mark_unpaid'; student: UserProfile } | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{ 
+    type: 'delete' | 'block' | 'unblock' | 'promote' | 'mark_paid' | 'mark_unpaid'; 
+    student: UserProfile; 
+  } | null>(null);
 
   const isSuperAdmin = adminService.getEffectivePermission(profile) === 'super_admin';
 
@@ -550,77 +553,73 @@ const StudentDirectory: React.FC = () => {
 
       </Container>
 
-      {/* ── Confirm Modal ─────────────────────────────────────────────────────── */}
-      {confirmModal && (
-        <div className="fixed inset-0 z-[200] bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-in zoom-in-95">
-            <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 mx-auto ${
-              confirmModal.type === 'delete' ? 'bg-red-50' :
-              confirmModal.type === 'block' ? 'bg-amber-50' :
-              confirmModal.type === 'unblock' ? 'bg-emerald-50' : 
-              confirmModal.type === 'mark_paid' ? 'bg-emerald-50' :
-              confirmModal.type === 'mark_unpaid' ? 'bg-amber-50' :
-              'bg-primary-50'
-            }`}>
-              <i className={`fas text-3xl ${
-                confirmModal.type === 'delete' ? 'fa-trash-alt text-red-500' :
-                confirmModal.type === 'block' ? 'fa-lock text-amber-500' :
-                confirmModal.type === 'unblock' ? 'fa-unlock text-emerald-500' :
-                confirmModal.type === 'mark_paid' ? 'fa-money-bill-wave text-emerald-600' :
-                confirmModal.type === 'mark_unpaid' ? 'fa-times-circle text-amber-500' :
-                'fa-level-up-alt text-primary-600'
-              }`}></i>
-            </div>
-
-            <h3 className="text-xl font-black text-slate-900 text-center mb-2">
-              {confirmModal.type === 'delete' ? 'Permanently Remove Student' :
-               confirmModal.type === 'block' ? 'Block Student Access' :
-               confirmModal.type === 'unblock' ? 'Restore Student Access' :
-               confirmModal.type === 'mark_paid' ? 'Manual Payment Authorization' :
-               confirmModal.type === 'mark_unpaid' ? 'Revoke Payment Status' :
-               `Promote to Level ${parseInt(confirmModal.student.level || '100') + 100}`}
-            </h3>
-            <p className="text-sm text-slate-500 text-center mb-2">
-              <span className="font-bold text-slate-900">{confirmModal.student.displayName}</span>
-              {' '}· {confirmModal.student.institution}
+      {/* Centralized Confirmation Modal */}
+      <Modal
+        isOpen={!!confirmModal}
+        onClose={() => setConfirmModal(null)}
+        title={
+          confirmModal?.type === 'delete' ? 'Remove Student' :
+          confirmModal?.type === 'block' ? 'Block Access' :
+          confirmModal?.type === 'unblock' ? 'Restore Access' :
+          confirmModal?.type === 'mark_paid' ? 'Authorize Payment' :
+          confirmModal?.type === 'mark_unpaid' ? 'Revoke Payment' :
+          'Promote Student'
+        }
+        variant={
+          confirmModal?.type === 'delete' || confirmModal?.type === 'block' || confirmModal?.type === 'mark_unpaid' 
+            ? 'danger' 
+            : 'info'
+        }
+        footer={
+          <>
+            <button
+              onClick={() => setConfirmModal(null)}
+              className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={executeAction}
+              className={`flex-1 py-3 rounded-xl font-black text-white transition active:scale-95 shadow-xl ${
+                confirmModal?.type === 'delete' || confirmModal?.type === 'block' || confirmModal?.type === 'mark_unpaid'
+                  ? 'bg-red-600 hover:bg-red-700 shadow-red-200'
+                  : 'bg-primary-600 hover:bg-primary-700 shadow-primary-200'
+              }`}
+            >
+              Confirm
+            </button>
+          </>
+        }
+      >
+        {confirmModal && (
+          <div className="text-center">
+            <p className="mb-4">
+              Action for <span className="font-bold text-slate-900">{confirmModal.student.displayName}</span>
             </p>
             {confirmModal.type === 'delete' && (
-              <div className="bg-red-50 border border-red-100 text-red-700 text-xs font-bold rounded-xl p-3 mb-6 text-center">
+              <p className="text-xs text-red-600 font-bold bg-red-50 p-3 rounded-xl">
                 <i className="fas fa-exclamation-triangle mr-2"></i>
-                This will permanently delete their profile and ALL exam submission records. This cannot be undone.
-              </div>
+                This will PERMANENTLY delete this student's profile and all examination records. This cannot be undone.
+              </p>
             )}
-            {confirmModal.type !== 'delete' && <div className="mb-6"></div>}
-
-            <div className="flex gap-3">
-              <button
-                onClick={() => setConfirmModal(null)}
-                className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={executeAction}
-                className={`flex-1 py-3 rounded-xl font-black text-white transition active:scale-95 ${
-                  confirmModal.type === 'delete' ? 'bg-red-600 hover:bg-red-700' :
-                  confirmModal.type === 'block' ? 'bg-amber-500 hover:bg-amber-600' :
-                  confirmModal.type === 'unblock' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                  confirmModal.type === 'mark_paid' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                  confirmModal.type === 'mark_unpaid' ? 'bg-amber-600 hover:bg-amber-700' :
-                  'bg-primary-600 hover:bg-primary-700'
-                }`}
-              >
-                {confirmModal.type === 'delete' ? 'Yes, Remove' :
-                 confirmModal.type === 'block' ? 'Block Access' :
-                 confirmModal.type === 'unblock' ? 'Restore Access' :
-                 confirmModal.type === 'mark_paid' ? 'Authorize Access' :
-                 confirmModal.type === 'mark_unpaid' ? 'Revoke Access' :
-                 'Confirm Promotion'}
-              </button>
-            </div>
+            {confirmModal.type === 'block' && (
+              <p>Are you sure you want to block this student's access to the platform?</p>
+            )}
+            {confirmModal.type === 'unblock' && (
+              <p>Are you sure you want to restore access for this student?</p>
+            )}
+            {confirmModal.type === 'promote' && (
+              <p>Advance student to <span className="font-bold text-slate-900">Level {(parseInt(confirmModal.student.level || '100') + 100)}</span>?</p>
+            )}
+            {confirmModal.type === 'mark_paid' && (
+              <p>Grant full access to this student? They will be marked as having paid manually.</p>
+            )}
+            {confirmModal.type === 'mark_unpaid' && (
+              <p>Revoke manual payment status? The student may lose access to premium modules.</p>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
     </div>
   );
 };

@@ -7,11 +7,11 @@
   "targets": {
     "smart-prep-db982": {
       "hosting": {
-        "smartprep": [
-          "smart-prep-db982"
-        ],
         "vectorify": [
           "vectorify-tool"
+        ],
+        "smartprep": [
+          "smart-prep-db982"
         ]
       }
     }

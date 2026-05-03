@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { Navbar, Container, Card } from '../ui/Layout';
+import { Navbar, Container, Card, Modal } from '../ui/Layout';
 import { libraryService } from '../services/libraryService';
 import { LibraryResource } from '../core/types';
 import { useAuth } from '../auth/AuthProvider';
@@ -12,6 +12,8 @@ const LibraryManagement: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [activeTab, setActiveTab] = useState<'all' | '100' | '200' | '300' | 'candidate'>('all');
+  const [deleteModalData, setDeleteModalData] = useState<LibraryResource | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   // Form State
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -74,12 +76,24 @@ const LibraryManagement: React.FC = () => {
     setUploadProgress(0);
   };
 
-  const handleDelete = async (resource: LibraryResource) => {
-    if (!confirm(`Are you sure you want to delete "${resource.title}"?`)) return;
+  const executeDelete = async () => {
+    if (!deleteModalData) return;
+    setDeleting(true);
     try {
-      await libraryService.deleteResource(resource.id, resource.fileUrl, resource.thumbnailUrl);
+      await libraryService.deleteResource(deleteModalData.id, deleteModalData.fileUrl, deleteModalData.thumbnailUrl);
+      if (profile) {
+        await adminService.logAction(
+          profile.uid,
+          profile.displayName || 'Admin',
+          'DELETE_RESOURCE',
+          `Permanently deleted library resource: "${deleteModalData.title}"`
+        );
+      }
+      setDeleteModalData(null);
     } catch (error) {
       alert("Failed to delete resource.");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -183,7 +197,7 @@ const LibraryManagement: React.FC = () => {
                         <i className={`fas ${resource.published ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                       </button>
                       <button 
-                        onClick={() => handleDelete(resource)}
+                        onClick={() => setDeleteModalData(resource)}
                         title="Delete"
                         className="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-100 transition-all"
                       >
@@ -329,6 +343,42 @@ const LibraryManagement: React.FC = () => {
           </div>
         )}
       </Container>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={!!deleteModalData}
+        onClose={() => !deleting && setDeleteModalData(null)}
+        title="Remove Resource"
+        variant="danger"
+        footer={
+          <>
+            <button
+              onClick={() => setDeleteModalData(null)}
+              disabled={deleting}
+              className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={executeDelete}
+              disabled={deleting}
+              className="flex-1 py-3 rounded-xl bg-red-600 text-white font-black hover:bg-red-700 transition active:scale-95 shadow-xl shadow-red-200 disabled:opacity-50"
+            >
+              {deleting ? 'Deleting...' : 'Confirm Delete'}
+            </button>
+          </>
+        }
+      >
+        <div className="text-center">
+          <p className="mb-4 text-slate-600">
+            Are you sure you want to permanently remove <span className="font-bold text-slate-900">"{deleteModalData?.title}"</span>?
+          </p>
+          <p className="text-xs text-red-600 font-bold bg-red-50 p-3 rounded-xl">
+            <i className="fas fa-exclamation-triangle mr-2"></i>
+            This will delete the file from cloud storage and remove it from the student library. This action cannot be undone.
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 };

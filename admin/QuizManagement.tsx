@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, Navigate } from 'react-router-dom';
-import { Navbar, Container, Card } from '../ui/Layout';
+import { Navbar, Container, Card, Modal } from '../ui/Layout';
 import { quizService } from '../services/quizService';
 import { Quiz } from '../core/types';
 import { useAuth } from '../auth/AuthProvider';
@@ -34,6 +34,8 @@ const QuizManagement: React.FC = () => {
   const [watermarkEnabled, setWatermarkEnabled] = useState(false);
   const [movingWatermark, setMovingWatermark] = useState(false);
   const [blurOnTabLeave, setBlurOnTabLeave] = useState(false);
+  const [restrictQuestionPrinting, setRestrictQuestionPrinting] = useState(false);
+  const [restrictResultPrinting, setRestrictResultPrinting] = useState(false);
   const [shuffleQuestions, setShuffleQuestions] = useState(false);
   const [shuffleOptions, setShuffleOptions] = useState(false);
 
@@ -62,6 +64,9 @@ const QuizManagement: React.FC = () => {
   const [destQuizId, setDestQuizId] = useState('');
   const [deleteSourceAfterMerge, setDeleteSourceAfterMerge] = useState(false);
   const [isMerging, setIsMerging] = useState(false);
+
+  // Delete Confirmation Modal State
+  const [deleteModalQuiz, setDeleteModalQuiz] = useState<Quiz | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -92,6 +97,8 @@ const QuizManagement: React.FC = () => {
         setWatermarkEnabled(!!draft.watermarkEnabled);
         setMovingWatermark(!!draft.movingWatermark);
         setBlurOnTabLeave(!!draft.blurOnTabLeave);
+        setRestrictQuestionPrinting(!!draft.restrictQuestionPrinting);
+        setRestrictResultPrinting(!!draft.restrictResultPrinting);
         setShuffleQuestions(!!draft.shuffleQuestions);
         setShuffleOptions(!!draft.shuffleOptions);
         setShowResults(draft.showResults ?? true);
@@ -108,9 +115,6 @@ const QuizManagement: React.FC = () => {
         if (draft.isModalOpen) {
           setShowModal(true);
           if (draft.editingQuizId) {
-            // We'll need to find the quiz in the list once it's loaded
-            // or just rely on the ID for lookup if needed.
-            // For now, let's flag that we are in recovery mode
             localStorage.setItem('vsefa_recovery_quiz_id', draft.editingQuizId);
           }
         }
@@ -135,7 +139,6 @@ const QuizManagement: React.FC = () => {
       const isMultiInst = assigned.length >= 2;
       setFilteredQuizzes(quizzes.filter(q => {
         const inst = (q.institution || '').trim().toLowerCase();
-        // If it's a global quiz (inst === ""), and admin is multi-inst, allow management
         if (inst === "" && isMultiInst) return true;
         return assigned.some(i => i.trim().toLowerCase() === inst);
       }));
@@ -161,12 +164,12 @@ const QuizManagement: React.FC = () => {
       restrictCopyPaste, restrictTabSwitch, enforceFullscreen,
       disableTextSelection, disableRightClick, watermarkEnabled,
       movingWatermark, blurOnTabLeave, showResults,
+      restrictQuestionPrinting, restrictResultPrinting,
       availableFrom, availableUntil, institution, level, allowedUsers,
       questionsPerPage, shuffleQuestions, shuffleOptions, minSubmissionPercentage, defaultMarkPerQuestion,
       isModalOpen: showModal, editingQuizId: editingQuiz?.id
     };
 
-    // Only save if there's actual content or modal is open
     if (showModal || title || desc) {
       localStorage.setItem('vsefa_quiz_form_draft', JSON.stringify(formData));
     } else {
@@ -177,12 +180,11 @@ const QuizManagement: React.FC = () => {
     restrictCopyPaste, restrictTabSwitch, enforceFullscreen,
     disableTextSelection, disableRightClick, watermarkEnabled,
     movingWatermark, blurOnTabLeave, showResults,
+    restrictQuestionPrinting, restrictResultPrinting,
     availableFrom, availableUntil, institution, allowedUsers,
     questionsPerPage, shuffleQuestions, shuffleOptions, minSubmissionPercentage, defaultMarkPerQuestion,
     showModal, editingQuiz
   ]);
-
-
 
   const handleOpenCreate = () => {
     setEditingQuiz(null);
@@ -209,13 +211,15 @@ const QuizManagement: React.FC = () => {
     setWatermarkEnabled(!!quiz.watermarkEnabled);
     setMovingWatermark(!!quiz.movingWatermark);
     setBlurOnTabLeave(!!quiz.blurOnTabLeave);
+    setRestrictQuestionPrinting(!!quiz.restrictQuestionPrinting);
+    setRestrictResultPrinting(!!quiz.restrictResultPrinting);
     setShuffleQuestions(!!quiz.shuffleQuestions);
     setShuffleOptions(!!quiz.shuffleOptions);
 
     setShowResults(quiz.showResults ?? true);
     setAvailableFrom(quiz.availableFrom ? new Date(quiz.availableFrom).toISOString().slice(0, 16) : '');
     setAvailableUntil(quiz.availableUntil ? new Date(quiz.availableUntil).toISOString().slice(0, 16) : '');
-    setInstitution(quiz.institution || ''); // Ensure this matches the value type of the select options
+    setInstitution(quiz.institution || '');
     setLevel(quiz.level || '');
     setAllowedUsers(quiz.allowedUsers ? quiz.allowedUsers.join(', ') : '');
     setQuestionsPerPage(quiz.questionsPerPage || 0);
@@ -252,6 +256,8 @@ const QuizManagement: React.FC = () => {
         watermarkEnabled,
         movingWatermark,
         blurOnTabLeave,
+        restrictQuestionPrinting,
+        restrictResultPrinting,
         showResults,
         availableFrom: availableFrom ? new Date(availableFrom).getTime() : undefined,
         availableUntil: availableUntil ? new Date(availableUntil).getTime() : undefined,
@@ -299,6 +305,8 @@ const QuizManagement: React.FC = () => {
     setWatermarkEnabled(false);
     setMovingWatermark(false);
     setBlurOnTabLeave(false);
+    setRestrictQuestionPrinting(false);
+    setRestrictResultPrinting(false);
     setShowResults(true);
     setAvailableFrom('');
     setAvailableUntil('');
@@ -320,24 +328,24 @@ const QuizManagement: React.FC = () => {
     });
   };
 
-  const handleDelete = async (id: string) => {
-    const confirmed = window.confirm(
-      "PERMANENT DELETION WARNING:\n\n" +
-      "This action will remove this examination from the student dashboard immediately.\n" +
-      "It will also PERMANENTLY delete:\n" +
-      "• All associated questions\n" +
-      "• All student submissions and grades for this module\n\n" +
-      "This cannot be undone. Proceed?"
-    );
-
-    if (!confirmed) return;
+  const handleDelete = async () => {
+    if (!deleteModalQuiz || !profile) return;
+    const { id, title } = deleteModalQuiz;
 
     try {
+      setDeleteModalQuiz(null);
       setLoading(true);
       await quizService.deleteQuiz(id);
+      await adminService.logAction(
+        profile.uid,
+        profile.displayName,
+        'DELETE_QUIZ',
+        `Permanently deleted examination module: "${title}"`
+      );
     } catch (err) {
       console.error("Deletion failed:", err);
       alert("Failed to delete the module. Ensure you have administrative permissions.");
+    } finally {
       setLoading(false);
     }
   };
@@ -439,7 +447,7 @@ const QuizManagement: React.FC = () => {
             {filteredQuizzes.map(quiz => (
               <Card key={quiz.id} className="relative p-5 sm:p-8 border-none shadow-xl shadow-slate-100/50 flex flex-col hover:scale-[1.01] transition-all group overflow-visible">
                 <button
-                  onClick={() => handleDelete(quiz.id)}
+                  onClick={() => setDeleteModalQuiz(quiz)}
                   className="absolute top-4 right-4 sm:top-6 sm:right-6 text-slate-300 hover:text-red-500 p-2 transition-colors z-10"
                   title="Permanently Delete Module & Results"
                 >
@@ -524,9 +532,9 @@ const QuizManagement: React.FC = () => {
                   </Link>
                 </div>
 
-                <Link to={`/admin/live-monitor/${quiz.id}`} className="w-full flex items-center justify-center p-3 sm:p-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-emerald-100 transition-colors mb-3 sm:mb-4">
+                <div className="w-full flex items-center justify-center p-3 sm:p-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-emerald-100 transition-colors mb-3 sm:mb-4">
                   <i className="fas fa-satellite-dish mr-2 animate-pulse"></i> Live Monitor
-                </Link>
+                </div>
 
                 <button
                   onClick={() => togglePublish(quiz)}
@@ -791,6 +799,8 @@ const QuizManagement: React.FC = () => {
                       { label: 'Watermark', state: watermarkEnabled, toggle: () => setWatermarkEnabled(!watermarkEnabled), onIcon: 'fa-stamp', offIcon: 'fa-ghost' },
                       { label: 'Moving Watermark', state: movingWatermark, toggle: () => setMovingWatermark(!movingWatermark), onIcon: 'fa-running', offIcon: 'fa-stop' },
                       { label: 'Blur on Tab Leave', state: blurOnTabLeave, toggle: () => setBlurOnTabLeave(!blurOnTabLeave), onIcon: 'fa-mask', offIcon: 'fa-eye' },
+                      { label: 'Block Q-Print', state: restrictQuestionPrinting, toggle: () => setRestrictQuestionPrinting(!restrictQuestionPrinting), onIcon: 'fa-print', offIcon: 'fa-print' },
+                      { label: 'Block R-Print', state: restrictResultPrinting, toggle: () => setRestrictResultPrinting(!restrictResultPrinting), onIcon: 'fa-file-invoice', offIcon: 'fa-file-invoice' },
                       { label: 'Shuffle Questions', state: shuffleQuestions, toggle: () => setShuffleQuestions(!shuffleQuestions), onIcon: 'fa-random', offIcon: 'fa-list-ol' },
                       { label: 'Shuffle Options', state: shuffleOptions, toggle: () => setShuffleOptions(!shuffleOptions), onIcon: 'fa-layer-group', offIcon: 'fa-align-left' },
                     ].map(({ label, state, toggle, onIcon, offIcon }) => (
@@ -969,6 +979,38 @@ const QuizManagement: React.FC = () => {
           </div>
         )}
       </Container>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={!!deleteModalQuiz}
+        onClose={() => setDeleteModalQuiz(null)}
+        title="Delete Examination"
+        variant="danger"
+        footer={
+          <>
+            <button 
+              onClick={() => setDeleteModalQuiz(null)}
+              className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleDelete}
+              className="flex-1 py-4 bg-red-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 shadow-xl shadow-red-200 transition-all"
+            >
+              Delete Permanently
+            </button>
+          </>
+        }
+      >
+        {deleteModalQuiz && (
+          <p>
+            PERMANENT DELETION WARNING:<br/><br/>
+            This action will remove <span className="font-bold text-slate-900">"{deleteModalQuiz.title}"</span> from the platform. 
+            All associated questions and student grades will be <span className="font-bold text-red-600">ERASED PERMANENTLY</span>.
+          </p>
+        )}
+      </Modal>
     </div>
   );
 };

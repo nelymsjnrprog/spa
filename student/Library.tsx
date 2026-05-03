@@ -12,19 +12,37 @@ const StudentLibrary: React.FC = () => {
   const [selectedResource, setSelectedResource] = useState<LibraryResource | null>(null);
 
   useEffect(() => {
-    if (!profile?.level) return;
+    // Wait for profile to load
+    if (!profile) return;
+
+    if (!profile.level) {
+      setLoading(false);
+      return;
+    }
     
-    // Students only see published resources for their level
-    const unsub = libraryService.subscribeToLibrary(
-      (data) => {
-        setResources(data);
-        setLoading(false);
-      },
-      { level: profile.level, onlyPublished: true }
-    );
-    
-    return () => unsub();
-  }, [profile?.level]);
+    let unsubscribed = false;
+    setLoading(true);
+
+    try {
+      const unsub = libraryService.subscribeToLibrary(
+        (data) => {
+          if (!unsubscribed) {
+            setResources(data);
+            setLoading(false);
+          }
+        },
+        { level: profile.level, onlyPublished: true }
+      );
+      
+      return () => {
+        unsubscribed = true;
+        unsub();
+      };
+    } catch (err) {
+      console.error('Library subscription error:', err);
+      setLoading(false);
+    }
+  }, [profile]);
 
   return (
     <div className="min-h-screen bg-slate-50">

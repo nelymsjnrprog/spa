@@ -67,7 +67,9 @@ const QuizRoom: React.FC = () => {
   const [flags, setFlags] = useState<Set<string>>(new Set());
   const [gridPage, setGridPage] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const ITEMS_PER_PAGE = 50;
+  const [showReview, setShowReview] = useState(false);
+  const [showSubmitConfirmation, setShowSubmitConfirmation] = useState(false);
+  const ITEMS_PER_PAGE = 500;
 
   const timerRef = useRef<any>(null);
 
@@ -107,6 +109,21 @@ const QuizRoom: React.FC = () => {
   useEffect(() => {
     if (!examStarted || !quiz) return;
 
+    // Add Print Blocking CSS if either screenshot or question printing is restricted
+    const style = document.createElement('style');
+    if (quiz.restrictScreenshot || quiz.restrictQuestionPrinting) {
+      style.innerHTML = `
+        @media print {
+          body * { visibility: hidden !important; }
+          #secure-exam-container { display: none !important; }
+          .printable-content { display: none !important; }
+          .no-print { display: none !important; }
+        }
+        .exam-blur { filter: blur(40px) grayscale(1); transition: filter 0.3s ease; }
+      `;
+      document.head.appendChild(style);
+    }
+
     // 1. Block Context Menu (Right Click) - Desktop Only
     const handleContextMenu = (e: MouseEvent) => {
       if (quiz.disableRightClick && !isMobile) {
@@ -124,7 +141,7 @@ const QuizRoom: React.FC = () => {
 
     // 3. Tab Switch Detection & Blur
     const handleVisibilityChange = () => {
-      if (isTransitioningRef.current) return;
+      if (isTransitioningRef.current || submittingRef.current) return;
       
       if (document.hidden) {
         if (quiz.restrictTabSwitch) {
@@ -142,7 +159,7 @@ const QuizRoom: React.FC = () => {
     };
 
     const handleBlur = () => {
-      if (isTransitioningRef.current || document.hidden) return;
+      if (isTransitioningRef.current || submittingRef.current || document.hidden) return;
 
       if (quiz.restrictTabSwitch) {
         const newViolationsCount = violations + 1;
@@ -183,10 +200,16 @@ const QuizRoom: React.FC = () => {
 
     // 4.5 Screenshot Blocker (Desktop Only)
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!isMobile && quiz.restrictScreenshot) {
+      // DevTools Protection
+      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I'))) {
+        e.preventDefault();
+        return;
+      }
+      if (quiz.restrictScreenshot || quiz.restrictQuestionPrinting) {
         if (
           e.key === 'PrintScreen' ||
           (e.ctrlKey && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S')) ||
+          (e.metaKey && (e.key === 'p' || e.key === 'P')) ||
           (e.metaKey && e.shiftKey && (e.key === 's' || e.key === 'S' || e.key === '3' || e.key === '4' || e.key === '5'))
         ) {
           setIsContentBlurred(true);
@@ -228,8 +251,36 @@ const QuizRoom: React.FC = () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
       window.removeEventListener('keydown', handleKeyDown);
+      if (style.parentNode) document.head.removeChild(style);
     };
   }, [examStarted, quiz, isMobile, submissionId, violations]);
+
+  // 4.6 Prevent Accidental Page Refresh/Exit
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (examStarted && !submitting) {
+        const message = "You have an active examination session in progress. Refreshing or leaving the page may disrupt your session. Your progress is autosaved.";
+        e.preventDefault();
+        e.returnValue = message; // Standard for most browsers
+        return message;
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden' && examStarted && submissionId) {
+        // Ensure presence is updated when app goes to background (mobile)
+        submissionService.updatePresence(submissionId, currentIndex).catch(console.error);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [examStarted, submitting, submissionId, currentIndex]);
 
   // Presence Ping
   useEffect(() => {
@@ -428,12 +479,26 @@ const QuizRoom: React.FC = () => {
     setStarting(true);
     const now = Date.now();
     
-    let totalPossibleMarks = 0;
-    questions.forEach(q => {
-      totalPossibleMarks += (quiz.defaultMarkPerQuestion || 1);
-    });
-
     try {
+      // Safety Check: Verify if a submission was already created/restored during initialCheck
+      // This prevents the "Already started" error if the user clicks "Begin" while initialCheck is finishing
+      const existingSub = await submissionService.getSubmission(quiz.id, profile.uid);
+      if (existingSub && existingSub.status === 'active') {
+        console.log("Existing active submission found, resuming...");
+        setSubmissionId(existingSub.id);
+        setAnswers(existingSub.answers || {});
+        setSessionStartTime(existingSub.createdAt || existingSub.startedAt || now);
+        setTimeExtension(existingSub.timeExtension || 0);
+        setExamStarted(true);
+        if (quiz.enforceFullscreen) requestFullscreen();
+        return;
+      }
+
+      let totalPossibleMarks = 0;
+      questions.forEach(q => {
+        totalPossibleMarks += (quiz.defaultMarkPerQuestion || 1);
+      });
+
       const id = await submissionService.createSubmission({
         quizId: quiz.id,
         studentId: profile.uid,
@@ -516,52 +581,47 @@ const QuizRoom: React.FC = () => {
   };
 
   const handleFinalSubmit = async (isAuto = false, stoppedByAdmin = false) => {
-    const currentQuiz = quizRef.current;
-    const currentProfile = profileRef.current;
-    const currentSubmissionId = submissionIdRef.current || submissionId;
+    // For auto-submit or admin-stop, we bypass the review and confirmation
+    if (!isAuto && !stoppedByAdmin && !showSubmitConfirmation) {
+      setShowSubmitConfirmation(true);
+      return;
+    }
+
+    const currentQuiz = quiz || quizRef.current;
+    const currentProfile = profile || profileRef.current;
+    const currentSubmissionId = submissionId || submissionIdRef.current;
     
     if (!currentQuiz || !currentProfile || !currentSubmissionId || submittingRef.current) {
       if (!isAuto && !submittingRef.current && !currentSubmissionId) {
         console.error("Submission failed: Missing Submission ID");
-        alert("Session error: Please refresh the page to finalize your submission.");
+        alert("Session error: Your session ID is missing. Please try refreshing to restore your connection.");
       }
       return;
     }
 
-    submittingRef.current = true; // Immediate guard
+    submittingRef.current = true;
+    setSubmitting(true);
     
-    const currentQuestions = questionsRef.current;
-    const currentAnswers = answersRef.current;
+    const currentQuestions = questions || questionsRef.current;
+    const currentAnswers = answers || answersRef.current;
     const currentNumAnswered = Object.keys(currentAnswers).length;
 
     const requiredPercent = currentQuiz.minSubmissionPercentage || 0;
     const percentAnswered = currentQuestions.length > 0 ? (currentNumAnswered / currentQuestions.length) * 100 : 100;
     let isIncompleteAttempt = false;
 
-    if (!isAuto) {
-      if (percentAnswered < requiredPercent) {
-        alert(`ACCESS DENIED: You must answer at least ${requiredPercent}% of the questions before submitting.\nYou have only answered ${Math.round(percentAnswered)}%.`);
-        submittingRef.current = false;
-        return;
-      }
-
-      const unansweredCount = currentQuestions.length - currentNumAnswered;
-      const warningMessage = unansweredCount > 0
-        ? `You have ${unansweredCount} unanswered question${unansweredCount > 1 ? 's' : ''}. Are you sure you want to finalize your submission? This action is permanent.`
-        : "Are you sure you want to finalize your submission? This action is permanent.";
-
-      const confirmed = window.confirm(warningMessage);
-      if (!confirmed) {
-        submittingRef.current = false;
-        return;
-      }
-    } else {
-      if (percentAnswered < requiredPercent) {
-        isIncompleteAttempt = true;
-      }
+    if (isAuto && percentAnswered < requiredPercent) {
+      isIncompleteAttempt = true;
     }
 
-    setSubmitting(true);
+    if (!isAuto && !stoppedByAdmin && percentAnswered < requiredPercent) {
+      alert(`Submission Denied: You have not met the administrative requirement for submission (${requiredPercent}% of questions must be answered). You have currently answered ${Math.round(percentAnswered)}%. Please complete more questions before submitting.`);
+      submittingRef.current = false;
+      setSubmitting(false);
+      setShowSubmitConfirmation(false);
+      return;
+    }
+
     let score = 0;
     let correctCount = 0;
     currentQuestions.forEach(q => {
@@ -573,12 +633,17 @@ const QuizRoom: React.FC = () => {
 
     try {
       await submissionService.finalSubmit(currentSubmissionId, score, isIncompleteAttempt, correctCount, currentQuestions.length, stoppedByAdmin);
+      
+      // Cleanup
+      localStorage.removeItem(`quiz_draft_${currentQuiz.id}`);
+      
       navigate(`/student/results/${currentSubmissionId}`);
     } catch (err: any) {
       console.error("Submission Error:", err);
-      alert("Final submission failed. Please check your internet connection.");
+      alert("Final submission failed. Please check your internet connection and try again.");
       setSubmitting(false);
       submittingRef.current = false;
+      setShowSubmitConfirmation(false);
     }
   };
 
@@ -587,28 +652,6 @@ const QuizRoom: React.FC = () => {
     const rs = s % 60;
     return `${m}:${rs < 10 ? '0' : ''}${rs}`;
   };
-
-  if (loading) return (
-    <div className="h-screen flex items-center justify-center bg-slate-50">
-      <div className="flex flex-col items-center">
-        <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Synchronizing Module Vault...</p>
-      </div>
-    </div>
-  );
-
-  if (error) return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
-      <Card className="max-w-md w-full p-10 text-center shadow-2xl border-none">
-        <div className="w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
-          <i className="fas fa-shield-virus text-3xl"></i>
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h2>
-        <p className="text-slate-500 mb-8 leading-relaxed">{error}</p>
-        <Link to="/student" className="block w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-primary-600 transition">Return to Dashboard</Link>
-      </Card>
-    </div>
-  );
 
   const currentQuestion = questions[currentIndex];
   const numAnswered = Object.keys(answers).length;
@@ -623,15 +666,26 @@ const QuizRoom: React.FC = () => {
   const endIdx = Math.min(startIdx + effectiveQPerPage, questions.length);
   const pageQuestions = questions.slice(startIdx, endIdx);
 
-  const scrollMainToTop = () => {
+  const scrollMainToTop = (smooth = true) => {
     const mainEl = document.querySelector('main');
-    if (mainEl) mainEl.scrollTo({ top: 0, behavior: 'smooth' });
+    if (mainEl) {
+      mainEl.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
+    }
+    // Backup for different layout structures or if main is not the scroll container
+    window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
   };
+
+  // Automatically scroll to top when page changes
+  useEffect(() => {
+    if (examStarted) {
+      // Use immediate scroll (smooth: false) for better reliability during page transitions
+      scrollMainToTop(false);
+    }
+  }, [currentPage, examStarted]);
 
   const handleNextPage = () => {
     const nextIdx = Math.min((currentPage + 1) * effectiveQPerPage, questions.length - 1);
     setCurrentIndex(nextIdx);
-    scrollMainToTop();
     if (submissionId) {
       submissionService.updatePresence(submissionId, nextIdx).catch(console.error);
     }
@@ -640,7 +694,6 @@ const QuizRoom: React.FC = () => {
   const handlePrevPage = () => {
     const prevIdx = Math.max((currentPage - 1) * effectiveQPerPage, 0);
     setCurrentIndex(prevIdx);
-    scrollMainToTop();
     if (submissionId) {
       submissionService.updatePresence(submissionId, prevIdx).catch(console.error);
     }
@@ -682,10 +735,34 @@ const QuizRoom: React.FC = () => {
     }, 150);
   };
 
+  if (loading) return (
+
+    <div className="h-screen flex items-center justify-center bg-slate-50">
+      <div className="flex flex-col items-center">
+        <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs">Synchronizing Module Vault...</p>
+      </div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6">
+      <Card className="max-w-md w-full p-10 text-center shadow-2xl border-none">
+        <div className="w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
+          <i className="fas fa-shield-virus text-3xl"></i>
+        </div>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h2>
+        <p className="text-slate-500 mb-8 leading-relaxed">{error}</p>
+        <Link to="/student" className="block w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-primary-600 transition">Return to Dashboard</Link>
+      </Card>
+    </div>
+  );
+
+
 
 
   return (
-    <div id="secure-exam-container" className="min-h-screen bg-slate-900 overflow-hidden relative">
+    <>
       {!examStarted ? (
         <div className="min-h-screen flex items-center justify-center p-4 sm:p-6">
           <Card className="max-w-xl w-full p-6 sm:p-12 text-center bg-white shadow-2xl relative overflow-hidden border-none text-slate-900 font-sans">
@@ -748,7 +825,7 @@ const QuizRoom: React.FC = () => {
           </Card>
         </div>
       ) : (
-        <div className={`h-screen h-[100dvh] bg-slate-50 flex flex-col lg:flex-row overflow-hidden relative selection:bg-primary-100 ${quiz?.disableTextSelection ? 'disable-selection' : ''}`}>
+        <div id="secure-exam-container" className={`h-screen h-[100dvh] bg-slate-50 flex flex-col lg:flex-row overflow-hidden relative selection:bg-primary-100 ${quiz?.disableTextSelection ? 'disable-selection' : ''} ${isContentBlurred ? 'exam-blur' : ''}`}>
 
       {/* Unified Security Overlays */}
       {/* EXAM PAUSED OVERLAY */}
@@ -834,7 +911,88 @@ const QuizRoom: React.FC = () => {
       {/* CENTER ZONE */}
       <main className="flex-1 flex flex-col relative overflow-y-auto w-full">
         <div className="max-w-3xl w-full mx-auto p-4 sm:p-6 lg:p-12 flex-1 flex flex-col pb-32 lg:pb-12">
-          {pageQuestions.length > 0 ? (
+          {showReview ? (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex-1 flex flex-col">
+              <div className="mb-10 text-center">
+                <h2 className="text-3xl font-black text-slate-900 mb-2">Review Summary</h2>
+                <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Verify your responses before final submission</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+                <Card className="p-6 text-center border-none shadow-xl shadow-slate-200">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Completion Status</p>
+                  <p className="text-4xl font-black text-slate-900">{numAnswered} / {questions.length}</p>
+                  <p className="text-xs font-bold text-slate-400 mt-2">Questions Answered</p>
+                </Card>
+                <Card className={`p-6 text-center border-none shadow-xl shadow-slate-200 border-2 ${timeLeft < 300 ? 'border-red-100' : 'border-transparent'}`}>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Time Remaining</p>
+                  <p className={`text-4xl font-black font-mono ${timeLeft < 300 ? 'text-red-600' : 'text-slate-900'}`}>{formatTime(timeLeft)}</p>
+                  <p className="text-xs font-bold text-slate-400 mt-2">Before Auto-Submit</p>
+                </Card>
+              </div>
+
+              {/* Unanswered Section */}
+              {questions.length - numAnswered > 0 && (
+                <div className="mb-10">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                      <i className="fas fa-exclamation-circle text-sm"></i>
+                    </div>
+                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Unanswered Questions ({questions.length - numAnswered})</h3>
+                  </div>
+                  <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
+                    {questions.map((q, i) => answers[q.id] === undefined ? (
+                      <button
+                        key={q.id}
+                        onClick={() => { setShowReview(false); navigateToQuestion(i); }}
+                        className="h-10 rounded-xl bg-white border-2 border-slate-100 text-slate-400 font-black text-xs hover:border-primary-500 hover:text-primary-600 transition-all shadow-sm flex items-center justify-center"
+                      >
+                        {i + 1}
+                      </button>
+                    ) : null)}
+                  </div>
+                </div>
+              )}
+
+              {/* Flagged Section */}
+              {flags.size > 0 && (
+                <div className="mb-10">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
+                      <i className="fas fa-flag text-sm"></i>
+                    </div>
+                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Flagged for Review ({flags.size})</h3>
+                  </div>
+                  <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
+                    {questions.map((q, i) => flags.has(q.id) ? (
+                      <button
+                        key={q.id}
+                        onClick={() => { setShowReview(false); navigateToQuestion(i); }}
+                        className="h-10 rounded-xl bg-red-500 border-2 border-red-600 text-white font-black text-xs hover:bg-red-600 transition-all shadow-md flex items-center justify-center"
+                      >
+                        {i + 1}
+                      </button>
+                    ) : null)}
+                  </div>
+                </div>
+              )}
+
+              <div className="mt-auto pt-10 flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => setShowReview(false)}
+                  className="flex-1 p-5 rounded-2xl bg-white border-2 border-slate-100 text-slate-600 font-black uppercase tracking-widest hover:bg-slate-50 transition-all text-sm"
+                >
+                  Go Back & Review
+                </button>
+                <button
+                  onClick={() => handleFinalSubmit(false)}
+                  className="flex-1 p-5 rounded-2xl bg-emerald-600 text-white font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200 text-sm"
+                >
+                  SUBMIT
+                </button>
+              </div>
+            </div>
+          ) : pageQuestions.length > 0 ? (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300 flex-1 flex flex-col">
               {pageQuestions.map((q, pIdx) => (
                 <Card key={q.id} id={`question-${startIdx + pIdx}`} className="p-4 lg:p-5 border-none shadow-xl shadow-slate-200 relative overflow-hidden mb-6 lg:mb-8">
@@ -938,7 +1096,10 @@ const QuizRoom: React.FC = () => {
 
                 {currentPage === totalPages - 1 ? (
                   <button
-                    onClick={() => handleFinalSubmit(false)}
+                    onClick={() => {
+                      setShowReview(true);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                     disabled={submitting}
                     className="flex-1 lg:flex-none lg:w-48 px-4 lg:px-8 py-4 lg:py-5 rounded-xl lg:rounded-2xl bg-emerald-600 text-white font-black uppercase tracking-widest hover:bg-emerald-700 disabled:opacity-20 transition-all shadow-xl shadow-emerald-200 flex items-center justify-center space-x-3 active:scale-95"
                   >
@@ -1111,8 +1272,41 @@ const QuizRoom: React.FC = () => {
         </div>
       </div>
 
+      {/* Final Submission Confirmation Modal */}
+      {showSubmitConfirmation && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 sm:p-6">
+          <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={() => setShowSubmitConfirmation(false)}></div>
+          <Card className="max-w-md w-full p-8 sm:p-10 text-center relative z-10 border-none shadow-3xl animate-in zoom-in-95 duration-300">
+            <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-emerald-100">
+              <i className="fas fa-check-double text-3xl"></i>
+            </div>
+            <h2 className="text-2xl font-black text-slate-900 mb-4">Confirm Submission</h2>
+            <p className="text-slate-500 mb-8 leading-relaxed font-medium">
+              Are you sure you want to finalize your submission? <br/>
+              <span className="text-red-500 font-bold">You cannot change your answers after this action.</span>
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => handleFinalSubmit()}
+                disabled={submitting}
+                className="w-full bg-emerald-600 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50"
+              >
+                {submitting ? 'Processing...' : 'Yes, Submit Now'}
+              </button>
+              <button
+                onClick={() => setShowSubmitConfirmation(false)}
+                disabled={submitting}
+                className="w-full bg-slate-100 text-slate-600 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+              >
+                Cancel & Review
+              </button>
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* Unified Security Overlays */}
-      {examStarted && !isTimeUp && (
+      {examStarted && !isTimeUp ? (
         <>
           {/* 1. Fullscreen Required Overlay */}
           {securityStatus === 'fullscreen_missing' && (
@@ -1184,7 +1378,7 @@ const QuizRoom: React.FC = () => {
             </div>
           )}
         </>
-      )}
+      ) : null}
 
       {/* Watermark */}
       {examStarted && (quiz?.watermarkEnabled || quiz?.restrictScreenshot) && (
@@ -1227,9 +1421,9 @@ const QuizRoom: React.FC = () => {
           </div>
         </div>
       )}
-        </div>
-      )}
     </div>
+    )}
+    </>
   );
 };
 

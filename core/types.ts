@@ -82,6 +82,8 @@ export interface Quiz {
   blurOnTabLeave?: boolean;
   minSubmissionPercentage?: number;
   defaultMarkPerQuestion?: number;
+  restrictQuestionPrinting?: boolean;
+  restrictResultPrinting?: boolean;
 
   // Live Controls & Monitor additions
   status?: 'active' | 'paused' | 'completed' | 'draft';

@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Navbar, Container, Card } from '../ui/Layout';
+import { Navbar, Container, Card, Modal } from '../ui/Layout';
 import { submissionService } from '../services/submissionService';
 import { quizService } from '../services/quizService';
 import { userService } from '../services/userService';
@@ -22,6 +22,11 @@ const Reports: React.FC = () => {
    const [searchTerm, setSearchTerm] = useState('');
    const [filterQuizId, setFilterQuizId] = useState('');
    const [filterLevel, setFilterLevel] = useState('');
+   
+   // Admin Action States
+   const [resetModalData, setResetModalData] = useState<{ id: string, name: string, quizTitle: string } | null>(null);
+   const [overrideModalData, setOverrideModalData] = useState<{ id: string, name: string, currentScore: number, total: number } | null>(null);
+   const [overrideInput, setOverrideInput] = useState('');
 
    const { profile } = useAuth();
    const isSuperAdmin = adminService.getEffectivePermission(profile) === 'super_admin';
@@ -33,10 +38,25 @@ const Reports: React.FC = () => {
       : (profile?.assignedInstitutions || []);
 
    useEffect(() => {
-      const unsubQ = quizService.subscribeToQuizzes((data) => setQuizzes(data));
+      let quizzesLoaded = false;
+      let subsLoaded = false;
+
+      const unsubQ = quizService.subscribeToQuizzes((data) => {
+         setQuizzes(data);
+         quizzesLoaded = true;
+         if (subsLoaded) setLoading(false);
+      }, (err) => {
+         console.error('Quiz subscription error:', err);
+         quizzesLoaded = true;
+         if (subsLoaded) setLoading(false);
+      });
       const unsubS = submissionService.subscribeToAllSubmissions((data) => {
          setSubmissions(data);
-         setLoading(false);
+         subsLoaded = true;
+         if (quizzesLoaded) setLoading(false);
+      }, () => {
+         subsLoaded = true;
+         if (quizzesLoaded) setLoading(false);
       });
       const unsubU = userService.subscribeToUsers((data) => {
          setStudents(data.filter(u => u.role === 'student'));
@@ -103,13 +123,20 @@ const Reports: React.FC = () => {
       return Math.round(avg * 100);
    };
 
-   const handleReset = async (submissionId: string) => {
-      if (!window.confirm(
-         "PERMANENT RESET WARNING:\n\nThis will permanently delete this student's submission.\nThe student will be authorized to re-attempt this examination.\n\nProceed?"
-      )) return;
+   const handleReset = async () => {
+      if (!resetModalData || !profile) return;
+      const { id, name, quizTitle } = resetModalData;
+      
       try {
          setLoading(true);
-         await submissionService.deleteSubmission(submissionId);
+         setResetModalData(null);
+         await submissionService.deleteSubmission(id);
+         await adminService.logAction(
+            profile.uid,
+            profile.displayName,
+            'RESET_SUBMISSION',
+            `Permanently deleted ${name}'s attempt for "${quizTitle}" to allow a re-take.`
+         );
       } catch (err: any) { 
          console.error("Reset Error:", err);
          alert(`Failed to reset: ${err.message || "Check your administrative permissions."}`); 
@@ -117,15 +144,30 @@ const Reports: React.FC = () => {
       finally { setLoading(false); }
    };
 
-   const handleOverrideGrade = async (submissionId: string, currentScore: number, totalPossible: number) => {
-      const input = window.prompt(`Override grade (Current: ${currentScore}/${totalPossible}):\nEnter new score:`, currentScore.toString());
-      if (input === null) return;
-      const newScore = parseInt(input, 10);
-      if (isNaN(newScore) || newScore < 0 || newScore > totalPossible) { alert("Invalid score."); return; }
+   const handleOverrideGrade = async () => {
+      if (!overrideModalData || !profile) return;
+      const { id, name, currentScore, total } = overrideModalData;
+      const newScore = parseInt(overrideInput, 10);
+      
+      if (isNaN(newScore) || newScore < 0 || newScore > total) {
+         alert(`Invalid score. Please enter a value between 0 and ${total}.`);
+         return;
+      }
+
       try {
          setLoading(true);
-         await submissionService.overrideGrade(submissionId, newScore);
-      } catch { alert("Failed to override grade."); }
+         setOverrideModalData(null);
+         await submissionService.overrideGrade(id, newScore);
+         await adminService.logAction(
+            profile.uid,
+            profile.displayName,
+            'OVERRIDE_GRADE',
+            `Changed ${name}'s score from ${currentScore} to ${newScore} (Total: ${total})`
+         );
+      } catch (err: any) {
+         console.error("Override Error:", err);
+         alert("Failed to override grade."); 
+      }
       finally { setLoading(false); }
    };
 
@@ -274,7 +316,7 @@ const Reports: React.FC = () => {
                   <select
                      value={filterLevel}
                      onChange={(e) => setFilterLevel(e.target.value)}
-                     disabled={!isSuperAdmin && allowedLevels.length === 1}
+                     disabled={!isSuperAdmin && visibleLevels.length === 1}
                      className="px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-primary-500 outline-none appearance-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                      title="Filter by Level"
                   >
@@ -389,8 +431,11 @@ const Reports: React.FC = () => {
                                               </td>
                                               <td className="px-6 py-4 text-right border-l border-slate-50">
                                                  <div className="flex justify-end gap-2">
-                                                    <button onClick={() => handleOverrideGrade(s.id, s.score, s.totalPossible)} className="p-2 text-slate-400 hover:text-primary-600 transition-colors" title="Edit Score"><i className="fas fa-edit"></i></button>
-                                                    <button onClick={() => handleReset(s.id)} className="p-2 text-slate-400 hover:text-red-600 transition-colors" title="Reset Attempt"><i className="fas fa-undo"></i></button>
+                                                    <button onClick={() => {
+                                                       setOverrideModalData({ id: s.id, name: s.studentName, currentScore: s.score, total: s.totalPossible });
+                                                       setOverrideInput(s.score.toString());
+                                                    }} className="p-2 text-slate-400 hover:text-primary-600 transition-colors" title="Edit Score"><i className="fas fa-edit"></i></button>
+                                                    <button onClick={() => setResetModalData({ id: s.id, name: s.studentName, quizTitle: getQuizTitle(s.quizId) })} className="p-2 text-slate-400 hover:text-red-600 transition-colors" title="Reset Attempt"><i className="fas fa-undo"></i></button>
                                                  </div>
                                               </td>
                                            </tr>
@@ -419,8 +464,11 @@ const Reports: React.FC = () => {
                                            </div>
                                         </div>
                                         <div className="flex gap-2">
-                                           <button onClick={() => handleOverrideGrade(s.id, s.score, s.totalPossible)} className="flex-1 py-3 bg-slate-50 text-slate-500 rounded-xl font-black text-[10px] uppercase tracking-widest active:bg-primary-50 active:text-primary-600 transition-colors flex items-center justify-center gap-2"><i className="fas fa-edit"></i><span>Edit Score</span></button>
-                                           <button onClick={() => handleReset(s.id)} className="flex-1 py-3 bg-slate-50 text-slate-500 rounded-xl font-black text-[10px] uppercase tracking-widest active:bg-red-50 active:text-red-600 transition-colors flex items-center justify-center gap-2"><i className="fas fa-undo"></i><span>Reset</span></button>
+                                           <button onClick={() => {
+                                              setOverrideModalData({ id: s.id, name: s.studentName, currentScore: s.score, total: s.totalPossible });
+                                              setOverrideInput(s.score.toString());
+                                           }} className="flex-1 py-3 bg-slate-50 text-slate-500 rounded-xl font-black text-[10px] uppercase tracking-widest active:bg-primary-50 active:text-primary-600 transition-colors flex items-center justify-center gap-2"><i className="fas fa-edit"></i><span>Edit Score</span></button>
+                                           <button onClick={() => setResetModalData({ id: s.id, name: s.studentName, quizTitle: getQuizTitle(s.quizId) })} className="flex-1 py-3 bg-slate-50 text-slate-500 rounded-xl font-black text-[10px] uppercase tracking-widest active:bg-red-50 active:text-red-600 transition-colors flex items-center justify-center gap-2"><i className="fas fa-undo"></i><span>Reset</span></button>
                                         </div>
                                      </div>
                                   ))}
@@ -650,7 +698,16 @@ const Reports: React.FC = () => {
    };
 
    const ModuleIntelligenceView = () => {
-      if (!selectedQuiz) return null;
+      if (!selectedQuiz) {
+          return (
+             <div className="py-20 text-center">
+                <i className="fas fa-exclamation-circle text-slate-200 text-6xl mb-4"></i>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Module Not Found</h3>
+                <p className="text-slate-500">The examination module you are looking for may have been deleted or moved.</p>
+                <Link to="/admin" className="mt-6 inline-block text-primary-600 font-bold">Back to Dashboard</Link>
+             </div>
+          );
+       }
 
       const quizSubmissions = submissions.filter(s => s.quizId === selectedQuiz.id);
       const completed = quizSubmissions.filter(s => s.status === 'completed');
@@ -766,8 +823,11 @@ const Reports: React.FC = () => {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                        <div className="flex justify-end gap-2">
-                                          <button onClick={() => handleOverrideGrade(s.id, s.score, s.totalPossible)} className="p-2 text-slate-400 hover:text-slate-900 transition-colors"><i className="fas fa-edit"></i></button>
-                                          <button onClick={() => handleReset(s.id)} className="p-2 text-slate-400 hover:text-red-600 transition-colors"><i className="fas fa-undo"></i></button>
+                                          <button onClick={() => {
+                                             setOverrideModalData({ id: s.id, name: s.studentName, currentScore: s.score, total: s.totalPossible });
+                                             setOverrideInput(s.score.toString());
+                                          }} className="p-2 text-slate-400 hover:text-slate-900 transition-colors"><i className="fas fa-edit"></i></button>
+                                          <button onClick={() => setResetModalData({ id: s.id, name: s.studentName, quizTitle: selectedQuiz.title })} className="p-2 text-slate-400 hover:text-red-600 transition-colors"><i className="fas fa-undo"></i></button>
                                        </div>
                                     </td>
                                  </tr>
@@ -811,7 +871,7 @@ const Reports: React.FC = () => {
                   <>
                      <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Analytics & Reports</h1>
                      <p className="text-slate-500 font-medium mt-1">
-                        {isSuperAdmin ? 'Platform-wide academic intelligence.' : `Scoped to Level${allowedLevels.length > 1 ? 's' : ''} ${allowedLevels.join(', ')}.`}
+                        {isSuperAdmin ? 'Platform-wide academic intelligence.' : `Scoped to Level${visibleLevels.length > 1 ? 's' : ''} ${visibleLevels.join(', ')}.`}
                      </p>
                   </>
                )}
@@ -851,6 +911,83 @@ const Reports: React.FC = () => {
                </>
             )}
          </Container>
+
+         {/* Reset Confirmation Modal */}
+         <Modal
+            isOpen={!!resetModalData}
+            onClose={() => setResetModalData(null)}
+            title="Confirm Reset"
+            variant="danger"
+            footer={
+               <>
+                  <button 
+                     onClick={() => setResetModalData(null)}
+                     className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                  >
+                     Cancel
+                  </button>
+                  <button 
+                     onClick={handleReset}
+                     className="flex-1 py-4 bg-red-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-700 shadow-xl shadow-red-200 transition-all"
+                  >
+                     Confirm Delete
+                  </button>
+               </>
+            }
+         >
+            {resetModalData && (
+               <p>
+                  You are about to PERMANENTLY delete <span className="font-bold text-slate-900">{resetModalData.name}</span>'s submission for 
+                  <span className="font-bold text-slate-900"> {resetModalData.quizTitle}</span>. 
+                  The student will be authorized to re-take this exam immediately.
+               </p>
+            )}
+         </Modal>
+
+         {/* Override Grade Modal */}
+         <Modal
+            isOpen={!!overrideModalData}
+            onClose={() => setOverrideModalData(null)}
+            title="Override Grade"
+            variant="info"
+            footer={
+               <>
+                  <button 
+                     onClick={() => setOverrideModalData(null)}
+                     className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                  >
+                     Cancel
+                  </button>
+                  <button 
+                     onClick={handleOverrideGrade}
+                     className="flex-1 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-600 shadow-xl shadow-slate-200 transition-all"
+                  >
+                     Save Changes
+                  </button>
+               </>
+            }
+         >
+            {overrideModalData && (
+               <>
+                  <p className="mb-6 text-sm font-medium">
+                     Modifying result for <span className="font-bold text-slate-900">{overrideModalData.name}</span>
+                  </p>
+                  <div className="text-left">
+                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">New Score (Max: {overrideModalData.total})</label>
+                     <input 
+                        type="number" 
+                        value={overrideInput}
+                        onChange={(e) => setOverrideInput(e.target.value)}
+                        className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl font-black text-center text-2xl focus:ring-4 focus:ring-primary-50 outline-none transition-all"
+                        placeholder="0"
+                        min="0"
+                        max={overrideModalData.total}
+                        autoFocus
+                     />
+                  </div>
+               </>
+            )}
+         </Modal>
       </div>
    );
 };

@@ -318,33 +318,49 @@ const QuestionBuilder: React.FC = () => {
                       />
                     </div>
 
-                    <div className="space-y-3">
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Response Options</label>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Response Options</label>
+                        <span className="text-[10px] font-bold text-primary-500 uppercase">Select the correct answer</span>
+                      </div>
                       {options.map((opt, i) => (
                         <div key={i} className="flex items-center space-x-3 group w-full">
-                          <div className={`w-10 h-10 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center font-bold text-xs transition flex-shrink-0 ${correct === i ? 'bg-green-500 text-white shadow-lg' : 'bg-slate-100 text-slate-400'}`}>
-                            {String.fromCharCode(65 + i)}
-                          </div>
-                          <input
-                            type="text"
-                            value={opt}
-                            onChange={e => {
-                              const n = [...options];
-                              n[i] = e.target.value;
-                              setOptions(n);
-                            }}
-                            placeholder={`Option ${String.fromCharCode(65 + i)}`}
-                            className={`flex-1 p-3 sm:p-4 border rounded-xl text-sm transition min-h-[44px] ${correct === i ? 'border-green-200 bg-green-50/30' : 'bg-white'}`}
-                            required
-                          />
                           <button
                             type="button"
                             onClick={() => setCorrect(i)}
-                            className={`p-3 sm:p-2 transition flex-shrink-0 min-w-[44px] min-h-[44px] flex items-center justify-center ${correct === i ? 'text-green-600' : 'text-slate-200 hover:text-primary-400'}`}
+                            className={`w-11 h-11 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-black text-sm transition-all duration-200 flex-shrink-0 shadow-sm ${
+                              correct === i 
+                                ? 'bg-green-600 text-white ring-4 ring-green-100 scale-105' 
+                                : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
+                            }`}
                             title={`Mark Option ${String.fromCharCode(65 + i)} as correct`}
                           >
-                            <i className={`fas ${correct === i ? 'fa-check-circle' : 'fa-circle'} text-2xl sm:text-lg`}></i>
+                            {String.fromCharCode(65 + i)}
                           </button>
+                          <div className="relative flex-1">
+                            <input
+                              type="text"
+                              value={opt}
+                              onChange={e => {
+                                const n = [...options];
+                                n[i] = e.target.value;
+                                setOptions(n);
+                              }}
+                              placeholder={`Option ${String.fromCharCode(65 + i)} details...`}
+                              className={`w-full p-3 sm:p-4 border-2 rounded-xl text-sm transition-all duration-200 min-h-[48px] ${
+                                correct === i 
+                                  ? 'border-green-500 bg-green-50/20 text-slate-900 font-bold' 
+                                  : 'border-slate-100 bg-white focus:border-primary-500'
+                              }`}
+                              required
+                            />
+                            {correct === i && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1.5 bg-green-600 text-white px-2 py-1 rounded-md shadow-sm animate-in fade-in zoom-in duration-300">
+                                <i className="fas fa-check-circle text-[10px]"></i>
+                                <span className="text-[8px] font-black uppercase tracking-widest">Correct</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -456,9 +472,12 @@ const QuestionBuilder: React.FC = () => {
                       <p className="font-bold text-slate-800 mb-4 text-base leading-snug">{q.text}</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {q.options.map((opt, i) => (
-                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center ${i === q.correctOptionIndex ? 'bg-green-100 border-green-200 text-green-700 font-bold' : 'bg-white border-slate-100 text-slate-400'}`}>
-                            <span className="w-5 h-5 flex items-center justify-center rounded bg-white/50 mr-2 text-[10px]">{String.fromCharCode(65 + i)}</span>
-                            {opt}
+                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center justify-between ${i === q.correctOptionIndex ? 'bg-green-100 border-green-200 text-green-700 font-bold' : 'bg-white border-slate-100 text-slate-400'}`}>
+                            <div className="flex items-center">
+                              <span className="w-5 h-5 flex items-center justify-center rounded bg-white/50 mr-2 text-[10px]">{String.fromCharCode(65 + i)}</span>
+                              {opt}
+                            </div>
+                            {i === q.correctOptionIndex && <i className="fas fa-check-circle text-green-600"></i>}
                           </div>
                         ))}
                       </div>
@@ -483,9 +502,12 @@ const QuestionBuilder: React.FC = () => {
                       <p className="font-bold text-slate-700 mb-4 text-base leading-snug print:text-sm">{q.text}</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 print:gap-4">
                         {q.options.map((opt, i) => (
-                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center print:border-slate-200 print:p-2 ${i === q.correctOptionIndex ? 'bg-primary-50 border-primary-100 text-primary-700 font-bold print:bg-slate-50 print:text-slate-900' : 'bg-slate-50 border-slate-50 text-slate-500 print:bg-white'}`}>
-                            <span className="w-5 h-5 flex items-center justify-center rounded bg-white/50 mr-2 text-[10px] font-black print:border print:border-slate-300">{String.fromCharCode(65 + i)}</span>
-                            {opt}
+                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center justify-between print:border-slate-200 print:p-2 ${i === q.correctOptionIndex ? 'bg-primary-50 border-primary-100 text-primary-700 font-bold print:bg-slate-50 print:text-slate-900' : 'bg-slate-50 border-slate-50 text-slate-500 print:bg-white'}`}>
+                            <div className="flex items-center">
+                              <span className="w-5 h-5 flex items-center justify-center rounded bg-white/50 mr-2 text-[10px] font-black print:border print:border-slate-300">{String.fromCharCode(65 + i)}</span>
+                              {opt}
+                            </div>
+                            {i === q.correctOptionIndex && <i className="fas fa-check-circle text-primary-600 print:hidden"></i>}
                           </div>
                         ))}
                       </div>

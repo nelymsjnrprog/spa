@@ -141,11 +141,14 @@ export const submissionService = {
     return data.sort((a, b) => b.createdAt - a.createdAt);
   },
 
-  subscribeToAllSubmissions(callback: (submissions: Submission[]) => void) {
+  subscribeToAllSubmissions(callback: (submissions: Submission[]) => void, onError?: (error: any) => void) {
     const q = query(collection(db, 'submissions'), limit(500));
     return onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Submission));
       callback(data.sort((a, b) => b.createdAt - a.createdAt));
+    }, (error) => {
+      console.error("Submissions subscription error:", error);
+      if (onError) onError(error);
     });
   },
 

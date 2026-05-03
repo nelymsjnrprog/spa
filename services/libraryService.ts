@@ -56,22 +56,38 @@ export const libraryService = {
    * Admins see all. Students can filter by level and published status.
    */
   subscribeToLibrary(callback: (resources: LibraryResource[]) => void, filters?: { level?: string; onlyPublished?: boolean }) {
-    let q = query(collection(db, 'Library'), orderBy('uploadedAt', 'desc'));
-
-    if (filters?.level) {
-      q = query(q, where('level', '==', filters.level));
-    }
-
+    // To avoid "Missing or insufficient permissions" and composite index requirements:
+    // 1. We must query exactly what the rules allow (published == true)
+    // 2. We perform level filtering and sorting client-side
+    
+    let q = query(collection(db, 'Library'));
+    
     if (filters?.onlyPublished) {
       q = query(q, where('published', '==', true));
     }
 
     return onSnapshot(q, (snapshot) => {
-      const resources = snapshot.docs.map(doc => ({
+      let resources = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       } as LibraryResource));
+
+      // Client-side filtering for level (if specified)
+      if (filters?.level) {
+        resources = resources.filter(r => String(r.level) === String(filters.level));
+      }
+
+      // Client-side sorting by uploadedAt descending
+      resources.sort((a, b) => {
+        const aTime = a.uploadedAt?.toMillis ? a.uploadedAt.toMillis() : (a.uploadedAt?.seconds ? a.uploadedAt.seconds * 1000 : 0);
+        const bTime = b.uploadedAt?.toMillis ? b.uploadedAt.toMillis() : (b.uploadedAt?.seconds ? b.uploadedAt.seconds * 1000 : 0);
+        return bTime - aTime;
+      });
+
       callback(resources);
+    }, (error) => {
+      console.error('Library snapshot error:', error);
+      callback([]);
     });
   },
 

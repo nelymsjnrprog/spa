@@ -167,11 +167,9 @@ service cloud.firestore {
       allow update: if false;
     }
 
-    // Library Resources
     match /Library/{resourceId} {
-      // Students can only read published resources
-      allow read: if isSignedIn() && (isAdmin() || resource.data.published == true);
-      allow list: if isSignedIn() && isAdmin();
+      // Students can only read/list published resources
+      allow read, list: if isSignedIn() && (isAdmin() || resource.data.published == true);
       allow create, update, delete: if isAdmin();
     }
   }

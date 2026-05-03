@@ -212,3 +212,36 @@ export const Card: React.FC<{ children: React.ReactNode; className?: string; id?
     {children}
   </div>
 );
+
+export const Modal: React.FC<{
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+  variant?: 'danger' | 'info' | 'success';
+}> = ({ isOpen, onClose, title, children, footer, variant = 'info' }) => {
+  if (!isOpen) return null;
+
+  const icons = {
+    danger: 'fa-exclamation-triangle text-red-600 bg-red-50',
+    info: 'fa-info-circle text-primary-600 bg-primary-50',
+    success: 'fa-check-circle text-emerald-600 bg-emerald-50'
+  };
+
+  return (
+    <div className="fixed inset-0 z-[300] flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose}></div>
+      <Card className="relative w-full max-w-md p-8 border-none shadow-2xl bg-white rounded-[2rem] animate-in zoom-in-95 duration-200">
+        <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto shadow-inner ${icons[variant]}`}>
+          <i className={`fas ${icons[variant].split(' ')[0]}`}></i>
+        </div>
+        <h3 className="text-xl font-black text-slate-900 text-center mb-2 uppercase tracking-tight">{title}</h3>
+        <div className="text-slate-500 text-center text-sm mb-8 leading-relaxed">
+          {children}
+        </div>
+        {footer && <div className="flex gap-3">{footer}</div>}
+      </Card>
+    </div>
+  );
+};

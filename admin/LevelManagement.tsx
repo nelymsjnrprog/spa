@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useParams, Navigate, useNavigate } from 'react-router-dom';
-import { Navbar, Container, Card } from '../ui/Layout';
+import { Navbar, Container, Card, Modal } from '../ui/Layout';
 import { quizService } from '../services/quizService';
 import { userService } from '../services/userService';
 import { submissionService } from '../services/submissionService';
@@ -28,6 +28,15 @@ const LevelManagement: React.FC = () => {
    // Quiz Modal State
    const [showModal, setShowModal] = useState(false);
    const [editingQuiz, setEditingQuiz] = useState<Quiz | null>(null);
+   
+   // Confirmation Modal State
+   const [confirmModal, setConfirmModal] = useState<{
+      title: string;
+      message: string;
+      onConfirm: () => void;
+      variant?: 'danger' | 'info' | 'success';
+      confirmText?: string;
+   } | null>(null);
    
    // Form State (Same as QuizManagement)
    const [subjectTitle, setSubjectTitle] = useState('');
@@ -175,20 +184,28 @@ const LevelManagement: React.FC = () => {
        }
 
        const nextLevelLabel = nextLevel === 'Candidate' ? 'Candidate' : `Level ${nextLevel}`;
-       if (!confirm(`Promote ${student.displayName} to ${nextLevelLabel}?`)) return;
-
-       try {
-          await userService.updateUserProfile(student.uid, { level: nextLevel });
-          await adminService.logAction(
-             profile!.uid,
-             profile!.displayName,
-             'Promoted Student',
-             `Promoted ${student.displayName} from ${student.level === 'Candidate' ? 'Candidate' : 'Level ' + student.level} to ${nextLevelLabel}`,
-             level
-          );
-       } catch (err) {
-          alert("Failed to promote student.");
-       }
+       
+       setConfirmModal({
+          title: "Promote Student",
+          message: `Are you sure you want to promote ${student.displayName} to ${nextLevelLabel}?`,
+          variant: 'info',
+          confirmText: "Promote Now",
+          onConfirm: async () => {
+             try {
+                setConfirmModal(null);
+                await userService.updateUserProfile(student.uid, { level: nextLevel });
+                await adminService.logAction(
+                   profile!.uid,
+                   profile!.displayName,
+                   'PROMOTE_STUDENT',
+                   `Promoted ${student.displayName} from ${student.level === 'Candidate' ? 'Candidate' : 'Level ' + student.level} to ${nextLevelLabel}`,
+                   level
+                );
+             } catch (err) {
+                alert("Failed to promote student.");
+             }
+          }
+       });
     };
 
     const handlePromoteAll = async () => {
@@ -202,21 +219,29 @@ const LevelManagement: React.FC = () => {
        }
 
        const nextLevelLabel = nextLevel === 'Candidate' ? 'Candidate' : `Level ${nextLevel}`;
-       if (!confirm(`Are you sure you want to promote ALL ${students.length} students to ${nextLevelLabel}?`)) return;
-
-       setPromotingAll(true);
-       try {
-          const results = await Promise.all(students.map(u => 
-             userService.updateUserProfile(u.uid, { level: nextLevel })
-          ));
-         alert(`Success! ${results.length} students promoted.`);
-      } catch (err) {
-         console.error(err);
-         alert("Promotion failed for one or more students.");
-      } finally {
-         setPromotingAll(false);
-      }
-   };
+       
+       setConfirmModal({
+          title: "Bulk Promotion",
+          message: `CRITICAL ACTION: Are you sure you want to promote ALL ${students.length} students to ${nextLevelLabel}? This will affect their curriculum access immediately.`,
+          variant: 'danger',
+          confirmText: `Promote ${students.length} Students`,
+          onConfirm: async () => {
+             setConfirmModal(null);
+             setPromotingAll(true);
+             try {
+                const results = await Promise.all(students.map(u => 
+                   userService.updateUserProfile(u.uid, { level: nextLevel })
+                ));
+                alert(`Success! ${results.length} students promoted.`);
+             } catch (err) {
+                console.error(err);
+                alert("Promotion failed for one or more students.");
+             } finally {
+                setPromotingAll(false);
+             }
+          }
+       });
+    };
 
    const handleViewStudentInfo = (student: UserProfile) => {
       generateStudentInfoPDF(student);
@@ -224,39 +249,53 @@ const LevelManagement: React.FC = () => {
 
    const handleBlockToggle = async (student: UserProfile) => {
       const newStatus = !student.isBlocked;
-      const action = newStatus ? 'BLOCK' : 'UNBLOCK';
-      if (!confirm(`Are you sure you want to ${action} ${student.displayName}?`)) return;
-
-      try {
-         await userService.updateUserProfile(student.uid, { isBlocked: newStatus });
-         await adminService.logAction(
-            profile!.uid,
-            profile!.displayName,
-            `${action} Student`,
-            `${action}ed ${student.displayName} in Level ${level}`,
-            level
-         );
-      } catch (err) {
-         alert("Failed to update student status.");
-      }
+      const actionLabel = newStatus ? 'Block' : 'Unblock';
+      
+      setConfirmModal({
+         title: `${actionLabel} Student`,
+         message: `Are you sure you want to ${actionLabel.toLowerCase()} ${student.displayName}? They will ${newStatus ? 'no longer' : 'once again'} be able to access their dashboard.`,
+         variant: newStatus ? 'danger' : 'info',
+         confirmText: `Confirm ${actionLabel}`,
+         onConfirm: async () => {
+            try {
+               setConfirmModal(null);
+               await userService.updateUserProfile(student.uid, { isBlocked: newStatus });
+               await adminService.logAction(
+                  profile!.uid,
+                  profile!.displayName,
+                  `${newStatus ? 'BLOCK' : 'UNBLOCK'}_STUDENT`,
+                  `${newStatus ? 'Blocked' : 'Unblocked'} ${student.displayName} in Level ${level}`,
+                  level
+               );
+            } catch (err) {
+               alert("Failed to update student status.");
+            }
+         }
+      });
    };
 
    const handleDeleteUser = async (student: UserProfile) => {
-      if (!confirm(`WARNING: Are you sure you want to PERMANENTLY delete ${student.displayName}?\n\nThis will remove their profile and all their exam submissions.`)) return;
-      if (!confirm("This action CANNOT be undone. Click OK to confirm deletion.")) return;
-
-      try {
-         await userService.deleteUserData(student.uid);
-         await adminService.logAction(
-            profile!.uid,
-            profile!.displayName,
-            'Deleted Student',
-            `Permanently removed student ${student.displayName} from Level ${level}`,
-            level
-         );
-      } catch (err) {
-         alert("Failed to delete student.");
-      }
+      setConfirmModal({
+         title: "Delete Student Profile",
+         message: `DANGER: You are about to PERMANENTLY delete ${student.displayName}. This will remove their account and all their examination history. This cannot be undone.`,
+         variant: 'danger',
+         confirmText: "Delete Permanently",
+         onConfirm: async () => {
+            try {
+               setConfirmModal(null);
+               await userService.deleteUserData(student.uid);
+               await adminService.logAction(
+                  profile!.uid,
+                  profile!.displayName,
+                  'DELETE_STUDENT',
+                  `Permanently deleted student profile: ${student.displayName} (${student.email})`,
+                  level
+               );
+            } catch (err) {
+               alert("Failed to delete student.");
+            }
+         }
+      });
    };
 
    // Quiz Actions
@@ -391,14 +430,32 @@ const LevelManagement: React.FC = () => {
       await adminService.logAction(profile!.uid, profile!.displayName, isPublishing ? 'Published Quiz' : 'Unpublished Quiz', `${isPublishing ? 'Published' : 'Unpublished'} quiz "${quiz.title}" in Level ${level}`, level!);
    };
 
-   const handleDeleteQuiz = async (id: string) => {
-      if (!confirm("PERMANENT DELETION WARNING: This will delete the quiz and all its results. Proceed?")) return;
-      try {
-         await quizService.deleteQuiz(id);
-         await adminService.logAction(profile!.uid, profile!.displayName, 'Deleted Quiz', `Permanently deleted quiz ${id} from Level ${level}`, level!);
-      } catch (err) {
-         alert("Deletion failed.");
-      }
+   const handleDeleteQuiz = async (quizId: string, quizTitle: string) => {
+      setConfirmModal({
+         title: "Delete Examination Module",
+         message: `PERMANENT DELETION WARNING: This action will remove "${quizTitle}" and all associated questions and student grades. This cannot be undone.`,
+         variant: 'danger',
+         confirmText: "Delete Module",
+         onConfirm: async () => {
+            try {
+               setConfirmModal(null);
+               setLoading(true);
+               await quizService.deleteQuiz(quizId);
+               await adminService.logAction(
+                  profile!.uid,
+                  profile!.displayName,
+                  'DELETE_QUIZ',
+                  `Deleted quiz module: "${quizTitle}" from Level ${level}`,
+                  level
+               );
+            } catch (err) {
+               console.error("Deletion failed:", err);
+               alert("Failed to delete the module.");
+            } finally {
+               setLoading(false);
+            }
+         }
+      });
    };
 
 
@@ -559,7 +616,13 @@ const LevelManagement: React.FC = () => {
                               <Card key={quiz.id} className="p-8 border-none shadow-2xl shadow-slate-200/40 hover:translate-y-[-4px] transition-all group relative bg-white rounded-[2rem]">
                                  <div className="absolute top-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
                                     <button onClick={() => handleOpenEdit(quiz)} className="p-2 text-slate-400 hover:text-primary-600 font-bold text-[10px] uppercase">Edit</button>
-                                    <button onClick={() => handleDeleteQuiz(quiz.id)} className="p-2 text-slate-400 hover:text-red-500 font-bold text-[10px] uppercase">Delete</button>
+                                    <button 
+                                       onClick={() => handleDeleteQuiz(quiz.id, quiz.title)} 
+                                       className="p-3 text-slate-300 hover:text-red-500 transition-colors"
+                                       title="Permanently Delete Module"
+                                    >
+                                       <i className="fas fa-trash-alt text-sm"></i>
+                                    </button>
                                  </div>
                                  
                                  <div className="mb-6">
@@ -896,6 +959,31 @@ const LevelManagement: React.FC = () => {
             </div>
          )}
          </Container>
+
+         <Modal
+            isOpen={!!confirmModal}
+            onClose={() => setConfirmModal(null)}
+            title={confirmModal?.title || 'Confirm Action'}
+            variant={confirmModal?.variant || 'info'}
+            footer={
+               <>
+                  <button 
+                     onClick={() => setConfirmModal(null)}
+                     className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                  >
+                     Cancel
+                  </button>
+                  <button 
+                     onClick={confirmModal?.onConfirm}
+                     className={`flex-1 py-4 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl ${confirmModal?.variant === 'danger' ? 'bg-red-600 hover:bg-red-700 shadow-red-200' : 'bg-primary-600 hover:bg-primary-700 shadow-primary-200'}`}
+                  >
+                     {confirmModal?.confirmText || 'Confirm'}
+                  </button>
+               </>
+            }
+         >
+            {confirmModal?.message}
+         </Modal>
       </div>
    );
 };

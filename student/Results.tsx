@@ -20,6 +20,25 @@ const Results: React.FC = () => {
   const [isContentBlurred, setIsContentBlurred] = useState(false);
   const [showScreenshotOverlay, setShowScreenshotOverlay] = useState(false);
   const [watermarkPos, setWatermarkPos] = useState({ top: '20%', left: '20%' });
+  const [showBreakdown, setShowBreakdown] = useState(false);
+
+  useEffect(() => {
+    const style = document.createElement('style');
+    const isPrintingRestricted = quiz?.restrictResultPrinting;
+    
+    style.innerHTML = `
+      @media print {
+        body * { visibility: ${isPrintingRestricted ? 'hidden' : 'visible'} !important; }
+        .printable-content { display: ${isPrintingRestricted ? 'none' : 'block'} !important; }
+        .no-print { display: none !important; }
+      }
+      .exam-blur { filter: blur(40px) grayscale(1); transition: filter 0.3s ease; }
+      .pdf-view { user-select: none; -webkit-user-drag: none; }
+    `;
+    document.head.appendChild(style);
+    return () => { document.head.removeChild(style); };
+  }, [quiz]);
+
 
   const loadData = async (sid: string) => {
     try {
@@ -73,7 +92,9 @@ const Results: React.FC = () => {
     };
 
     const handleBlur = () => {
-      setIsContentBlurred(true);
+      if (quiz?.restrictResultPrinting || quiz?.restrictScreenshot) {
+        setIsContentBlurred(true);
+      }
     };
 
     const handleFocus = () => {
@@ -84,11 +105,14 @@ const Results: React.FC = () => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
         e.key === 'PrintScreen' ||
-        (e.ctrlKey && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) ||
-        (e.metaKey && e.shiftKey && (e.key === 's' || e.key === 'S' || e.key === '3' || e.key === '4' || e.key === '5')) || // Mac Screenshot
+        (quiz?.restrictResultPrinting && (
+          (e.ctrlKey && (e.key === 'p' || e.key === 'P' || e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) ||
+          (e.metaKey && (e.key === 'p' || e.key === 'P')) ||
+          (e.metaKey && e.shiftKey && (e.key === 's' || e.key === 'S' || e.key === '3' || e.key === '4' || e.key === '5'))
+        )) ||
         e.key === 'F12'
       ) {
-        if (e.key !== 'F12') e.preventDefault();
+        e.preventDefault();
         setIsContentBlurred(true);
         setShowScreenshotOverlay(true);
         setTimeout(() => {
@@ -161,99 +185,159 @@ const Results: React.FC = () => {
             <p className="text-slate-500 font-medium">Verified result record for {quiz?.title}</p>
           </header>
 
-          <section className="grid sm:grid-cols-3 gap-6 mb-6 sm:mb-12">
-            <Card className="sm:col-span-2 p-5 sm:p-8 flex items-center justify-between border-none shadow-xl shadow-slate-200/50 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-2 h-full bg-primary-600"></div>
-              <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Exam Score</p>
-                <div className="flex items-baseline space-x-3">
-                  <span className="text-3xl sm:text-6xl font-black text-slate-900">{correctCount}/{totalQuestions}</span>
-                  <span className="text-base sm:text-xl font-bold text-slate-400">({percentage}%)</span>
+          {quiz?.showResults !== false && (
+            <section className="grid sm:grid-cols-3 gap-6 mb-6 sm:mb-12">
+              <Card className="sm:col-span-2 p-5 sm:p-8 border-none shadow-xl shadow-slate-200/50 relative overflow-hidden flex flex-col sm:flex-row items-center justify-between">
+                <div className="absolute top-0 left-0 w-2 h-full bg-primary-600"></div>
+                <div className="flex-1 text-center sm:text-left">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Exam Score & Status</p>
+                  <div className="flex items-baseline justify-center sm:justify-start space-x-3">
+                    <span className="text-3xl sm:text-6xl font-black text-slate-900">{correctCount}/{totalQuestions}</span>
+                    <span className="text-base sm:text-xl font-bold text-slate-400">({percentage}%)</span>
+                  </div>
+                  <div className="mt-4 flex items-center justify-center sm:justify-start space-x-4">
+                    {submission.score !== correctCount && (
+                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tight">Weighted: {submission.score}/{submission.totalPossible}</p>
+                    )}
+                  </div>
                 </div>
-                {submission.score !== correctCount && (
-                  <p className="text-xs text-slate-400 mt-2 font-bold">Weighted Marks: {submission.score}/{submission.totalPossible}</p>
-                )}
-              </div>
-              <div className="hidden sm:block">
-                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-3xl shadow-inner ${percentage >= 70 ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'}`}>
-                  <i className={`fas ${percentage >= 70 ? 'fa-check-double' : 'fa-hourglass-end'}`}></i>
+                <div className="mt-6 sm:mt-0 sm:ml-6 flex flex-col items-center">
+                  <button 
+                    onClick={() => setShowBreakdown(true)}
+                    className="text-[10px] font-black text-primary-600 uppercase tracking-widest hover:underline flex items-center"
+                  >
+                    <i className="fas fa-file-invoice mr-2"></i> View Breakdown
+                  </button>
                 </div>
-              </div>
-            </Card>
+              </Card>
 
-            <Card className="p-5 sm:p-8 border-none shadow-xl shadow-slate-200/50 flex flex-col justify-center text-center sm:text-left">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Student Identity</p>
-              <p className="text-slate-900 font-black truncate text-lg uppercase tracking-tight">{submission.studentName}</p>
-              <div className="mt-4 pt-4 border-t border-slate-100">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Session ID</p>
-                <p className="text-[10px] text-slate-400 font-mono truncate">{submission.id}</p>
-              </div>
-            </Card>
-          </section>
+              <Card className="p-5 sm:p-8 border-none shadow-xl shadow-slate-200/50 flex flex-col justify-center text-center sm:text-left">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Student Identity</p>
+                <p className="text-slate-900 font-black truncate text-lg uppercase tracking-tight">{submission.studentName}</p>
+                <div className="mt-4 pt-4 border-t border-slate-100">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Session ID</p>
+                  <p className="text-[10px] text-slate-400 font-mono truncate">{submission.id}</p>
+                </div>
+              </Card>
+            </section>
+          )}
 
-          <div className="space-y-8">
-            <div className="flex items-center justify-between mb-2 px-2">
-              <h2 className="text-xl font-bold text-slate-900">Module Performance Breakdown</h2>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{questions.length} Items Evaluated</span>
+            <div className="bg-white p-6 sm:p-10 rounded-2xl border border-slate-100 shadow-sm text-center">
+              <div className="w-16 h-16 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="fas fa-paper-plane text-2xl"></i>
+              </div>
+              <h3 className="text-xl font-black text-slate-900 mb-2">Submission Confirmed</h3>
+              <p className="text-slate-500 text-sm mb-6">
+                Your examination has been securely recorded on <br/>
+                <span className="font-bold text-slate-700">{new Date(submission.completedAt || Date.now()).toLocaleString()}</span>
+              </p>
+              {quiz?.showResults === false && (
+                <div className="bg-amber-50 border border-amber-100 p-4 rounded-xl">
+                  <p className="text-amber-700 text-xs font-bold leading-relaxed">
+                    <i className="fas fa-info-circle mr-2"></i>
+                    Your detailed results and breakdown will be released by the administrator at a later date.
+                  </p>
+                </div>
+              )}
             </div>
 
-            {questions.length === 0 ? (
-              <Card className="p-12 text-center text-slate-400 italic bg-white border-dashed border-2">
-                Question data has been archived for this session.
-              </Card>
-            ) : quiz?.showResults === false ? (
-              <Card className="p-12 text-center text-slate-400 italic bg-white border-dashed border-2">
-                Detailed question breakdown is currently hidden by the administrator.
-              </Card>
-            ) : (
-              questions.map((q, idx) => {
-                const studentAnswerIdx = submission.answers[q.id];
-                const isCorrect = studentAnswerIdx === q.correctOptionIndex;
-                const studentAnswerText = q.options[studentAnswerIdx] || "No Answer Provided";
-                const correctAnswerText = q.options[q.correctOptionIndex];
+            {/* Breakdown Modal/PDF View */}
+            {showBreakdown && quiz?.showResults !== false && (
+              <div className="fixed inset-0 z-[400] flex flex-col bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-300">
+                <div className="flex items-center justify-between p-4 sm:p-6 text-white bg-slate-900/50">
+                  <div>
+                    <h3 className="text-lg font-black uppercase tracking-tight">Performance Breakdown</h3>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Document Mode • Confidential</p>
+                  </div>
+                  <button 
+                    onClick={() => setShowBreakdown(false)}
+                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
 
-                return (
-                  <Card key={q.id} className="p-5 sm:p-8 relative overflow-hidden group hover:border-primary-200 transition-colors border-none shadow-lg shadow-slate-200/40">
-                    <div className={`absolute top-0 left-0 w-1.5 h-full ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`}></div>
-
-                    <div className="flex items-start mb-4 sm:mb-6">
-                      <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-xs mr-4 shrink-0 shadow-sm ${isCorrect ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
-                        {idx + 1}
-                      </span>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900 leading-snug mb-2">{q.text}</h3>
-                        <div className="flex items-center space-x-3">
-                          <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${isCorrect ? 'bg-green-50 text-green-700 border-green-100' : 'bg-red-50 text-red-700 border-red-100'}`}>
-                            {isCorrect ? 'Correct' : 'Incorrect'}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="ml-4 shrink-0">
-                        {isCorrect ? (
-                          <i className="fas fa-check-circle text-2xl text-green-500"></i>
-                        ) : (
-                          <i className="fas fa-times-circle text-2xl text-red-500"></i>
-                        )}
+                <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
+                  <div className="max-w-4xl w-full mx-auto bg-white shadow-2xl rounded-sm p-6 sm:p-16 relative pdf-view printable-content">
+                    {/* Internal Watermark */}
+                    <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden select-none opacity-[0.03]">
+                      <div className="absolute inset-0 grid grid-cols-2 grid-rows-6 gap-20 transform -rotate-45 scale-150">
+                        {Array.from({ length: 12 }).map((_, i) => (
+                          <div key={i} className="text-xl font-black whitespace-nowrap text-slate-900 tracking-tighter uppercase italic">
+                            {profile?.displayName} • {profile?.email}
+                          </div>
+                        ))}
                       </div>
                     </div>
 
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      <div className={`p-4 rounded-xl border-2 ${isCorrect ? 'border-green-100 bg-green-50/30' : 'border-red-100 bg-red-50/30'}`}>
-                        <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Selected Answer</p>
-                        <p className={`text-sm font-bold ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>{studentAnswerText}</p>
-                      </div>
-                      {!isCorrect && (
-                        <div className="p-4 rounded-xl border-2 border-primary-100 bg-primary-50/30">
-                          <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Correct Solution</p>
-                          <p className="text-sm font-bold text-primary-800">{correctAnswerText}</p>
+                    <div className="relative z-20">
+                      <header className="border-b-4 border-primary-600 pb-8 mb-10 flex justify-between items-end">
+                        <div>
+                          <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter mb-2">{quiz?.title}</h2>
+                          <p className="text-slate-500 font-bold uppercase tracking-[0.2em] text-xs">Official Performance Evaluation Record</p>
                         </div>
-                      )}
+                        <div className="text-right">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Date of Evaluation</p>
+                          <p className="text-sm font-bold text-slate-900">{new Date(submission.completedAt || Date.now()).toLocaleDateString()}</p>
+                        </div>
+                      </header>
+
+                      <div className="grid grid-cols-2 gap-8 mb-12 bg-slate-50 p-8 rounded-xl border border-slate-100">
+                        <div>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Student Particulars</p>
+                          <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight">{submission.studentName}</h4>
+                          <p className="text-xs font-bold text-slate-500 mt-1">{profile?.email}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Examination Result</p>
+                          <h4 className="text-3xl font-black text-slate-900">{percentage}%</h4>
+
+                        </div>
+                      </div>
+
+                      <div className="space-y-10">
+                        {questions.map((q, idx) => {
+                          const answers = submission.answers || {};
+                          const studentAnswerIdx = answers[q.id];
+                          const isCorrect = studentAnswerIdx === q.correctOptionIndex;
+                          
+                          const options = q.options || [];
+                          const studentAnswerText = options[studentAnswerIdx] || "No Answer Provided";
+                          const correctAnswerText = options[q.correctOptionIndex] || "N/A";
+
+                          return (
+                            <div key={q.id || idx} className="pb-10 border-b border-slate-100 last:border-0">
+                              <div className="flex items-start mb-6">
+                                <span className="font-black text-slate-300 text-4xl mr-6 shrink-0 leading-none">{String(idx + 1).padStart(2, '0')}</span>
+                                <div className="flex-1">
+                                  <h3 className="text-lg font-bold text-slate-900 leading-snug mb-4">{q.text || "Question text missing"}</h3>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className={`p-4 rounded-lg border ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+                                      <p className="text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Student Response</p>
+                                      <p className={`text-sm font-bold ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>{studentAnswerText}</p>
+                                    </div>
+                                    {!isCorrect && (
+                                      <div className="p-4 rounded-lg bg-primary-50 border border-primary-200">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Expected Solution</p>
+                                        <p className="text-sm font-bold text-primary-800">{correctAnswerText}</p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <footer className="mt-16 pt-8 border-t-2 border-slate-100 text-center">
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">SmartPrep Examination Management System • Secure Result Portal</p>
+                      </footer>
                     </div>
-                  </Card>
-                );
-              })
+                  </div>
+                </div>
+              </div>
             )}
-          </div>
         </div>
       </Container>
 

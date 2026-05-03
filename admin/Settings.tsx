@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar, Container, Card } from '../ui/Layout';
+import { Navbar, Container, Card, Modal } from '../ui/Layout';
 import { institutionService, Institution } from '../services/institutionService';
 import { useAuth } from '../auth/AuthProvider';
 import { adminService } from '../services/adminService';
@@ -11,6 +11,15 @@ const Settings: React.FC = () => {
     const [deleting, setDeleting] = useState<string | null>(null);
     const [institutions, setInstitutions] = useState<Institution[]>([]);
     const [newInstitutionName, setNewInstitutionName] = useState('');
+
+    // Confirmation Modal State
+    const [confirmModal, setConfirmModal] = useState<{
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        variant?: 'danger' | 'info';
+        confirmText?: string;
+    } | null>(null);
 
     const { profile } = useAuth();
     const isSuperAdmin = adminService.getEffectivePermission(profile) === 'super_admin';
@@ -38,15 +47,29 @@ const Settings: React.FC = () => {
     };
 
     const handleDeleteInstitution = async (id: string, name: string) => {
-        if (!confirm(`Delete "${name}"?`)) return;
-        setDeleting(id);
-        try {
-            await institutionService.deleteInstitution(id);
-        } catch (err) {
-            console.error("Delete institution error:", err);
-            alert('Failed to delete.');
-        }
-        setDeleting(null);
+        setConfirmModal({
+            title: "Delete Institution",
+            message: `Are you sure you want to PERMANENTLY remove "${name}" from the system? This will affect all modules and students associated with this institution.`,
+            variant: 'danger',
+            confirmText: "Delete Institution",
+            onConfirm: async () => {
+                setConfirmModal(null);
+                setDeleting(id);
+                try {
+                    await institutionService.deleteInstitution(id);
+                    await adminService.logAction(
+                        profile!.uid,
+                        profile!.displayName,
+                        'DELETE_INSTITUTION',
+                        `Permanently deleted institution: "${name}"`
+                    );
+                } catch (err) {
+                    console.error("Delete institution error:", err);
+                    alert('Failed to delete.');
+                }
+                setDeleting(null);
+            }
+        });
     };
 
     return (
@@ -135,6 +158,31 @@ const Settings: React.FC = () => {
                     </div>
                 </Card>
             </Container>
+
+            <Modal
+                isOpen={!!confirmModal}
+                onClose={() => setConfirmModal(null)}
+                title={confirmModal?.title || 'Confirm Action'}
+                variant={confirmModal?.variant || 'info'}
+                footer={
+                    <>
+                        <button 
+                            onClick={() => setConfirmModal(null)}
+                            className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            onClick={confirmModal?.onConfirm}
+                            className={`flex-1 py-4 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl ${confirmModal?.variant === 'danger' ? 'bg-red-600 hover:bg-red-700 shadow-red-200' : 'bg-primary-600 hover:bg-primary-700 shadow-primary-200'}`}
+                        >
+                            {confirmModal?.confirmText || 'Confirm'}
+                        </button>
+                    </>
+                }
+            >
+                {confirmModal?.message}
+            </Modal>
         </div>
     );
 };
