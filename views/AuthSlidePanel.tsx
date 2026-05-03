@@ -126,8 +126,17 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
               transaction.reference,
               currentLevelSettings?.price
             );
-            await authService.login(email, password);
+            
             onClose();
+
+            // Check for smart redirect to quiz
+            const pendingQuizId = sessionStorage.getItem('pendingQuizId');
+            if (pendingQuizId) {
+              sessionStorage.removeItem('pendingQuizId');
+              navigate(`/student/quiz/${pendingQuizId}`);
+              return;
+            }
+
             navigate('/dispatch');
           } catch (err: any) {
             setError(err.message);
@@ -194,7 +203,6 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
       if (mode === 'signup') {
         const formattedPhone = '+233' + phoneNumber;
         await authService.signup(email, password, displayName, institution, formattedPhone, level, program, 'student');
-        await authService.login(email, password);
       } else if (mode === 'login') {
         await authService.login(email, password);
       } else if (mode === 'forgot') {

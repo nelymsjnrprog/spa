@@ -371,7 +371,7 @@ const QuizRoom: React.FC = () => {
 
         // Auto-submit if admin ends the quiz
         if (qz.status === 'completed' && examStartedRef.current && !submittingRef.current) {
-          handleFinalSubmit(true);
+          handleFinalSubmit(true, true);
         }
 
         // Show announcement if present
@@ -425,6 +425,10 @@ const QuizRoom: React.FC = () => {
         unsubSubRef.current = submissionService.subscribeToSubmission(existingSub.id, (sub) => {
           if (sub) {
             setTimeExtension(sub.timeExtension || 0);
+          } else if (examStartedRef.current && !submittingRef.current) {
+            // Submission was deleted by admin (Reset Session)
+            alert("Administrative Action: Your examination session has been reset by an administrator. You will be redirected to the dashboard.");
+            navigate('/student');
           }
         });
       } else {
@@ -520,6 +524,10 @@ const QuizRoom: React.FC = () => {
       unsubSubRef.current = submissionService.subscribeToSubmission(id, (sub) => {
         if (sub) {
           setTimeExtension(sub.timeExtension || 0);
+        } else if (examStartedRef.current && !submittingRef.current) {
+          // Submission was deleted by admin (Reset Session)
+          alert("Administrative Action: Your examination session has been reset by an administrator. You will be redirected to the dashboard.");
+          navigate('/student');
         }
       });
 
