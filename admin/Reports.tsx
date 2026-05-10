@@ -211,8 +211,8 @@ const Reports: React.FC = () => {
                   <Card key={i} className="p-6 border-none shadow-lg shadow-slate-200/50">
                      <div className="flex items-center justify-between">
                         <div>
-                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{s.label}</p>
-                           <p className="text-3xl font-black text-slate-900">{s.value}</p>
+                           <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">{s.label}</p>
+                           <p className="text-3xl font-black text-black">{s.value}</p>
                         </div>
                         <div className={`p-3 rounded-2xl ${s.bg} ${s.color} shadow-inner`}>
                            
@@ -225,7 +225,7 @@ const Reports: React.FC = () => {
             {/* Per-Level Breakdown */}
             <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden">
                <div className="px-6 py-4 bg-slate-50 border-b border-slate-100">
-                  <h2 className="text-[11px] font-black text-slate-500 uppercase tracking-widest flex items-center">
+                  <h2 className="text-[11px] font-black text-black uppercase tracking-widest flex items-center">
                      
                      Performance Snapshot by Level
                   </h2>
@@ -241,15 +241,15 @@ const Reports: React.FC = () => {
                                  {ls.level}
                               </div>
                               <div>
-                                 <p className="font-bold text-slate-900 text-sm">Level {ls.level}</p>
-                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                 <p className="font-bold text-black text-sm">Level {ls.level}</p>
+                                 <p className="text-[10px] text-black font-bold uppercase tracking-widest">
                                     {ls.studentCount} student{ls.studentCount !== 1 ? 's' : ''} · {ls.submissionCount} submission{ls.submissionCount !== 1 ? 's' : ''}
                                  </p>
                               </div>
                            </div>
                            <div className="flex items-center space-x-6">
                               <div className="text-right">
-                                 <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Pass Rate</p>
+                                 <p className="text-[10px] font-black text-black uppercase tracking-widest">Pass Rate</p>
                                  <p className={`text-xl font-black ${ls.passRate >= 50 ? 'text-emerald-600' : 'text-red-500'}`}>{ls.passRate}%</p>
                               </div>
                               {/* Mini progress bar */}
@@ -343,7 +343,7 @@ const Reports: React.FC = () => {
                      </button>
                   )}
                </div>
-               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-3">
+               <p className="text-[10px] text-black font-bold uppercase tracking-widest mt-3">
                   Showing {filtered.length} submission{filtered.length !== 1 ? 's' : ''}
                </p>
             </Card>
@@ -351,7 +351,7 @@ const Reports: React.FC = () => {
             {filtered.length === 0 ? (
                <Card className="p-24 text-center border-none shadow-xl shadow-slate-200/50">
                   
-                  <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">No records match your filters</p>
+                  <p className="text-black font-bold uppercase tracking-widest text-xs">No records match your filters</p>
                </Card>
             ) : (
                sortedLevels.map(level => (
@@ -362,8 +362,8 @@ const Reports: React.FC = () => {
                            {level}
                         </div>
                         <div>
-                           <h2 className="text-lg font-black text-slate-900">Level {level}</h2>
-                           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                           <h2 className="text-lg font-black text-black">Level {level}</h2>
+                           <p className="text-[10px] text-black font-bold uppercase tracking-widest">
                               {Object.values(byLevel[level]).flat().length} submission{Object.values(byLevel[level]).flat().length !== 1 ? 's' : ''} across {Object.keys(byLevel[level]).length} exam{Object.keys(byLevel[level]).length !== 1 ? 's' : ''}
                            </p>
                         </div>
@@ -372,16 +372,16 @@ const Reports: React.FC = () => {
                      {/* Quizzes within this level */}
                      {Object.entries(byLevel[level]).map(([quizId, quizSubs]) => (
                         <div key={quizId} className="ml-0 sm:ml-4">
-                           <h3 className="text-sm font-bold text-slate-600 px-2 py-1 border-l-4 border-slate-300 mb-3 flex items-center justify-between">
+                           <h3 className="text-sm font-bold text-black px-2 py-1 border-l-4 border-slate-300 mb-3 flex items-center justify-between">
                               <span>{getQuizTitle(quizId)}</span>
-                              <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-2 py-0.5 rounded-md">
+                              <span className="text-[10px] font-black text-black bg-slate-100 px-2 py-0.5 rounded-md">
                                  {quizSubs.length} attempt{quizSubs.length !== 1 ? 's' : ''} · Avg {calcPassRate(quizSubs)}%
                               </span>
                            </h3>
                            <Card className="overflow-hidden border-none shadow-xl shadow-slate-200/50">
                                <div className="hidden md:block overflow-x-auto">
                                   <table className="w-full text-left">
-                                     <thead className="bg-slate-50 text-[10px] font-black text-slate-400 uppercase border-b border-slate-100">
+                                     <thead className="bg-slate-50 text-[10px] font-black text-black uppercase border-b border-slate-100">
                                         <tr>
                                            <th className="px-6 py-4 tracking-widest">Student</th>
                                            {isSuperAdmin && <th className="px-6 py-4 tracking-widest">Institution</th>}
@@ -396,15 +396,15 @@ const Reports: React.FC = () => {
                                            <tr key={s.id} className="hover:bg-slate-50/50 transition-colors group">
                                               <td className="px-6 py-4">
                                                  <div className="flex items-center space-x-3">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500 shrink-0">
+                                                    <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-black shrink-0">
                                                        {s.studentName.charAt(0)}
                                                     </div>
-                                                    <span className="font-bold text-slate-900 truncate max-w-[140px]">{s.studentName}</span>
+                                                    <span className="font-bold text-black truncate max-w-[140px]">{s.studentName}</span>
                                                  </div>
                                               </td>
                                               {isSuperAdmin && (
                                                  <td className="px-6 py-4">
-                                                    <span className="text-xs text-slate-500 font-medium truncate max-w-[120px] block">
+                                                    <span className="text-xs text-black font-medium truncate max-w-[120px] block">
                                                        {s.studentInstitution || '—'}
                                                     </span>
                                                  </td>
@@ -426,7 +426,7 @@ const Reports: React.FC = () => {
                                                     {s.score}/{s.totalPossible}
                                                  </div>
                                               </td>
-                                              <td className="px-6 py-4 text-right text-slate-400 text-xs whitespace-nowrap">
+                                              <td className="px-6 py-4 text-right text-black text-xs whitespace-nowrap">
                                                  {new Date(s.createdAt).toLocaleDateString()}
                                               </td>
                                               <td className="px-6 py-4 text-right border-l border-slate-50">
@@ -434,8 +434,8 @@ const Reports: React.FC = () => {
                                                     <button onClick={() => {
                                                        setOverrideModalData({ id: s.id, name: s.studentName, currentScore: s.score, total: s.totalPossible });
                                                        setOverrideInput(s.score.toString());
-                                                    }} className="p-2 text-slate-400 hover:text-primary-600 transition-colors" title="Edit Score"><i className="fas fa-edit"></i></button>
-                                                    <button onClick={() => setResetModalData({ id: s.id, name: s.studentName, quizTitle: getQuizTitle(s.quizId) })} className="p-2 text-slate-400 hover:text-red-600 transition-colors" title="Reset Attempt"><i className="fas fa-undo"></i></button>
+                                                    }} className="p-2 text-black hover:text-primary-600 transition-colors" title="Edit Score"><i className="fas fa-edit"></i></button>
+                                                    <button onClick={() => setResetModalData({ id: s.id, name: s.studentName, quizTitle: getQuizTitle(s.quizId) })} className="p-2 text-black hover:text-red-600 transition-colors" title="Reset Attempt"><i className="fas fa-undo"></i></button>
                                                  </div>
                                               </td>
                                            </tr>
@@ -454,21 +454,21 @@ const Reports: React.FC = () => {
                                                  {s.studentName.charAt(0)}
                                               </div>
                                               <div className="min-w-0">
-                                                 <p className="font-black text-slate-900 truncate max-w-[120px]">{s.studentName}</p>
-                                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{s.status}</p>
+                                                 <p className="font-black text-black truncate max-w-[120px]">{s.studentName}</p>
+                                                 <p className="text-[10px] text-black font-bold uppercase tracking-widest">{s.status}</p>
                                               </div>
                                            </div>
                                            <div className="text-right">
                                               <p className="text-[10px] font-black text-primary-600">{s.score}/{s.totalPossible}</p>
-                                              <p className="text-[9px] text-slate-400 font-medium">{new Date(s.createdAt).toLocaleDateString()}</p>
+                                              <p className="text-[9px] text-black font-medium">{new Date(s.createdAt).toLocaleDateString()}</p>
                                            </div>
                                         </div>
                                         <div className="flex gap-2">
                                            <button onClick={() => {
                                               setOverrideModalData({ id: s.id, name: s.studentName, currentScore: s.score, total: s.totalPossible });
                                               setOverrideInput(s.score.toString());
-                                           }} className="flex-1 py-3 bg-slate-50 text-slate-500 rounded-xl font-black text-[10px] uppercase tracking-widest active:bg-primary-50 active:text-primary-600 transition-colors flex items-center justify-center gap-2"><i className="fas fa-edit"></i><span>Edit Score</span></button>
-                                           <button onClick={() => setResetModalData({ id: s.id, name: s.studentName, quizTitle: getQuizTitle(s.quizId) })} className="flex-1 py-3 bg-slate-50 text-slate-500 rounded-xl font-black text-[10px] uppercase tracking-widest active:bg-red-50 active:text-red-600 transition-colors flex items-center justify-center gap-2"><i className="fas fa-undo"></i><span>Reset</span></button>
+                                           }} className="flex-1 py-3 bg-slate-50 text-black rounded-xl font-black text-[10px] uppercase tracking-widest active:bg-primary-50 active:text-primary-600 transition-colors flex items-center justify-center gap-2"><i className="fas fa-edit"></i><span>Edit Score</span></button>
+                                           <button onClick={() => setResetModalData({ id: s.id, name: s.studentName, quizTitle: getQuizTitle(s.quizId) })} className="flex-1 py-3 bg-slate-50 text-black rounded-xl font-black text-[10px] uppercase tracking-widest active:bg-red-50 active:text-red-600 transition-colors flex items-center justify-center gap-2"><i className="fas fa-undo"></i><span>Reset</span></button>
                                         </div>
                                      </div>
                                   ))}
@@ -518,8 +518,8 @@ const Reports: React.FC = () => {
                                  
                               </div>
                               <div>
-                                 <h2 className="text-lg font-black text-slate-900">{inst}</h2>
-                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                                 <h2 className="text-lg font-black text-black">{inst}</h2>
+                                 <p className="text-[10px] text-black font-bold uppercase tracking-widest">
                                     {totalStudentsInInst} student{totalStudentsInInst !== 1 ? 's' : ''} · {instSubs.length} exam{instSubs.length !== 1 ? 's' : ''} taken · Avg {calcPassRate(instSubs)}%
                                  </p>
                               </div>
@@ -545,19 +545,19 @@ const Reports: React.FC = () => {
                                                 {level}
                                              </div>
                                              <div>
-                                                <p className="font-bold text-slate-900 text-sm">Level {level}</p>
-                                                <p className="text-[10px] text-slate-400 font-medium">
+                                                <p className="font-bold text-black text-sm">Level {level}</p>
+                                                <p className="text-[10px] text-black font-medium">
                                                    {lvlStudents.length} student{lvlStudents.length !== 1 ? 's' : ''} registered
                                                 </p>
                                              </div>
                                           </div>
                                           <div className="flex items-center space-x-6 text-right">
                                              <div>
-                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Submissions</p>
-                                                <p className="font-black text-slate-900">{lvlSubs.length}</p>
+                                                <p className="text-[10px] text-black font-bold uppercase tracking-widest">Submissions</p>
+                                                <p className="font-black text-black">{lvlSubs.length}</p>
                                              </div>
                                              <div>
-                                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Avg Score</p>
+                                                <p className="text-[10px] text-black font-bold uppercase tracking-widest">Avg Score</p>
                                                 <p className={`font-black text-lg ${calcPassRate(lvlSubs) >= 50 ? 'text-emerald-600' : 'text-red-500'}`}>{calcPassRate(lvlSubs)}%</p>
                                              </div>
                                           </div>
@@ -566,7 +566,7 @@ const Reports: React.FC = () => {
                                        {/* Students in this level/institution */}
                                        <div className="mt-3 flex flex-wrap gap-2">
                                           {lvlStudents.slice(0, 8).map(st => (
-                                             <span key={st.uid} className="inline-flex items-center px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold">
+                                             <span key={st.uid} className="inline-flex items-center px-2.5 py-1 bg-slate-100 text-black rounded-lg text-[10px] font-bold">
                                                 <span className="w-4 h-4 rounded-full bg-slate-300 text-white flex items-center justify-center text-[8px] font-black mr-1.5">
                                                    {st.displayName?.charAt(0) || 'S'}
                                                 </span>
@@ -574,7 +574,7 @@ const Reports: React.FC = () => {
                                              </span>
                                           ))}
                                           {lvlStudents.length > 8 && (
-                                             <span className="inline-flex items-center px-2.5 py-1 bg-slate-200 text-slate-500 rounded-lg text-[10px] font-bold">
+                                             <span className="inline-flex items-center px-2.5 py-1 bg-slate-200 text-black rounded-lg text-[10px] font-bold">
                                                 +{lvlStudents.length - 8} more
                                              </span>
                                           )}
@@ -630,7 +630,7 @@ const Reports: React.FC = () => {
                            </div>
                            <div>
                               <h3 className="font-black text-white">Level {row.level}</h3>
-                              <p className="text-[10px] text-slate-400 uppercase tracking-widest">{row.lvlQuizzes.length} exam module{row.lvlQuizzes.length !== 1 ? 's' : ''}</p>
+                              <p className="text-[10px] text-black uppercase tracking-widest">{row.lvlQuizzes.length} exam module{row.lvlQuizzes.length !== 1 ? 's' : ''}</p>
                            </div>
                         </div>
                         <div className={`text-3xl font-black ${row.passRate >= 50 ? 'text-emerald-400' : 'text-red-400'}`}>
@@ -641,19 +641,19 @@ const Reports: React.FC = () => {
                      {/* Stats row */}
                      <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-y sm:divide-y-0 divide-slate-100">
                         <div className="px-6 py-4 text-center">
-                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Students</p>
-                           <p className="text-2xl font-black text-slate-900">{row.lvlStudents.length}</p>
+                           <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Students</p>
+                           <p className="text-2xl font-black text-black">{row.lvlStudents.length}</p>
                         </div>
                         <div className="px-6 py-4 text-center">
-                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Submissions</p>
-                           <p className="text-2xl font-black text-slate-900">{row.lvlSubs.length}</p>
+                           <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Submissions</p>
+                           <p className="text-2xl font-black text-black">{row.lvlSubs.length}</p>
                         </div>
                         <div className="px-6 py-4 text-center">
-                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Exam Modules</p>
-                           <p className="text-2xl font-black text-slate-900">{row.lvlQuizzes.length}</p>
+                           <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Exam Modules</p>
+                           <p className="text-2xl font-black text-black">{row.lvlQuizzes.length}</p>
                         </div>
                         <div className="px-6 py-4 text-center">
-                           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Top Scorer</p>
+                           <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Top Scorer</p>
                            {row.topScorer ? (
                               <p className="text-sm font-black text-primary-600 truncate">{row.topScorer.studentName}</p>
                            ) : (
@@ -666,7 +666,7 @@ const Reports: React.FC = () => {
                      {row.lvlQuizzes.length > 0 && (
                         <div className="border-t border-slate-100">
                            <div className="px-6 py-3 bg-slate-50">
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Exam Breakdown</p>
+                              <p className="text-[10px] font-black text-black uppercase tracking-widest">Exam Breakdown</p>
                            </div>
                            <div className="divide-y divide-slate-50">
                               {row.lvlQuizzes.map(q => {
@@ -675,8 +675,8 @@ const Reports: React.FC = () => {
                                  return (
                                     <div key={q.id} className="px-6 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors">
                                        <div>
-                                          <p className="text-sm font-bold text-slate-800">{q.title}</p>
-                                          <p className="text-[10px] text-slate-400 uppercase tracking-widest">{qSubs.length} attempt{qSubs.length !== 1 ? 's' : ''}</p>
+                                          <p className="text-sm font-bold text-black">{q.title}</p>
+                                          <p className="text-[10px] text-black uppercase tracking-widest">{qSubs.length} attempt{qSubs.length !== 1 ? 's' : ''}</p>
                                        </div>
                                        <div className="flex items-center space-x-4">
                                           <div className="w-20 h-1.5 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
@@ -702,8 +702,8 @@ const Reports: React.FC = () => {
           return (
              <div className="py-20 text-center">
                 <i className="fas fa-exclamation-circle text-slate-200 text-6xl mb-4"></i>
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Module Not Found</h3>
-                <p className="text-slate-500">The examination module you are looking for may have been deleted or moved.</p>
+                <h3 className="text-xl font-bold text-black mb-2">Module Not Found</h3>
+                <p className="text-black">The examination module you are looking for may have been deleted or moved.</p>
                 <Link to="/admin" className="mt-6 inline-block text-primary-600 font-bold">Back to Dashboard</Link>
              </div>
           );
@@ -729,12 +729,12 @@ const Reports: React.FC = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                <div>
                   <div className="flex items-center space-x-3 mb-2">
-                     <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">{selectedQuiz.title}</h1>
+                     <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight">{selectedQuiz.title}</h1>
                      <span className="bg-primary-100 text-primary-700 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">
                         Level {selectedQuiz.level || '100'}
                      </span>
                   </div>
-                  <p className="text-slate-500 font-medium text-sm">{selectedQuiz.description}</p>
+                  <p className="text-black font-medium text-sm">{selectedQuiz.description}</p>
                </div>
                <div className="flex items-center gap-3 w-full md:w-auto">
                   <div className="relative flex-1 md:w-64">
@@ -759,8 +759,8 @@ const Reports: React.FC = () => {
                   { label: 'Highest Score', value: `${highestScore} Pts` },
                ].map((s, i) => (
                   <Card key={i} className="p-5 border-none shadow-lg shadow-slate-200/50">
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{s.label}</p>
-                     <p className="text-2xl font-black text-slate-900">{s.value}</p>
+                     <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">{s.label}</p>
+                     <p className="text-2xl font-black text-black">{s.value}</p>
                   </Card>
                ))}
             </div>
@@ -768,12 +768,12 @@ const Reports: React.FC = () => {
             {/* Results Table */}
             <Card className="border-none shadow-xl shadow-slate-200/50 overflow-hidden bg-white">
                <div className="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                  <h2 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Candidate Performance Registry</h2>
-                  <span className="text-[10px] font-bold text-slate-400">{filtered.length} Results Found</span>
+                  <h2 className="text-[10px] font-black text-black uppercase tracking-widest">Candidate Performance Registry</h2>
+                  <span className="text-[10px] font-bold text-black">{filtered.length} Results Found</span>
                </div>
                <div className="overflow-x-auto">
                   <table className="w-full text-left">
-                     <thead className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase border-b border-slate-100">
+                     <thead className="bg-slate-50/50 text-[10px] font-black text-black uppercase border-b border-slate-100">
                         <tr>
                            <th className="px-6 py-4">Identity</th>
                            <th className="px-6 py-4">Institution</th>
@@ -783,7 +783,7 @@ const Reports: React.FC = () => {
                            <th className="px-6 py-4 text-right">Actions</th>
                         </tr>
                      </thead>
-                     <tbody className="divide-y divide-slate-50 text-sm font-medium text-slate-600">
+                     <tbody className="divide-y divide-slate-50 text-sm font-medium text-black">
                         {filtered.length === 0 ? (
                            <tr><td colSpan={6} className="p-20 text-center text-slate-300 font-bold uppercase tracking-widest">No matching records found</td></tr>
                         ) : (
@@ -799,19 +799,19 @@ const Reports: React.FC = () => {
                                           <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black text-xs uppercase">
                                              {s.studentName.charAt(0)}
                                           </div>
-                                          <span className="font-bold text-slate-900">{s.studentName}</span>
+                                          <span className="font-bold text-black">{s.studentName}</span>
                                        </div>
                                     </td>
-                                    <td className="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-tight">{s.studentInstitution || 'General'}</td>
+                                    <td className="px-6 py-4 text-xs font-bold text-black uppercase tracking-tight">{s.studentInstitution || 'General'}</td>
                                     <td className="px-6 py-4">
                                        <span className={`text-[10px] font-black px-2 py-1 rounded uppercase ${s.status === 'completed' ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
                                           {s.status}
                                        </span>
                                     </td>
                                     <td className="px-6 py-4">
-                                       <span className="font-mono font-black text-slate-900">{s.score}</span>
+                                       <span className="font-mono font-black text-black">{s.score}</span>
                                        <span className="text-slate-300 mx-1">/</span>
-                                       <span className="text-slate-400 text-xs">{s.totalPossible}</span>
+                                       <span className="text-black text-xs">{s.totalPossible}</span>
                                     </td>
                                     <td className="px-6 py-4">
                                        <div className="flex items-center gap-3">
@@ -826,8 +826,8 @@ const Reports: React.FC = () => {
                                           <button onClick={() => {
                                              setOverrideModalData({ id: s.id, name: s.studentName, currentScore: s.score, total: s.totalPossible });
                                              setOverrideInput(s.score.toString());
-                                          }} className="p-2 text-slate-400 hover:text-slate-900 transition-colors"><i className="fas fa-edit"></i></button>
-                                          <button onClick={() => setResetModalData({ id: s.id, name: s.studentName, quizTitle: selectedQuiz.title })} className="p-2 text-slate-400 hover:text-red-600 transition-colors"><i className="fas fa-undo"></i></button>
+                                          }} className="p-2 text-black hover:text-black transition-colors"><i className="fas fa-edit"></i></button>
+                                          <button onClick={() => setResetModalData({ id: s.id, name: s.studentName, quizTitle: selectedQuiz.title })} className="p-2 text-black hover:text-red-600 transition-colors"><i className="fas fa-undo"></i></button>
                                        </div>
                                     </td>
                                  </tr>
@@ -869,8 +869,8 @@ const Reports: React.FC = () => {
                )}
                {!filterQuizId && (
                   <>
-                     <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Analytics & Reports</h1>
-                     <p className="text-slate-500 font-medium mt-1">
+                     <h1 className="text-3xl font-bold text-black tracking-tight">Analytics & Reports</h1>
+                     <p className="text-black font-medium mt-1">
                         {isSuperAdmin ? 'Platform-wide academic intelligence.' : `Scoped to Level${visibleLevels.length > 1 ? 's' : ''} ${visibleLevels.join(', ')}.`}
                      </p>
                   </>
@@ -880,7 +880,7 @@ const Reports: React.FC = () => {
             {loading ? (
                <Card className="p-24 text-center border-none shadow-xl shadow-slate-200/50">
                   <div className="w-10 h-10 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                  <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Synchronizing Records...</p>
+                  <p className="text-black font-bold uppercase tracking-widest text-xs">Synchronizing Records...</p>
                </Card>
             ) : filterQuizId ? (
                <ModuleIntelligenceView />
@@ -895,7 +895,7 @@ const Reports: React.FC = () => {
                            className={`flex items-center space-x-2 px-5 py-3 rounded-xl font-bold text-sm transition-all whitespace-nowrap flex-1 justify-center ${
                               activeTab === tab.id
                                  ? 'bg-slate-900 text-white shadow-lg'
-                                 : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                                 : 'text-black hover:text-black hover:bg-slate-50'
                            }`}
                         >
                            
@@ -922,7 +922,7 @@ const Reports: React.FC = () => {
                <>
                   <button 
                      onClick={() => setResetModalData(null)}
-                     className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                     className="flex-1 py-4 bg-slate-100 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
                   >
                      Cancel
                   </button>
@@ -937,8 +937,8 @@ const Reports: React.FC = () => {
          >
             {resetModalData && (
                <p>
-                  You are about to PERMANENTLY delete <span className="font-bold text-slate-900">{resetModalData.name}</span>'s submission for 
-                  <span className="font-bold text-slate-900"> {resetModalData.quizTitle}</span>. 
+                  You are about to PERMANENTLY delete <span className="font-bold text-black">{resetModalData.name}</span>'s submission for 
+                  <span className="font-bold text-black"> {resetModalData.quizTitle}</span>. 
                   The student will be authorized to re-take this exam immediately.
                </p>
             )}
@@ -954,7 +954,7 @@ const Reports: React.FC = () => {
                <>
                   <button 
                      onClick={() => setOverrideModalData(null)}
-                     className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                     className="flex-1 py-4 bg-slate-100 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
                   >
                      Cancel
                   </button>
@@ -970,10 +970,10 @@ const Reports: React.FC = () => {
             {overrideModalData && (
                <>
                   <p className="mb-6 text-sm font-medium">
-                     Modifying result for <span className="font-bold text-slate-900">{overrideModalData.name}</span>
+                     Modifying result for <span className="font-bold text-black">{overrideModalData.name}</span>
                   </p>
                   <div className="text-left">
-                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">New Score (Max: {overrideModalData.total})</label>
+                     <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2 ml-1">New Score (Max: {overrideModalData.total})</label>
                      <input 
                         type="number" 
                         value={overrideInput}

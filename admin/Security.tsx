@@ -71,47 +71,47 @@ const Security: React.FC = () => {
                     <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
                         <i className="fas fa-arrow-left mr-2"></i> Back to Dashboard
                     </Link>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Security & Access Control</h1>
-                    <p className="text-slate-500 font-medium">Manage student authentication credentials and security tools.</p>
+                    <h1 className="text-3xl font-bold text-black tracking-tight">Security & Access Control</h1>
+                    <p className="text-black font-medium">Manage student authentication credentials and security tools.</p>
                 </div>
 
                 <Card className="p-6 mb-8 border-none shadow-xl shadow-slate-200/50">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div className="relative flex-1 max-w-lg">
-                            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-black"></i>
                             <input
                                 type="text"
                                 placeholder="Search students by name or email..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none font-medium text-slate-700"
+                                className="w-full pl-12 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none font-medium text-black"
                             />
                             {searchQuery && (
                                 <button
                                     onClick={() => setSearchQuery('')}
                                     aria-label="Clear search"
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-black hover:text-black"
                                 >
                                     <i className="fas fa-times border border-slate-300 rounded-full w-5 h-5 flex items-center justify-center text-[10px]"></i>
                                 </button>
                             )}
                         </div>
-                        <div className="text-sm font-bold text-slate-500">
+                        <div className="text-sm font-bold text-black">
                             Showing {filteredStudents.length} student{filteredStudents.length !== 1 ? 's' : ''}
                         </div>
                     </div>
                 </Card>
 
                 {loading ? (
-                    <Card className="p-20 text-center text-slate-400 font-bold uppercase tracking-widest animate-pulse border-none shadow-xl shadow-slate-200/50">
+                    <Card className="p-20 text-center text-black font-bold uppercase tracking-widest animate-pulse border-none shadow-xl shadow-slate-200/50">
                         <div className="w-8 h-8 border-2 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                         Loading Directory...
                     </Card>
                 ) : filteredStudents.length === 0 ? (
                     <Card className="p-20 text-center border-none shadow-xl shadow-slate-200/50">
                         <i className="fas fa-user-slash text-4xl text-slate-300 mb-4"></i>
-                        <p className="text-lg font-bold text-slate-900">No students found</p>
-                        <p className="text-slate-500 font-medium mt-1">
+                        <p className="text-lg font-bold text-black">No students found</p>
+                        <p className="text-black font-medium mt-1">
                             {searchQuery ? 'Try adjusting your search terms.' : 'There are no students registered yet.'}
                         </p>
                     </Card>
@@ -128,9 +128,9 @@ const Security: React.FC = () => {
                                             </div>
                                             <div>
                                                 <div className="flex items-center space-x-2">
-                                                    <p className="font-bold text-slate-900 leading-tight text-lg">{u.displayName || "Unnamed User"}</p>
+                                                    <p className="font-bold text-black leading-tight text-lg">{u.displayName || "Unnamed User"}</p>
                                                 </div>
-                                                <div className="flex items-center text-xs font-medium text-slate-500 mt-1">
+                                                <div className="flex items-center text-xs font-medium text-black mt-1">
                                                     <i className="fas fa-envelope mr-1.5 opacity-70"></i>
                                                     <span>{u.email}</span>
                                                     {u.institution && (
@@ -154,13 +154,13 @@ const Security: React.FC = () => {
                                                 <button
                                                     onClick={() => handlePasswordReset(u.email, u.uid)}
                                                     disabled={actionState?.uid === u.uid && actionState.status === 'loading'}
-                                                    className="flex items-center justify-center space-x-2 bg-white text-slate-700 hover:text-primary-600 hover:bg-primary-50 border border-slate-200 hover:border-primary-200 px-4 py-2.5 rounded-xl font-bold text-sm transition-all focus:ring-4 focus:ring-primary-50 w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed group"
+                                                    className="flex items-center justify-center space-x-2 bg-white text-black hover:text-primary-600 hover:bg-primary-50 border border-slate-200 hover:border-primary-200 px-4 py-2.5 rounded-xl font-bold text-sm transition-all focus:ring-4 focus:ring-primary-50 w-full md:w-auto disabled:opacity-50 disabled:cursor-not-allowed group"
                                                 >
                                                     {actionState?.uid === u.uid && actionState.status === 'loading' ? (
                                                         <i className="fas fa-spinner fa-spin text-primary-500"></i>
                                                     ) : (
                                                         <>
-                                                            <i className="fas fa-key text-slate-400 group-hover:text-primary-500 transition-colors"></i>
+                                                            <i className="fas fa-key text-black group-hover:text-primary-500 transition-colors"></i>
                                                             <span>Send Password Reset</span>
                                                         </>
                                                     )}

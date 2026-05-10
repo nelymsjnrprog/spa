@@ -35,22 +35,22 @@ const SupportCenter: React.FC = () => {
       <Navbar />
       <Container>
         <div className="mb-10">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Support</h1>
-          <p className="text-slate-500 font-medium mt-1">Manage and respond to student inquiries.</p>
+          <h1 className="text-3xl font-black text-black tracking-tight">Support</h1>
+          <p className="text-black font-medium mt-1">Manage and respond to student inquiries.</p>
         </div>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-10 h-10 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Loading Inquiries...</p>
+            <p className="text-black font-bold uppercase tracking-widest text-[10px]">Loading Inquiries...</p>
           </div>
         ) : inquiries.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-[2rem] p-20 text-center">
             <div className="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-6">
               <i className="fas fa-check-circle text-3xl"></i>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">All Clear!</h3>
-            <p className="text-slate-500">There are no pending inquiries at the moment.</p>
+            <h3 className="text-xl font-bold text-black mb-2">All Clear!</h3>
+            <p className="text-black">There are no pending inquiries at the moment.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6">
@@ -59,24 +59,24 @@ const SupportCenter: React.FC = () => {
                 <div className="p-8 sm:p-10">
                   <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
                     <div>
-                      <h3 className="text-xl font-black text-slate-900 mb-1">{inquiry.subject}</h3>
+                      <h3 className="text-xl font-black text-black mb-1">{inquiry.subject}</h3>
                       <div className="flex flex-wrap items-center gap-3">
                         <span className="text-[10px] font-black uppercase tracking-widest text-primary-600 bg-primary-50 px-2.5 py-1 rounded-lg">
                           {inquiry.name}
                         </span>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 px-2.5 py-1 rounded-lg">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black bg-slate-50 px-2.5 py-1 rounded-lg">
                           {inquiry.email}
                         </span>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Received</p>
-                      <p className="text-xs font-bold text-slate-900">{formatTimestamp(inquiry.createdAt)}</p>
+                      <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Received</p>
+                      <p className="text-xs font-bold text-black">{formatTimestamp(inquiry.createdAt)}</p>
                     </div>
                   </div>
 
                   <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 mb-8">
-                    <p className="text-slate-700 whitespace-pre-wrap leading-relaxed">{inquiry.message}</p>
+                    <p className="text-black whitespace-pre-wrap leading-relaxed">{inquiry.message}</p>
                   </div>
 
                   <div className="flex flex-wrap gap-3">

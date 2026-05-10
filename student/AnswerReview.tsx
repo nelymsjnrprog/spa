@@ -127,7 +127,7 @@ const AnswerReview: React.FC = () => {
       <div className="min-h-screen bg-slate-100 flex items-center justify-center">
         <div className="flex flex-col items-center">
           <div className="w-10 h-10 border-[3px] border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-slate-400 text-xs font-black uppercase tracking-widest">Loading Review...</p>
+          <p className="text-black text-xs font-black uppercase tracking-widest">Loading Review...</p>
         </div>
       </div>
     );
@@ -138,9 +138,9 @@ const AnswerReview: React.FC = () => {
       <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6">
         <div className="text-center">
           <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i className="fas fa-exclamation-triangle text-slate-400 text-xl"></i>
+            <i className="fas fa-exclamation-triangle text-black text-xl"></i>
           </div>
-          <p className="text-slate-500 font-bold">Results not found.</p>
+          <p className="text-black font-bold">Results not found.</p>
           <button onClick={() => navigate('/student')} className="mt-4 text-primary-600 font-bold text-sm hover:underline">
             Back to Dashboard
           </button>
@@ -164,13 +164,13 @@ const AnswerReview: React.FC = () => {
               onClick={() => navigate(`/student/results/${submissionId}`)}
               className="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
             >
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-black" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <path d="M19 12H5M12 19l-7-7 7-7" />
               </svg>
             </button>
             <div>
 
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{quiz.title}</p>
+              <p className="text-[10px] font-bold text-black uppercase tracking-widest">{quiz.title}</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -203,10 +203,10 @@ const AnswerReview: React.FC = () => {
                   {isCorrect ? '✓' : '✗'}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                  <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">
                     Question {idx + 1} of {totalQ}
                   </p>
-                  <p className="text-sm font-bold text-slate-900 leading-relaxed">
+                  <p className="text-sm font-bold text-black leading-relaxed">
                     {q.text || 'Question text missing'}
                   </p>
                 </div>
@@ -218,8 +218,8 @@ const AnswerReview: React.FC = () => {
                   const isStudentChoice = isAnswered && studentAnswerIdx === optIdx;
                   const isCorrectOption = q.correctOptionIndex === optIdx;
 
-                  let bgClass = 'bg-slate-50 border-slate-100 text-slate-600';
-                  let labelBg = 'bg-slate-200 text-slate-500';
+                  let bgClass = 'bg-slate-50 border-slate-100 text-black';
+                  let labelBg = 'bg-slate-200 text-black';
                   let suffix = null;
 
                   if (isCorrectOption) {
@@ -291,7 +291,7 @@ const AnswerReview: React.FC = () => {
       <div className="fixed inset-0 z-[100] pointer-events-none overflow-hidden select-none opacity-[0.05]">
         {/* Moving Watermark */}
         <div
-          className="absolute text-2xl font-black whitespace-nowrap text-slate-900 tracking-tighter uppercase italic transition-all duration-1000"
+          className="absolute text-2xl font-black whitespace-nowrap text-black tracking-tighter uppercase italic transition-all duration-1000"
           style={{ transform: `translate(${watermarkPos.left}, ${watermarkPos.top})` }}
         >
           {profile?.displayName} • {profile?.email} • {new Date().toLocaleDateString()}
@@ -300,7 +300,7 @@ const AnswerReview: React.FC = () => {
         {/* Static Grid Watermark */}
         <div className="absolute inset-0 grid grid-cols-4 grid-rows-6 gap-20 transform -rotate-45 scale-150">
           {Array.from({ length: 24 }).map((_, i) => (
-            <div key={i} className="text-2xl font-black whitespace-nowrap text-slate-900 tracking-tighter uppercase italic opacity-20">
+            <div key={i} className="text-2xl font-black whitespace-nowrap text-black tracking-tighter uppercase italic opacity-20">
               {profile?.displayName} • {profile?.email} • REVIEW MODE
             </div>
           ))}
@@ -317,10 +317,10 @@ const AnswerReview: React.FC = () => {
             <h2 className="text-xl font-bold mb-2">
               {showScreenshotOverlay ? "Capture Blocked" : "Results Protected"}
             </h2>
-            <p className="text-slate-500 text-[10px] leading-relaxed uppercase tracking-widest font-black">
+            <p className="text-black text-[10px] leading-relaxed uppercase tracking-widest font-black">
               {showScreenshotOverlay ? "Screen capturing is prohibited" : "Confidential Result Data"}
             </p>
-            <p className="mt-4 text-[10px] text-slate-600 font-bold italic">
+            <p className="mt-4 text-[10px] text-black font-bold italic">
               Please focus on the review window. Navigation or screen capturing is restricted.
             </p>
           </div>

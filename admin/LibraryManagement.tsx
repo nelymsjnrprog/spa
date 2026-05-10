@@ -111,8 +111,8 @@ const LibraryManagement: React.FC = () => {
       <Container>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10">
           <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Library Management</h1>
-            <p className="text-slate-500 font-medium mt-1">Upload and manage study materials for students.</p>
+            <h1 className="text-3xl font-black text-black tracking-tight">Library Management</h1>
+            <p className="text-black font-medium mt-1">Upload and manage study materials for students.</p>
           </div>
           <button 
             onClick={() => setShowUploadModal(true)}
@@ -132,7 +132,7 @@ const LibraryManagement: React.FC = () => {
               className={`px-5 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest transition-all ${
                 activeTab === tab 
                   ? 'bg-slate-900 text-white shadow-lg shadow-slate-200' 
-                  : 'bg-white text-slate-500 hover:bg-slate-100 border border-slate-200'
+                  : 'bg-white text-black hover:bg-slate-100 border border-slate-200'
               }`}
             >
               {tab === 'all' ? 'All Resources' : `Level ${tab}`}
@@ -143,15 +143,15 @@ const LibraryManagement: React.FC = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-10 h-10 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Loading Library...</p>
+            <p className="text-black font-bold uppercase tracking-widest text-[10px]">Loading Library...</p>
           </div>
         ) : resources.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-[2rem] p-20 text-center">
             <div className="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-6">
               <i className="fas fa-book text-3xl"></i>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">No resources found</h3>
-            <p className="text-slate-500">Start by uploading your first PDF handout or book.</p>
+            <h3 className="text-xl font-bold text-black mb-2">No resources found</h3>
+            <p className="text-black">Start by uploading your first PDF handout or book.</p>
           </div>
         ) : (
           <div className="grid grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
@@ -179,8 +179,8 @@ const LibraryManagement: React.FC = () => {
                 </div>
 
                 <div className="p-3 sm:p-6 flex-1 flex flex-col">
-                  <h3 className="text-xs sm:text-lg font-black text-slate-900 mb-1 sm:mb-2 line-clamp-1">{resource.title}</h3>
-                  <p className="text-slate-500 text-[10px] sm:text-sm font-medium line-clamp-2 mb-3 sm:mb-6 flex-1">{resource.description || 'No description provided.'}</p>
+                  <h3 className="text-xs sm:text-lg font-black text-black mb-1 sm:mb-2 line-clamp-1">{resource.title}</h3>
+                  <p className="text-black text-[10px] sm:text-sm font-medium line-clamp-2 mb-3 sm:mb-6 flex-1">{resource.description || 'No description provided.'}</p>
                   
                   <div className="flex items-center justify-between pt-6 border-t border-slate-50">
                     <div className="flex gap-2">
@@ -188,7 +188,7 @@ const LibraryManagement: React.FC = () => {
                         onClick={() => togglePublish(resource)}
                         title={resource.published ? "Unpublish" : "Publish"}
                         className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-all ${
-                          resource.published ? 'bg-slate-100 text-slate-600 hover:bg-slate-200' : 'bg-primary-50 text-primary-600 hover:bg-primary-100'
+                          resource.published ? 'bg-slate-100 text-black hover:bg-slate-200' : 'bg-primary-50 text-primary-600 hover:bg-primary-100'
                         }`}
                       >
                         <i className={`fas ${resource.published ? 'fa-eye-slash' : 'fa-eye'} text-xs sm:text-base`}></i>
@@ -224,8 +224,8 @@ const LibraryManagement: React.FC = () => {
             <div className="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
               <div className="p-8 md:p-10">
                 <div className="flex justify-between items-center mb-8">
-                  <h2 className="text-2xl font-black text-slate-900 tracking-tight">Upload Resource</h2>
-                  <button onClick={() => setShowUploadModal(false)} className="text-slate-400 hover:text-slate-600">
+                  <h2 className="text-2xl font-black text-black tracking-tight">Upload Resource</h2>
+                  <button onClick={() => setShowUploadModal(false)} className="text-black hover:text-black">
                     <i className="fas fa-times text-xl"></i>
                   </button>
                 </div>
@@ -233,7 +233,7 @@ const LibraryManagement: React.FC = () => {
                 <form onSubmit={handleUpload} className="space-y-6">
                   <div className="space-y-4">
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4 mb-2 block">Resource Title</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-black ml-4 mb-2 block">Resource Title</label>
                       <input 
                         type="text" 
                         required
@@ -245,7 +245,7 @@ const LibraryManagement: React.FC = () => {
                     </div>
 
                     <div>
-                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4 mb-2 block">Description (Optional)</label>
+                      <label className="text-[10px] font-black uppercase tracking-[0.2em] text-black ml-4 mb-2 block">Description (Optional)</label>
                       <textarea 
                         rows={2}
                         placeholder="What's this handout about?"
@@ -257,7 +257,7 @@ const LibraryManagement: React.FC = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4 mb-2 block">Target Level</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-black ml-4 mb-2 block">Target Level</label>
                         <select 
                           className="w-full bg-slate-50 border border-slate-100 rounded-2xl py-4 px-6 outline-none focus:ring-2 focus:ring-primary-500 transition-all font-semibold"
                           value={formData.level}
@@ -277,14 +277,14 @@ const LibraryManagement: React.FC = () => {
                             onChange={e => setFormData({...formData, published: e.target.checked})}
                             className="w-5 h-5 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
                           />
-                          <span className="text-sm font-bold text-slate-700">Published</span>
+                          <span className="text-sm font-bold text-black">Published</span>
                         </label>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="relative">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4 mb-2 block">PDF File</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-black ml-4 mb-2 block">PDF File</label>
                         <input 
                           type="file" 
                           accept=".pdf"
@@ -295,13 +295,13 @@ const LibraryManagement: React.FC = () => {
                         />
                         <label htmlFor="pdf-upload" className={`w-full bg-slate-50 border border-dashed rounded-2xl py-8 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 transition-all ${pdfFile ? 'border-primary-300 bg-primary-50' : 'border-slate-200'}`}>
                           <i className={`fas ${pdfFile ? 'fa-file-circle-check text-primary-500' : 'fa-file-pdf text-slate-300'} text-2xl mb-2`}></i>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center px-2 truncate w-full">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-black text-center px-2 truncate w-full">
                             {pdfFile ? pdfFile.name : 'Select PDF'}
                           </span>
                         </label>
                       </div>
                       <div className="relative">
-                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-4 mb-2 block">Cover (Optional)</label>
+                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-black ml-4 mb-2 block">Cover (Optional)</label>
                         <input 
                           type="file" 
                           accept="image/*"
@@ -311,7 +311,7 @@ const LibraryManagement: React.FC = () => {
                         />
                         <label htmlFor="thumb-upload" className={`w-full bg-slate-50 border border-dashed rounded-2xl py-8 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-100 transition-all ${thumbnailFile ? 'border-primary-300 bg-primary-50' : 'border-slate-200'}`}>
                           <i className={`fas ${thumbnailFile ? 'fa-image text-primary-500' : 'fa-camera text-slate-300'} text-2xl mb-2`}></i>
-                          <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 text-center px-2 truncate w-full">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-black text-center px-2 truncate w-full">
                             {thumbnailFile ? thumbnailFile.name : 'Select Image'}
                           </span>
                         </label>
@@ -352,7 +352,7 @@ const LibraryManagement: React.FC = () => {
             <button
               onClick={() => setDeleteModalData(null)}
               disabled={deleting}
-              className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition disabled:opacity-50"
+              className="flex-1 py-3 rounded-xl bg-slate-100 text-black font-bold hover:bg-slate-200 transition disabled:opacity-50"
             >
               Cancel
             </button>
@@ -367,8 +367,8 @@ const LibraryManagement: React.FC = () => {
         }
       >
         <div className="text-center">
-          <p className="mb-4 text-slate-600">
-            Are you sure you want to permanently remove <span className="font-bold text-slate-900">"{deleteModalData?.title}"</span>?
+          <p className="mb-4 text-black">
+            Are you sure you want to permanently remove <span className="font-bold text-black">"{deleteModalData?.title}"</span>?
           </p>
           <p className="text-xs text-red-600 font-bold bg-red-50 p-3 rounded-xl">
             <i className="fas fa-exclamation-triangle mr-2"></i>

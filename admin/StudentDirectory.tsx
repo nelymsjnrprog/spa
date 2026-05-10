@@ -167,8 +167,8 @@ const StudentDirectory: React.FC = () => {
         <Navbar />
         <div className="text-center p-12">
           <i className="fas fa-shield-alt text-6xl text-slate-200 mb-4"></i>
-          <h2 className="text-2xl font-black text-slate-900">Super Admin Access Required</h2>
-          <p className="text-slate-500 mt-2">This panel is restricted to Super Administrators.</p>
+          <h2 className="text-2xl font-black text-black">Super Admin Access Required</h2>
+          <p className="text-black mt-2">This panel is restricted to Super Administrators.</p>
           <Link to="/admin" className="mt-6 inline-block bg-primary-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-primary-700 transition">
             Return to Dashboard
           </Link>
@@ -188,15 +188,15 @@ const StudentDirectory: React.FC = () => {
             <Link to="/admin/settings" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
               <i className="fas fa-arrow-left mr-2"></i> Back to Settings
             </Link>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Student Directory</h1>
-            <p className="text-slate-500 font-medium text-sm mt-0.5">
+            <h1 className="text-2xl sm:text-3xl font-black text-black tracking-tight">Student Directory</h1>
+            <p className="text-black font-medium text-sm mt-0.5">
               Full registry — payment status, level, and administrative controls.
             </p>
           </div>
 
           {/* Search */}
           <div className="relative w-full sm:w-80">
-            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-black text-xs"></i>
             <input
               type="text"
               placeholder="Search name or email…"
@@ -210,15 +210,15 @@ const StudentDirectory: React.FC = () => {
         {/* ── Stat Cards ────────────────────────────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {[
-            { label: 'Total Students', value: totalStudents, icon: 'fa-users', color: 'text-slate-700', bg: 'bg-slate-50' },
+            { label: 'Total Students', value: totalStudents, icon: 'fa-users', color: 'text-black', bg: 'bg-slate-50' },
             { label: 'Paid Members', value: paidCount, icon: 'fa-check-circle', color: 'text-emerald-600', bg: 'bg-emerald-50' },
             { label: 'Unpaid / Pending', value: unpaidCount, icon: 'fa-clock', color: 'text-amber-600', bg: 'bg-amber-50' },
             { label: 'Blocked', value: blockedCount, icon: 'fa-ban', color: 'text-red-600', bg: 'bg-red-50' },
           ].map((card, i) => (
             <Card key={i} className="p-5 border-none shadow-xl shadow-slate-200/40 flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{card.label}</p>
-                <p className="text-3xl font-black text-slate-900">
+                <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">{card.label}</p>
+                <p className="text-3xl font-black text-black">
                   {loading ? <span className="animate-pulse text-slate-300">…</span> : card.value}
                 </p>
               </div>
@@ -242,7 +242,7 @@ const StudentDirectory: React.FC = () => {
                     ? tab === 'paid' ? 'bg-emerald-600 text-white'
                       : tab === 'unpaid' ? 'bg-amber-500 text-white'
                       : 'bg-slate-900 text-white'
-                    : 'text-slate-400 hover:text-slate-700'
+                    : 'text-black hover:text-black'
                 }`}
               >
                 {tab === 'all' ? `All (${totalStudents})` : tab === 'paid' ? `Paid (${paidCount})` : `Unpaid (${unpaidCount})`}
@@ -255,7 +255,7 @@ const StudentDirectory: React.FC = () => {
             value={levelFilter}
             onChange={e => setLevelFilter(e.target.value)}
             title="Filter by Level"
-            className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-600 focus:ring-2 focus:ring-primary-500 outline-none shadow-sm"
+            className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-black focus:ring-2 focus:ring-primary-500 outline-none shadow-sm"
           >
             <option value="">All Levels</option>
             {allLevels.map(l => (
@@ -270,7 +270,7 @@ const StudentDirectory: React.FC = () => {
               setInstitutionFilter(e.target.value);
             }}
             title="Filter by Institution"
-            className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-600 focus:ring-2 focus:ring-primary-500 outline-none shadow-sm flex-1"
+            className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-black focus:ring-2 focus:ring-primary-500 outline-none shadow-sm flex-1"
           >
             <option value="">All Institutions</option>
             {allInstitutions.map(inst => (
@@ -314,7 +314,7 @@ const StudentDirectory: React.FC = () => {
                   {/* Desktop Table View */}
                   <div className="hidden md:block">
                     <table className="w-full text-left">
-                      <thead className="bg-slate-900 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      <thead className="bg-slate-900 text-[10px] font-black text-black uppercase tracking-widest">
                         <tr>
                           <th className="px-6 py-4 text-slate-200">Student</th>
                           <th className="px-6 py-4 hidden lg:table-cell">Institution</th>
@@ -348,14 +348,14 @@ const StudentDirectory: React.FC = () => {
                                     </div>
                                     <div className="min-w-0">
                                       <div className="flex items-center gap-2 flex-wrap">
-                                        <p className={`font-black text-sm leading-tight ${student.isBlocked ? 'text-red-900' : 'text-slate-900'}`}>
+                                        <p className={`font-black text-sm leading-tight ${student.isBlocked ? 'text-red-900' : 'text-black'}`}>
                                           {student.displayName || 'Unnamed'}
                                         </p>
                                         {student.isBlocked && (
                                           <span className="text-[8px] font-black bg-red-600 text-white px-1.5 py-0.5 rounded-full uppercase">Blocked</span>
                                         )}
                                       </div>
-                                      <p className="text-[11px] text-slate-400 font-medium truncate">{student.email}</p>
+                                      <p className="text-[11px] text-black font-medium truncate">{student.email}</p>
                                       {student.phoneNumber && (
                                         <p className="text-[10px] text-primary-600 font-bold mt-0.5">
                                           <i className="fas fa-phone-alt mr-1 text-[8px]"></i>{student.phoneNumber}
@@ -368,7 +368,7 @@ const StudentDirectory: React.FC = () => {
 
                                 {/* Institution */}
                                 <td className="px-6 py-5 hidden lg:table-cell">
-                                  <span className="text-xs font-bold text-slate-600">
+                                  <span className="text-xs font-bold text-black">
                                     {student.institution || '—'}
                                   </span>
                                 </td>
@@ -399,7 +399,7 @@ const StudentDirectory: React.FC = () => {
                                 </td>
 
                                 {/* Joined */}
-                                <td className="px-6 py-5 hidden sm:table-cell text-xs font-bold text-slate-400">
+                                <td className="px-6 py-5 hidden sm:table-cell text-xs font-bold text-black">
                                   {student.createdAt ? new Date(student.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Legacy'}
                                 </td>
 
@@ -436,7 +436,7 @@ const StudentDirectory: React.FC = () => {
                                       <button
                                         onClick={() => setConfirmModal({ type: paid.paid ? 'mark_unpaid' : 'mark_paid', student })}
                                         className={`text-[10px] font-black uppercase tracking-widest transition ${
-                                          paid.paid ? 'text-slate-400 hover:text-amber-600' : 'text-emerald-600 hover:text-emerald-800'
+                                          paid.paid ? 'text-black hover:text-amber-600' : 'text-emerald-600 hover:text-emerald-800'
                                         }`}
                                       >
                                         <i className={`fas ${paid.paid ? 'fa-times-circle' : 'fa-money-bill-wave'} mr-1`}></i>
@@ -479,10 +479,10 @@ const StudentDirectory: React.FC = () => {
                               </div>
                               <div className="min-w-0 flex-1">
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <p className="font-black text-slate-900 truncate max-w-[150px]">{student.displayName || 'Unnamed'}</p>
+                                  <p className="font-black text-black truncate max-w-[150px]">{student.displayName || 'Unnamed'}</p>
                                   {student.isBlocked && <span className="text-[8px] font-black bg-red-600 text-white px-1.5 py-0.5 rounded-full uppercase">Blocked</span>}
                                 </div>
-                                <p className="text-xs text-slate-400 font-medium truncate">{student.email}</p>
+                                <p className="text-xs text-black font-medium truncate">{student.email}</p>
                                 {student.phoneNumber && (
                                   <p className="text-[10px] text-primary-600 font-bold mt-1">
                                     <i className="fas fa-phone-alt mr-1 text-[8px]"></i>{student.phoneNumber}
@@ -493,12 +493,12 @@ const StudentDirectory: React.FC = () => {
 
                             <div className="grid grid-cols-2 gap-2 text-[10px] font-black uppercase tracking-widest">
                                 <div className="bg-slate-50 p-2 rounded-xl">
-                                   <p className="text-slate-400 mb-0.5">Academic Level</p>
-                                   <p className="text-slate-700">Level {student.level || '100'}</p>
+                                   <p className="text-black mb-0.5">Academic Level</p>
+                                   <p className="text-black">Level {student.level || '100'}</p>
                                 </div>
                                <div className="bg-slate-50 p-2 rounded-xl">
-                                  <p className="text-slate-400 mb-0.5">Institution</p>
-                                  <p className="text-slate-700 truncate">{student.institution || '—'}</p>
+                                  <p className="text-black mb-0.5">Institution</p>
+                                  <p className="text-black truncate">{student.institution || '—'}</p>
                                </div>
                             </div>
 
@@ -580,7 +580,7 @@ const StudentDirectory: React.FC = () => {
           <>
             <button
               onClick={() => setConfirmModal(null)}
-              className="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 font-bold hover:bg-slate-200 transition"
+              className="flex-1 py-3 rounded-xl bg-slate-100 text-black font-bold hover:bg-slate-200 transition"
             >
               Cancel
             </button>
@@ -600,7 +600,7 @@ const StudentDirectory: React.FC = () => {
         {confirmModal && (
           <div className="text-center">
             <p className="mb-4">
-              Action for <span className="font-bold text-slate-900">{confirmModal.student.displayName}</span>
+              Action for <span className="font-bold text-black">{confirmModal.student.displayName}</span>
             </p>
             {confirmModal.type === 'delete' && (
               <p className="text-xs text-red-600 font-bold bg-red-50 p-3 rounded-xl">
@@ -615,7 +615,7 @@ const StudentDirectory: React.FC = () => {
               <p>Are you sure you want to restore access for this student?</p>
             )}
             {confirmModal.type === 'promote' && (
-              <p>Advance student to <span className="font-bold text-slate-900">Level {(parseInt(confirmModal.student.level || '100') + 100)}</span>?</p>
+              <p>Advance student to <span className="font-bold text-black">Level {(parseInt(confirmModal.student.level || '100') + 100)}</span>?</p>
             )}
             {confirmModal.type === 'mark_paid' && (
               <p>Grant full access to this student? They will be marked as having paid manually.</p>

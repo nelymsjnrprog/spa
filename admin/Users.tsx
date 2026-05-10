@@ -99,8 +99,8 @@ const Users: React.FC = () => {
                      <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
                         <i className="fas fa-arrow-left mr-2"></i> Back to Dashboard
                      </Link>
-                     <h1 className="text-3xl font-bold text-slate-900 tracking-tight">User Management</h1>
-                     <p className="text-slate-500 font-medium">
+                     <h1 className="text-3xl font-bold text-black tracking-tight">User Management</h1>
+                     <p className="text-black font-medium">
                          {isSuperAdmin 
                             ? "Manage student registries and institutional access." 
                             : `Managing ${profile?.assignedInstitutions?.join(', ') || 'Assigned'} Institutions`}
@@ -109,7 +109,7 @@ const Users: React.FC = () => {
                   
                   {/* Search Bar */}
                   <div className="relative w-full sm:w-80">
-                     <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                     <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-black text-xs"></i>
                      <input 
                         type="text"
                         placeholder="Search name or email..."
@@ -123,19 +123,19 @@ const Users: React.FC = () => {
 
             <div className="space-y-12">
                {loading ? (
-                  <Card className="p-20 text-center text-slate-400 font-bold uppercase tracking-widest animate-pulse">Loading Registry...</Card>
+                  <Card className="p-20 text-center text-black font-bold uppercase tracking-widest animate-pulse">Loading Registry...</Card>
                ) : (
                   sortedInstitutions.map(inst => (
                      <div key={inst} className="space-y-4">
                         <div className="flex items-center space-x-4">
                            <div className="h-px flex-1 bg-slate-200"></div>
-                           <h2 className="text-xs font-black text-slate-400 uppercase tracking-[0.3em]">{inst}</h2>
+                           <h2 className="text-xs font-black text-black uppercase tracking-[0.3em]">{inst}</h2>
                            <div className="h-px flex-1 bg-slate-200"></div>
                         </div>
 
                         <Card className="overflow-hidden border-none shadow-xl shadow-slate-200/50">
                            <table className="w-full text-left">
-                              <thead className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                              <thead className="bg-slate-50/50 text-[10px] font-black text-black uppercase tracking-widest border-b border-slate-100">
                                  <tr>
                                     <th className="px-8 py-4">Identity</th>
                                     <th className="px-8 py-4">Level</th>
@@ -156,10 +156,10 @@ const Users: React.FC = () => {
                                                 </div>
                                                 <div>
                                                    <div className="flex items-center space-x-2">
-                                                      <p className={`font-bold leading-tight ${u.isBlocked ? 'text-red-900' : 'text-slate-900'}`}>{u.displayName || "Unnamed User"}</p>
+                                                      <p className={`font-bold leading-tight ${u.isBlocked ? 'text-red-900' : 'text-black'}`}>{u.displayName || "Unnamed User"}</p>
                                                       {u.isBlocked && <span className="text-[8px] font-black bg-red-600 text-white px-1.5 py-0.5 rounded-full uppercase tracking-tighter">Blocked</span>}
                                                    </div>
-                                                   <p className="text-[11px] text-slate-400 font-medium">{u.email}</p>
+                                                   <p className="text-[11px] text-black font-medium">{u.email}</p>
                                                    {u.phoneNumber && <p className="text-[10px] text-primary-600 font-bold mt-0.5"><i className="fas fa-phone-alt mr-1 text-[8px]"></i> {u.phoneNumber}</p>}
                                                 </div>
                                              </div>
@@ -170,11 +170,11 @@ const Users: React.FC = () => {
                                              </span>
                                           </td>
                                           <td className="px-8 py-5">
-                                             <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg border uppercase tracking-tighter ${u.isBlocked ? 'bg-red-50 text-red-700 border-red-100' : 'bg-slate-50 text-slate-500 border-slate-100'}`}>
+                                             <span className={`text-[9px] font-black px-2.5 py-1 rounded-lg border uppercase tracking-tighter ${u.isBlocked ? 'bg-red-50 text-red-700 border-red-100' : 'bg-slate-50 text-black border-slate-100'}`}>
                                                 {u.role}
                                              </span>
                                           </td>
-                                          <td className="px-8 py-5 text-xs font-bold text-slate-400">
+                                          <td className="px-8 py-5 text-xs font-bold text-black">
                                              {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'Legacy'}
                                           </td>
                                           {isSuperAdmin && (

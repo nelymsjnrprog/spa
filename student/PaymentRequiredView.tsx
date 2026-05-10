@@ -158,8 +158,8 @@ const PaymentRequiredView: React.FC = () => {
             </button>
           ) : (
             <div className="w-full py-4 px-6 bg-slate-50 border border-slate-100 rounded-xl text-center">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Awaiting Activation</p>
-              <p className="text-xs text-slate-600 font-medium leading-relaxed">
+              <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Awaiting Activation</p>
+              <p className="text-xs text-black font-medium leading-relaxed">
                 Your account is pending review. Please contact administration to complete your enrollment.
               </p>
             </div>
@@ -167,7 +167,7 @@ const PaymentRequiredView: React.FC = () => {
 
           <button
             onClick={handleLogout}
-            className="mt-6 w-full text-center text-[10px] font-black text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+            className="mt-6 w-full text-center text-[10px] font-black text-black hover:text-black uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
           >
             <i className="fas fa-sign-out-alt"></i>
             Switch Account

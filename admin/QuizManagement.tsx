@@ -427,8 +427,8 @@ const QuizManagement: React.FC = () => {
             <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
               <i className="fas fa-arrow-left mr-2"></i> Back to Dashboard
             </Link>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Module Management</h1>
-            <p className="text-slate-500 font-medium text-sm sm:text-base">Author and deploy examination curriculum.</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-black tracking-tight">Module Management</h1>
+            <p className="text-black font-medium text-sm sm:text-base">Author and deploy examination curriculum.</p>
           </div>
           <button
             onClick={handleOpenCreate}
@@ -463,7 +463,7 @@ const QuizManagement: React.FC = () => {
                   )}
                   <button
                     onClick={() => handleOpenEdit(quiz)}
-                    className="ml-3 sm:ml-4 text-slate-400 hover:text-primary-600 transition-colors"
+                    className="ml-3 sm:ml-4 text-black hover:text-primary-600 transition-colors"
                     title="Edit Module Details"
                   >
                     <i className="fas fa-edit text-sm"></i>
@@ -472,14 +472,14 @@ const QuizManagement: React.FC = () => {
                     <>
                       <button
                         onClick={() => openDuplicateModal(quiz)}
-                        className="ml-3 sm:ml-4 text-slate-400 hover:text-indigo-600 transition-colors"
+                        className="ml-3 sm:ml-4 text-black hover:text-indigo-600 transition-colors"
                         title="Duplicate to another Institution"
                       >
                         <i className="fas fa-clone text-sm"></i>
                       </button>
                       <button
                         onClick={() => openMergeModal(quiz)}
-                        className="ml-3 sm:ml-4 text-slate-400 hover:text-amber-600 transition-colors"
+                        className="ml-3 sm:ml-4 text-black hover:text-amber-600 transition-colors"
                         title="Merge Questions into another Module"
                       >
                         <i className="fas fa-object-group text-sm"></i>
@@ -491,10 +491,10 @@ const QuizManagement: React.FC = () => {
                 {quiz.subjectTitle && (
                   <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mb-1.5 leading-none">{quiz.subjectTitle}</p>
                 )}
-                <h3 className="text-lg sm:text-2xl font-black text-slate-900 mb-1 leading-tight pr-6">{quiz.title}</h3>
-                <p className="text-xs sm:text-sm text-slate-500 line-clamp-2 mb-4 sm:mb-6 font-medium">{quiz.description}</p>
+                <h3 className="text-lg sm:text-2xl font-black text-black mb-1 leading-tight pr-6">{quiz.title}</h3>
+                <p className="text-xs sm:text-sm text-black line-clamp-2 mb-4 sm:mb-6 font-medium">{quiz.description}</p>
 
-                <div className="flex flex-wrap gap-x-4 gap-y-2 mb-4 sm:mb-6 text-[10px] sm:text-[11px] font-black text-slate-400 uppercase tracking-widest border-t border-slate-50 pt-4">
+                <div className="flex flex-wrap gap-x-4 gap-y-2 mb-4 sm:mb-6 text-[10px] sm:text-[11px] font-black text-black uppercase tracking-widest border-t border-slate-50 pt-4">
                   <span className="flex items-center" title="Time Limit"><i className="far fa-clock mr-1.5 text-primary-400"></i> {quiz.timeLimit}M</span>
                   <span className="flex items-center" title="Total Questions"><i className="fas fa-list-ul mr-1.5 text-primary-400"></i> {quiz.totalQuestions} QS</span>
                   <span className="flex items-center" title="Options Format"><i className="fas fa-th-list mr-1.5 text-primary-400"></i> {quiz.defaultOptionsCount || 4} OP</span>
@@ -508,7 +508,7 @@ const QuizManagement: React.FC = () => {
                       <i className="fas fa-layer-group mr-1.5"></i> O-Shuffle
                     </span>
                   )}
-                  <span className={`flex items-center ${quiz.published ? 'text-green-600' : 'text-slate-400'}`}>
+                  <span className={`flex items-center ${quiz.published ? 'text-green-600' : 'text-black'}`}>
                     <i className="fas fa-circle mr-1.5 text-[6px]"></i> {quiz.published ? 'Live' : 'Draft'}
                   </span>
                   {quiz.institution && (
@@ -527,7 +527,7 @@ const QuizManagement: React.FC = () => {
                   <Link to={`/admin/questions/${quiz.id}`} className="flex items-center justify-center p-3 sm:p-4 bg-slate-900 text-white rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-primary-600 transition-colors shadow-lg shadow-slate-200">
                     Questions
                   </Link>
-                  <Link to={`/admin/reports?quizId=${quiz.id}`} className="flex items-center justify-center p-3 sm:p-4 bg-slate-50 text-slate-600 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-colors">
+                  <Link to={`/admin/reports?quizId=${quiz.id}`} className="flex items-center justify-center p-3 sm:p-4 bg-slate-50 text-black rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-colors">
                     Results
                   </Link>
                 </div>
@@ -548,7 +548,7 @@ const QuizManagement: React.FC = () => {
             {quizzes.length === 0 && !loading && (
               <div className="col-span-full py-20 flex flex-col items-center justify-center border-4 border-dashed border-slate-200 rounded-[3rem] opacity-50">
                 <i className="fas fa-layer-group text-6xl text-slate-300 mb-4"></i>
-                <p className="text-slate-400 font-bold uppercase tracking-widest">No Examinations Found</p>
+                <p className="text-black font-bold uppercase tracking-widest">No Examinations Found</p>
               </div>
             )}
           </div>
@@ -558,10 +558,10 @@ const QuizManagement: React.FC = () => {
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
             <Card className="max-w-xl w-full p-5 sm:p-10 relative border-none shadow-2xl animate-in slide-in-from-bottom-4 sm:zoom-in-95 max-h-[92vh] sm:max-h-[95vh] overflow-y-auto rounded-t-3xl sm:rounded-3xl rounded-b-none sm:rounded-b-3xl">
               <div className="flex items-center justify-between mb-5 sm:mb-8">
-                <h2 className="text-xl sm:text-3xl font-black text-slate-900 tracking-tight">{editingQuiz ? 'Edit Module' : 'New Module'}</h2>
+                <h2 className="text-xl sm:text-3xl font-black text-black tracking-tight">{editingQuiz ? 'Edit Module' : 'New Module'}</h2>
                 <button
                   onClick={() => setShowModal(false)}
-                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition flex-shrink-0"
+                  className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 text-black hover:bg-slate-200 hover:text-black transition flex-shrink-0"
                   title="Close Modal"
                   aria-label="Close"
                 >
@@ -571,26 +571,26 @@ const QuizManagement: React.FC = () => {
               <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Exam Title</label>
+                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Exam Title</label>
                     <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-slate-50 border-slate-200" placeholder="e.g. Clinical Nursing Practice" required />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Subject Title</label>
+                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Subject Title</label>
                     <input type="text" value={subjectTitle} onChange={e => setSubjectTitle(e.target.value)} className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-slate-50 border-slate-200" placeholder="e.g. Medical Surgical Nursing" required />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Curriculum Overview</label>
+                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Curriculum Overview</label>
                     <textarea value={desc} onChange={e => setDesc(e.target.value)} className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-slate-50 border-slate-200" placeholder="Brief description for student dashboard..." required />
                   </div>
                 </div>
 
                 <div className="p-4 sm:p-6 bg-slate-50 rounded-3xl space-y-4 sm:space-y-6">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center">
+                  <h3 className="text-[10px] font-black text-black uppercase tracking-widest mb-2 flex items-center">
                     <i className="fas fa-clock mr-2"></i> Scheduling & Access
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Duration (Minutes)</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Duration (Minutes)</label>
                       <input
                         type="number"
                         id="duration"
@@ -603,11 +603,11 @@ const QuizManagement: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Lock Code (Optional)</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Lock Code (Optional)</label>
                       <input type="text" value={lockCode} onChange={e => setLockCode(e.target.value)} className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-sm" placeholder="e.g. SECRET123" />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Quiz Join Code (6 Digits)</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Quiz Join Code (6 Digits)</label>
                       <input 
                         type="text" 
                         value={quizCode} 
@@ -621,23 +621,23 @@ const QuizManagement: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Available From (Optional)</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Available From (Optional)</label>
                       <input type="datetime-local" value={availableFrom} onChange={e => setAvailableFrom(e.target.value)} className="w-full p-3 sm:p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-xs sm:text-sm" title="Available from date" placeholder="Select start date" />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Available Until (Optional)</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Available Until (Optional)</label>
                       <input type="datetime-local" value={availableUntil} onChange={e => setAvailableUntil(e.target.value)} className="w-full p-3 sm:p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-xs sm:text-sm" title="Available until date" placeholder="Select end date" />
                     </div>
                   </div>
                 </div>
 
                 <div className="p-4 sm:p-6 bg-slate-50 rounded-3xl space-y-4 sm:space-y-6">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center">
+                  <h3 className="text-[10px] font-black text-black uppercase tracking-widest mb-2 flex items-center">
                     <i className="fas fa-university mr-2"></i> Target Audience
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Institution</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Institution</label>
                       <select
                         id="institution"
                         value={institution}
@@ -665,7 +665,7 @@ const QuizManagement: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Academic Level</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Academic Level</label>
                       <select
                         value={level}
                         title="Target Academic Level"
@@ -681,7 +681,7 @@ const QuizManagement: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Target Programs</label>
+                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Target Programs</label>
                     <div className="flex flex-wrap gap-2">
                       {['RCN', 'RGN', 'RMN', 'RPHN'].map(prog => (
                         <button
@@ -694,7 +694,7 @@ const QuizManagement: React.FC = () => {
                               setAllowedPrograms([...allowedPrograms, prog]);
                             }
                           }}
-                          className={`px-4 py-2.5 rounded-xl text-[10px] font-black transition-all border-2 ${allowedPrograms.includes(prog) ? 'bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-200' : 'bg-white text-slate-400 border-white hover:border-slate-200'}`}
+                          className={`px-4 py-2.5 rounded-xl text-[10px] font-black transition-all border-2 ${allowedPrograms.includes(prog) ? 'bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-200' : 'bg-white text-black border-white hover:border-slate-200'}`}
                         >
                           {prog}
                         </button>
@@ -702,20 +702,20 @@ const QuizManagement: React.FC = () => {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Assigned Students (Emails separated by commas)</label>
+                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Assigned Students (Emails separated by commas)</label>
                     <input type="text" value={allowedUsers} onChange={e => setAllowedUsers(e.target.value)} className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200" placeholder="leave blank for all students" />
                   </div>
                 </div>
 
                 <div className="p-4 sm:p-6 bg-slate-50 rounded-3xl space-y-4 sm:space-y-6">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center">
+                  <h3 className="text-[10px] font-black text-black uppercase tracking-widest mb-2 flex items-center">
                     <i className="fas fa-cog mr-2"></i> Configuration
                   </h3>
                   <div>
                     <button
                       type="button"
                       onClick={() => setShowResults(!showResults)}
-                      className={`p-4 w-full rounded-xl border-2 flex items-center justify-between transition ${showResults ? 'bg-primary-50 border-primary-200 text-primary-700' : 'bg-white border-white text-slate-500 hover:border-primary-100'}`}
+                      className={`p-4 w-full rounded-xl border-2 flex items-center justify-between transition ${showResults ? 'bg-primary-50 border-primary-200 text-primary-700' : 'bg-white border-white text-black hover:border-primary-100'}`}
                     >
                       <span className="text-[11px] font-bold uppercase">Show Results Immediately</span>
                       <i className={`fas ${showResults ? 'fa-eye text-primary-500' : 'fa-eye-slash'} text-lg`}></i>
@@ -724,14 +724,14 @@ const QuizManagement: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Options Per Question</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Options Per Question</label>
                       <div className="grid grid-cols-3 gap-2">
                         {[2, 3, 4].map(num => (
                           <button
                             key={num}
                             type="button"
                             onClick={() => setOptionsCount(num)}
-                            className={`py-3 rounded-xl border-2 font-black text-xs transition ${optionsCount === num ? 'bg-primary-600 border-primary-600 text-white shadow-lg' : 'bg-white border-white text-slate-400 hover:border-primary-200'}`}
+                            className={`py-3 rounded-xl border-2 font-black text-xs transition ${optionsCount === num ? 'bg-primary-600 border-primary-600 text-white shadow-lg' : 'bg-white border-white text-black hover:border-primary-200'}`}
                           >
                             {num}
                           </button>
@@ -739,14 +739,14 @@ const QuizManagement: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Questions Per Page</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Questions Per Page</label>
                       <div className="flex flex-wrap gap-2">
                         {[0, 1, 2, 5, 10].map(num => (
                           <button
                             key={num}
                             type="button"
                             onClick={() => setQuestionsPerPage(num)}
-                            className={`flex-1 min-w-[40px] py-3 rounded-xl border-2 font-black text-xs transition ${questionsPerPage === num ? 'bg-primary-600 border-primary-600 text-white shadow-lg' : 'bg-white border-white text-slate-400 hover:border-primary-200'}`}
+                            className={`flex-1 min-w-[40px] py-3 rounded-xl border-2 font-black text-xs transition ${questionsPerPage === num ? 'bg-primary-600 border-primary-600 text-white shadow-lg' : 'bg-white border-white text-black hover:border-primary-200'}`}
                           >
                             {num === 0 ? 'All' : num}
                           </button>
@@ -757,7 +757,7 @@ const QuizManagement: React.FC = () => {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Required Answers %</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Required Answers %</label>
                       <input
                         type="number"
                         value={minSubmissionPercentage}
@@ -770,7 +770,7 @@ const QuizManagement: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Marks Per Question</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Marks Per Question</label>
                       <input
                         type="number"
                         value={defaultMarkPerQuestion}
@@ -785,7 +785,7 @@ const QuizManagement: React.FC = () => {
                 </div>
 
                 <div className="p-4 sm:p-6 bg-slate-50 rounded-3xl space-y-4">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center">
+                  <h3 className="text-[10px] font-black text-black uppercase tracking-widest mb-2 flex items-center">
                     <i className="fas fa-shield-alt mr-2"></i> Security Enforcement
                   </h3>
                   <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3">
@@ -808,7 +808,7 @@ const QuizManagement: React.FC = () => {
                         key={label}
                         type="button"
                         onClick={toggle}
-                        className={`p-3 sm:p-4 rounded-xl border-2 flex items-center justify-between transition ${state ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-white text-slate-400 hover:border-primary-100'}`}
+                        className={`p-3 sm:p-4 rounded-xl border-2 flex items-center justify-between transition ${state ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-white text-black hover:border-primary-100'}`}
                       >
                         <span className="text-[10px] font-bold uppercase">{label}</span>
                         <i className={`fas ${state ? onIcon : offIcon} text-xs`}></i>
@@ -834,10 +834,10 @@ const QuizManagement: React.FC = () => {
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
             <Card className="max-w-md w-full p-5 sm:p-8 relative border-none shadow-2xl animate-in slide-in-from-bottom-4 sm:zoom-in-95 rounded-t-3xl sm:rounded-3xl">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-black text-slate-900 tracking-tight">Duplicate Module</h2>
+                <h2 className="text-xl font-black text-black tracking-tight">Duplicate Module</h2>
                 <button
                   onClick={() => setShowDuplicationModal(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 text-black hover:bg-slate-200 transition"
                 >
                   <i className="fas fa-times"></i>
                 </button>
@@ -845,12 +845,12 @@ const QuizManagement: React.FC = () => {
               
               <div className="mb-6 p-4 bg-indigo-50 border border-indigo-100 rounded-2xl">
                 <p className="text-xs font-bold text-indigo-700 uppercase tracking-widest mb-1">Source Module</p>
-                <p className="font-black text-slate-900">{duplicatingQuiz?.title}</p>
+                <p className="font-black text-black">{duplicatingQuiz?.title}</p>
               </div>
 
               <form onSubmit={handleDuplicate} className="space-y-4">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Target Institution</label>
+                  <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Target Institution</label>
                   <select
                     value={dupInstitution}
                     onChange={(e) => setDupInstitution(e.target.value)}
@@ -864,7 +864,7 @@ const QuizManagement: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Target Academic Level</label>
+                  <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Target Academic Level</label>
                   <select
                     value={dupLevel}
                     onChange={(e) => setDupLevel(e.target.value)}
@@ -899,10 +899,10 @@ const QuizManagement: React.FC = () => {
           <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 animate-in fade-in">
             <Card className="max-w-md w-full p-5 sm:p-8 relative border-none shadow-2xl animate-in slide-in-from-bottom-4 sm:zoom-in-95 rounded-t-3xl sm:rounded-3xl">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-black text-slate-900 tracking-tight">Merge Question Sets</h2>
+                <h2 className="text-xl font-black text-black tracking-tight">Merge Question Sets</h2>
                 <button
                   onClick={() => setShowMergeModal(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 text-black hover:bg-slate-200 transition"
                 >
                   <i className="fas fa-times"></i>
                 </button>
@@ -910,19 +910,19 @@ const QuizManagement: React.FC = () => {
 
               <div className="mb-6 p-4 bg-amber-50 border border-amber-100 rounded-2xl">
                 <p className="text-xs font-bold text-amber-700 uppercase tracking-widest mb-2">Merge questions from:</p>
-                <p className="font-black text-slate-900 mb-4">{sourceQuiz?.title}</p>
+                <p className="font-black text-black mb-4">{sourceQuiz?.title}</p>
                 <div className="flex items-center justify-center text-slate-300 my-2">
                   <i className="fas fa-arrow-down text-xl"></i>
                 </div>
                 <p className="text-xs font-bold text-amber-700 uppercase tracking-widest mt-4 mb-2">Into Destination:</p>
-                <p className="font-black text-slate-900 italic">
+                <p className="font-black text-black italic">
                   {quizzes.find(q => q.id === destQuizId)?.title || "Select a module below..."}
                 </p>
               </div>
 
               <form onSubmit={handleMerge} className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Destination Module</label>
+                  <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Destination Module</label>
                   <select
                     value={destQuizId}
                     onChange={(e) => setDestQuizId(e.target.value)}
@@ -949,7 +949,7 @@ const QuizManagement: React.FC = () => {
                     <div className={`w-10 h-6 rounded-full transition-colors ${deleteSourceAfterMerge ? 'bg-red-500' : 'bg-slate-200'}`}></div>
                     <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${deleteSourceAfterMerge ? 'translate-x-4' : ''}`}></div>
                   </div>
-                  <span className="ml-3 text-xs font-black text-slate-600 uppercase tracking-tight group-hover:text-red-600 transition-colors">
+                  <span className="ml-3 text-xs font-black text-black uppercase tracking-tight group-hover:text-red-600 transition-colors">
                     Delete source module after merging
                   </span>
                 </label>
@@ -958,7 +958,7 @@ const QuizManagement: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setShowMergeModal(false)}
-                    className="flex-1 px-4 py-4 rounded-xl bg-slate-100 text-slate-500 font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
+                    className="flex-1 px-4 py-4 rounded-xl bg-slate-100 text-black font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all"
                   >
                     Cancel
                   </button>
@@ -990,7 +990,7 @@ const QuizManagement: React.FC = () => {
           <>
             <button 
               onClick={() => setDeleteModalQuiz(null)}
-              className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+              className="flex-1 py-4 bg-slate-100 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
             >
               Cancel
             </button>
@@ -1006,7 +1006,7 @@ const QuizManagement: React.FC = () => {
         {deleteModalQuiz && (
           <p>
             PERMANENT DELETION WARNING:<br/><br/>
-            This action will remove <span className="font-bold text-slate-900">"{deleteModalQuiz.title}"</span> from the platform. 
+            This action will remove <span className="font-bold text-black">"{deleteModalQuiz.title}"</span> from the platform. 
             All associated questions and student grades will be <span className="font-bold text-red-600">ERASED PERMANENTLY</span>.
           </p>
         )}

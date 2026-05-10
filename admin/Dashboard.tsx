@@ -111,7 +111,7 @@ const AdminDashboard: React.FC = () => {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="animate-pulse flex flex-col items-center">
           <div className="w-12 h-12 bg-primary-200 rounded-full mb-4"></div>
-          <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Initializing Mission Control...</p>
+          <p className="text-black font-bold uppercase tracking-widest text-xs">Initializing Mission Control...</p>
         </div>
       </div>
     );
@@ -134,9 +134,9 @@ const AdminDashboard: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           {levelStats.map((stat) => (
             <Card key={stat.level} className="p-8 border-none shadow-xl shadow-slate-200/50 bg-white group hover:bg-slate-900 transition-all duration-500 rounded-[2rem]">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 group-hover:text-primary-400 transition-colors">{stat.level === 'Candidate' ? stat.level : `Level ${stat.level}`} Students</p>
+              <p className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-2 group-hover:text-primary-400 transition-colors">{stat.level === 'Candidate' ? stat.level : `Level ${stat.level}`} Students</p>
               <div className="flex items-end justify-between">
-                <h3 className="text-4xl font-black text-slate-900 group-hover:text-white transition-colors">{stat.count}</h3>
+                <h3 className="text-4xl font-black text-black group-hover:text-white transition-colors">{stat.count}</h3>
                 <div className="w-10 h-10 rounded-xl bg-slate-50 group-hover:bg-slate-800 flex items-center justify-center transition-colors">
                   <span className="text-primary-600 font-black text-xs">{stat.level === 'Candidate' ? 'CAN' : `L${stat.level.charAt(0)}`}</span>
                 </div>
@@ -148,7 +148,7 @@ const AdminDashboard: React.FC = () => {
         {/* Institution Breakdown */}
         {isSuperAdmin && institutionStats.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-lg font-black text-slate-900 tracking-tight mb-4 flex items-center">
+            <h2 className="text-lg font-black text-black tracking-tight mb-4 flex items-center">
               <span className="w-1.5 h-5 bg-primary-600 rounded-full mr-3"></span>
               Institutions
             </h2>
@@ -162,8 +162,8 @@ const AdminDashboard: React.FC = () => {
                           <i className="fas fa-university text-primary-600 group-hover:text-white transition-colors"></i>
                         </div>
                         <div>
-                          <p className="font-bold text-slate-900 text-sm">{inst.name}</p>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{inst.count} student{inst.count !== 1 ? 's' : ''}</p>
+                          <p className="font-bold text-black text-sm">{inst.name}</p>
+                          <p className="text-[10px] font-black text-black uppercase tracking-widest">{inst.count} student{inst.count !== 1 ? 's' : ''}</p>
                         </div>
                       </div>
                       <i className="fas fa-chevron-right text-slate-300 group-hover:text-primary-500 transition-colors"></i>
@@ -179,11 +179,11 @@ const AdminDashboard: React.FC = () => {
         <Card className="p-10 border-none shadow-2xl shadow-slate-200/60 bg-white rounded-[3rem] overflow-hidden">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
             <div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center">
+              <h2 className="text-2xl font-black text-black tracking-tight flex items-center">
                 <span className="w-1.5 h-6 bg-primary-600 rounded-full mr-3"></span>
                 Enrollment Trends
               </h2>
-              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Candidate registration metrics (Last 7 Days)</p>
+              <p className="text-xs text-black font-bold uppercase tracking-widest mt-1">Candidate registration metrics (Last 7 Days)</p>
             </div>
           </div>
 

@@ -36,8 +36,8 @@ const AdminLogs: React.FC = () => {
                     <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
                         <i className="fas fa-arrow-left mr-2"></i> Back to Dashboard
                     </Link>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight uppercase">System Action Log</h1>
-                    <p className="text-slate-500 font-medium">Real-time audit trail of administrative operations.</p>
+                    <h1 className="text-3xl font-black text-black tracking-tight uppercase">System Action Log</h1>
+                    <p className="text-black font-medium">Real-time audit trail of administrative operations.</p>
                 </div>
 
                 <Card className="border-none shadow-22xl shadow-slate-200/50 overflow-hidden bg-white">
@@ -45,7 +45,7 @@ const AdminLogs: React.FC = () => {
                         <h2 className="text-[10px] sm:text-xs font-black text-white uppercase tracking-widest flex items-center">
                             <i className="fas fa-history mr-2 text-primary-400"></i> Audit Feed
                         </h2>
-                        <span className="text-[10px] font-black text-slate-500 uppercase">
+                        <span className="text-[10px] font-black text-black uppercase">
                             Last 100 Operations
                         </span>
                     </div>
@@ -54,7 +54,7 @@ const AdminLogs: React.FC = () => {
                         {loading ? (
                             <div className="p-20 text-center">
                                 <i className="fas fa-spinner fa-spin text-4xl text-slate-200 mb-4"></i>
-                                <p className="text-xs font-black text-slate-400 uppercase tracking-widest animate-pulse">Synchronizing Logs...</p>
+                                <p className="text-xs font-black text-black uppercase tracking-widest animate-pulse">Synchronizing Logs...</p>
                             </div>
                         ) : logs.length === 0 ? (
                             <div className="p-20 text-center text-slate-300">
@@ -79,15 +79,15 @@ const AdminLogs: React.FC = () => {
                                                 {log.action.split('_')[0].charAt(0)}
                                             </div>
                                             <div>
-                                                <p className="text-sm font-black text-slate-900 uppercase tracking-tight">{log.action.replace(/_/g, ' ')}</p>
+                                                <p className="text-sm font-black text-black uppercase tracking-tight">{log.action.replace(/_/g, ' ')}</p>
                                                 <p className="text-[10px] font-bold text-primary-600">{log.adminName}</p>
                                             </div>
                                         </div>
-                                        <span className="text-[10px] font-black text-slate-300 group-hover:text-slate-400 transition-colors uppercase">
+                                        <span className="text-[10px] font-black text-slate-300 group-hover:text-black transition-colors uppercase">
                                             {getTimeSince(log.timestamp)}
                                         </span>
                                     </div>
-                                    <p className="text-xs text-slate-500 font-medium pl-11">
+                                    <p className="text-xs text-black font-medium pl-11">
                                         {log.details}
                                     </p>
                                 </div>

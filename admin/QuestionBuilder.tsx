@@ -219,7 +219,7 @@ const QuestionBuilder: React.FC = () => {
     <div className="h-screen flex items-center justify-center bg-slate-50">
       <div className="flex flex-col items-center">
         <div className="w-10 h-10 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">Opening Registry...</p>
+        <p className="text-black font-bold text-xs uppercase tracking-widest">Opening Registry...</p>
       </div>
     </div>
   );
@@ -239,12 +239,12 @@ const QuestionBuilder: React.FC = () => {
               <i className="fas fa-arrow-left mr-2"></i> Back to Registry
             </button>
 
-            <p className="text-slate-500 font-medium text-sm lg:text-base">{quiz?.title}</p>
+            <p className="text-black font-medium text-sm lg:text-base">{quiz?.title}</p>
           </div>
           <div className="grid grid-cols-2 lg:flex items-center gap-2 w-full lg:w-auto">
             <div className="bg-white px-3 py-2 sm:px-4 sm:py-3 rounded-xl border border-slate-200 shadow-sm text-center lg:min-w-[100px]">
-              <p className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Vault Registry</p>
-              <p className="text-base sm:text-xl font-black text-slate-900">{savedQuestions.length} <span className="text-[10px] font-bold text-slate-400">Items</span></p>
+              <p className="text-[8px] sm:text-[9px] font-black text-black uppercase tracking-widest mb-0.5">Vault Registry</p>
+              <p className="text-base sm:text-xl font-black text-black">{savedQuestions.length} <span className="text-[10px] font-bold text-black">Items</span></p>
             </div>
             <div className="bg-primary-50 px-3 py-2 sm:px-4 sm:py-3 rounded-xl border border-primary-100 shadow-sm text-center lg:min-w-[100px]">
               <p className="text-[8px] sm:text-[9px] font-black text-primary-400 uppercase tracking-widest mb-0.5">Format</p>
@@ -267,19 +267,19 @@ const QuestionBuilder: React.FC = () => {
           <div className="flex lg:hidden border-b border-slate-200 mb-6 sticky top-0 bg-slate-50 z-20">
             <button 
               onClick={() => setActiveTab('compose')} 
-              className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all border-b-4 ${activeTab === 'compose' ? 'border-primary-600 text-primary-600' : 'border-transparent text-slate-400'}`}
+              className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all border-b-4 ${activeTab === 'compose' ? 'border-primary-600 text-primary-600' : 'border-transparent text-black'}`}
             >
               Compose
             </button>
             <button 
               onClick={() => setActiveTab('sequence')} 
-              className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all border-b-4 ${activeTab === 'sequence' ? 'border-primary-600 text-primary-600' : 'border-transparent text-slate-400'}`}
+              className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all border-b-4 ${activeTab === 'sequence' ? 'border-primary-600 text-primary-600' : 'border-transparent text-black'}`}
             >
               Sequence ({stagedQuestions.length + savedQuestions.length})
             </button>
             <button 
               onClick={() => setActiveTab('vault')} 
-              className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all border-b-4 ${activeTab === 'vault' ? 'border-primary-600 text-primary-600' : 'border-transparent text-slate-400'}`}
+              className={`flex-1 py-4 text-[11px] font-black uppercase tracking-widest transition-all border-b-4 ${activeTab === 'vault' ? 'border-primary-600 text-primary-600' : 'border-transparent text-black'}`}
             >
               Vault ({savedQuestions.length})
             </button>
@@ -306,7 +306,7 @@ const QuestionBuilder: React.FC = () => {
                   </div>
                 )}
 
-                <h2 className="text-xl font-bold text-slate-900 flex items-center px-2 print:hidden mb-4">
+                <h2 className="text-xl font-bold text-black flex items-center px-2 print:hidden mb-4">
                   <span className="w-2 h-8 bg-primary-600 rounded-full mr-3"></span>
                   Sequence Preview
                 </h2>
@@ -316,10 +316,10 @@ const QuestionBuilder: React.FC = () => {
                   <div className="flex justify-between items-center">
                       <div>
                         <h1 className="text-2xl font-black uppercase tracking-tighter">SmartPrep Examination Registry</h1>
-                        <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">{quiz?.title}</p>
+                        <p className="text-sm font-bold text-black uppercase tracking-widest">{quiz?.title}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Target Level</p>
+                        <p className="text-[10px] font-black text-black uppercase tracking-widest">Target Level</p>
                         <p className="text-sm font-bold">Level {quiz?.level}</p>
                       </div>
                   </div>
@@ -357,10 +357,10 @@ const QuestionBuilder: React.FC = () => {
                           </button>
                         </div>
                       </div>
-                      <p className="font-bold text-slate-800 mb-4 text-base leading-snug">{q.text}</p>
+                      <p className="font-bold text-black mb-4 text-base leading-snug">{q.text}</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {q.options.map((opt, i) => (
-                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center justify-between ${i === q.correctOptionIndex ? 'bg-green-100 border-green-200 text-green-700 font-bold' : 'bg-white border-slate-100 text-slate-400'}`}>
+                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center justify-between ${i === q.correctOptionIndex ? 'bg-green-100 border-green-200 text-green-700 font-bold' : 'bg-white border-slate-100 text-black'}`}>
                             <div className="flex items-center">
                               <span className="w-5 h-5 flex items-center justify-center rounded bg-white/50 mr-2 text-[10px]">{String.fromCharCode(65 + i)}</span>
                               {opt}
@@ -379,18 +379,18 @@ const QuestionBuilder: React.FC = () => {
                       : 'border-slate-100'
                       }`}>
                       <div className="flex justify-between items-start mb-3">
-                        <span className="text-primary-600 font-black text-sm print:text-slate-900 print:text-xs">QUESTION #{idx + 1}</span>
+                        <span className="text-primary-600 font-black text-sm print:text-black print:text-xs">QUESTION #{idx + 1}</span>
                         <div className="flex items-center space-x-2 print:hidden">
                            <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase ${editingSavedId === q.id
                               ? 'bg-primary-100 text-primary-700'
-                              : 'bg-slate-50 text-slate-400'
+                              : 'bg-slate-50 text-black'
                               }`}>{editingSavedId === q.id ? 'Editing' : 'In Vault'}</span>
                         </div>
                       </div>
-                      <p className="font-bold text-slate-700 mb-4 text-base leading-snug print:text-sm">{q.text}</p>
+                      <p className="font-bold text-black mb-4 text-base leading-snug print:text-sm">{q.text}</p>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 print:gap-4">
                         {q.options.map((opt, i) => (
-                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center justify-between print:border-slate-200 print:p-2 ${i === q.correctOptionIndex ? 'bg-primary-50 border-primary-100 text-primary-700 font-bold print:bg-slate-50 print:text-slate-900' : 'bg-slate-50 border-slate-50 text-slate-500 print:bg-white'}`}>
+                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center justify-between print:border-slate-200 print:p-2 ${i === q.correctOptionIndex ? 'bg-primary-50 border-primary-100 text-primary-700 font-bold print:bg-slate-50 print:text-black' : 'bg-slate-50 border-slate-50 text-black print:bg-white'}`}>
                             <div className="flex items-center">
                               <span className="w-5 h-5 flex items-center justify-center rounded bg-white/50 mr-2 text-[10px] font-black print:border print:border-slate-300">{String.fromCharCode(65 + i)}</span>
                               {opt}
@@ -417,7 +417,7 @@ const QuestionBuilder: React.FC = () => {
               <div className="pb-24 lg:pb-8">
                 <Card className="p-5 sm:p-8 border-none shadow-xl shadow-slate-200/50">
                   <div className="flex items-center justify-between mb-6 sm:mb-8">
-                    <h2 className="text-xl font-bold text-slate-900">
+                    <h2 className="text-xl font-bold text-black">
                       {editingSavedId ? `Editing Vault Item` : editingIndex !== null ? `Editing Staged #${savedQuestions.length + editingIndex + 1}` : 'Composer'}
                     </h2>
                     {editingIndex === null && !editingSavedId ? (
@@ -433,11 +433,11 @@ const QuestionBuilder: React.FC = () => {
 
                   <form onSubmit={addToStage} className="space-y-6">
                     <div>
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Question Inquiry</label>
+                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Question Inquiry</label>
                       <textarea
                         value={text}
                         onChange={e => setText(e.target.value)}
-                        className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition min-h-[140px] text-slate-700 font-medium text-sm sm:text-base"
+                        className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition min-h-[140px] text-black font-medium text-sm sm:text-base"
                         placeholder="e.g. Identify the primary advantage of utilizing a hash map for lookups."
                         required
                         style={{ minHeight: '120px' }}
@@ -446,7 +446,7 @@ const QuestionBuilder: React.FC = () => {
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Response Options</label>
+                        <label className="text-[10px] font-black text-black uppercase tracking-widest">Response Options</label>
                         <span className="text-[10px] font-bold text-primary-500 uppercase">Select the correct answer</span>
                       </div>
                       {options.map((opt, i) => (
@@ -457,7 +457,7 @@ const QuestionBuilder: React.FC = () => {
                             className={`w-11 h-11 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-black text-sm transition-all duration-200 flex-shrink-0 shadow-sm ${
                               correct === i 
                                 ? 'bg-green-600 text-white ring-4 ring-green-100 scale-105' 
-                                : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
+                                : 'bg-slate-100 text-black hover:bg-slate-200 hover:text-black'
                             }`}
                             title={`Mark Option ${String.fromCharCode(65 + i)} as correct`}
                           >
@@ -475,7 +475,7 @@ const QuestionBuilder: React.FC = () => {
                               placeholder={`Option ${String.fromCharCode(65 + i)} details...`}
                               className={`w-full p-3 sm:p-4 border-2 rounded-xl text-sm transition-all duration-200 min-h-[48px] ${
                                 correct === i 
-                                  ? 'border-green-500 bg-green-50/20 text-slate-900 font-bold' 
+                                  ? 'border-green-500 bg-green-50/20 text-black font-bold' 
                                   : 'border-slate-100 bg-white focus:border-primary-500'
                               }`}
                               required
@@ -512,7 +512,7 @@ const QuestionBuilder: React.FC = () => {
                           <button
                             type="button"
                             onClick={resetForm}
-                            className="px-5 py-4 rounded-xl font-bold bg-slate-100 text-slate-500 hover:bg-slate-200 transition text-sm sm:text-base"
+                            className="px-5 py-4 rounded-xl font-bold bg-slate-100 text-black hover:bg-slate-200 transition text-sm sm:text-base"
                           >
                             Cancel
                           </button>
@@ -527,7 +527,7 @@ const QuestionBuilder: React.FC = () => {
             {/* Panel 3: Vault */}
             <div className={`h-full lg:overflow-y-auto lg:pl-4 custom-scrollbar ${activeTab !== 'vault' ? 'hidden lg:block' : 'block'}`}>
               <div className="pb-8">
-                <h2 className="text-xl font-bold text-slate-900 flex items-center px-2 mb-4">
+                <h2 className="text-xl font-bold text-black flex items-center px-2 mb-4">
                   <span className="w-2 h-8 bg-slate-900 rounded-full mr-3"></span>
                   Examination Vault
                 </h2>
@@ -535,7 +535,7 @@ const QuestionBuilder: React.FC = () => {
                 <div className="space-y-3">
                   {savedQuestions.length === 0 ? (
                     <div className="p-8 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                      <p className="text-slate-400 font-bold text-xs uppercase tracking-widest">No vault items yet</p>
+                      <p className="text-black font-bold text-xs uppercase tracking-widest">No vault items yet</p>
                     </div>
                   ) : (
                     savedQuestions.map((q) => (
@@ -543,14 +543,14 @@ const QuestionBuilder: React.FC = () => {
                         <div className="flex justify-between items-start gap-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="bg-slate-100 text-slate-500 text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">IN VAULT</span>
+                              <span className="bg-slate-100 text-black text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">IN VAULT</span>
                             </div>
-                            <p className="text-sm font-bold text-slate-700 line-clamp-3">{q.text}</p>
+                            <p className="text-sm font-bold text-black line-clamp-3">{q.text}</p>
                           </div>
                           <div className="flex flex-col gap-2">
                             <button
                               onClick={() => startEditSaved(q)}
-                              className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:bg-primary-50 hover:text-primary-600 transition flex items-center justify-center"
+                              className="w-10 h-10 rounded-xl bg-slate-50 text-black hover:bg-primary-50 hover:text-primary-600 transition flex items-center justify-center"
                               title="Pull back to composer for editing"
                             >
                               <i className="fas fa-pen-to-square text-sm"></i>
@@ -562,7 +562,7 @@ const QuestionBuilder: React.FC = () => {
                                   loadData(quizId!);
                                 }
                               }}
-                              className="w-10 h-10 rounded-xl bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 transition flex items-center justify-center"
+                              className="w-10 h-10 rounded-xl bg-slate-50 text-black hover:bg-red-50 hover:text-red-500 transition flex items-center justify-center"
                               title="Delete from vault"
                             >
                               <i className="fas fa-trash-can text-sm"></i>

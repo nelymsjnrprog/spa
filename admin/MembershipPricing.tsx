@@ -83,8 +83,8 @@ const MembershipPricing: React.FC = () => {
             <Container>
                <div className="flex flex-col items-center justify-center py-32">
                   <i className="fas fa-shield-halved text-6xl text-slate-200 mb-6"></i>
-                  <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Restricted</h1>
-                  <p className="text-slate-500">Only Super Admins can manage membership pricing.</p>
+                  <h1 className="text-2xl font-bold text-black mb-2">Access Restricted</h1>
+                  <p className="text-black">Only Super Admins can manage membership pricing.</p>
                   <Link to="/admin/settings" className="mt-6 text-primary-600 font-bold hover:underline">
                      <i className="fas fa-arrow-left mr-2"></i>Back to Settings
                   </Link>
@@ -102,8 +102,8 @@ const MembershipPricing: React.FC = () => {
                <Link to="/admin/settings" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
                   <i className="fas fa-arrow-left mr-2"></i> Back to Settings
                </Link>
-               <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Membership & Pricing Control</h1>
-               <p className="text-slate-500 font-medium">Configure which levels require payment before signup and set membership prices.</p>
+               <h1 className="text-3xl font-bold text-black tracking-tight">Membership & Pricing Control</h1>
+               <p className="text-black font-medium">Configure which levels require payment before signup and set membership prices.</p>
             </div>
 
             <Card className="p-0 overflow-hidden border-none shadow-xl shadow-slate-200/50 mb-8">
@@ -122,7 +122,7 @@ const MembershipPricing: React.FC = () => {
             </Card>
 
             {loading ? (
-               <Card className="p-20 text-center text-slate-400 font-bold uppercase tracking-widest animate-pulse">Loading Settings...</Card>
+               <Card className="p-20 text-center text-black font-bold uppercase tracking-widest animate-pulse">Loading Settings...</Card>
             ) : (
                <>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -139,17 +139,17 @@ const MembershipPricing: React.FC = () => {
                                  }`}>
                                  <div className="flex items-center justify-between">
                                     <div>
-                                       <h3 className="text-lg font-black text-slate-900">{label}</h3>
+                                       <h3 className="text-lg font-black text-black">{label}</h3>
                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${levelSettings.paymentRequired
                                           ? 'bg-primary-100 text-primary-700'
-                                          : 'bg-slate-100 text-slate-400'
+                                          : 'bg-slate-100 text-black'
                                           }`}>
                                           {levelSettings.paymentRequired ? 'Paid Signup' : 'Free Signup'}
                                        </span>
                                     </div>
                                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner ${levelSettings.paymentRequired
                                        ? 'bg-primary-100 text-primary-600'
-                                       : 'bg-slate-100 text-slate-400'
+                                       : 'bg-slate-100 text-black'
                                        }`}>
                                        <i className={`fas ${levelSettings.paymentRequired ? 'fa-credit-card' : 'fa-door-open'} text-xl`}></i>
                                     </div>
@@ -158,7 +158,7 @@ const MembershipPricing: React.FC = () => {
 
                               <div className="p-6 space-y-5">
                                  <div className="flex items-center justify-between">
-                                    <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Require Payment</label>
+                                    <label className="text-xs font-black text-black uppercase tracking-widest">Require Payment</label>
                                     <button
                                        onClick={() => handleToggle(formKey)}
                                        className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${levelSettings.paymentRequired ? 'bg-primary-600' : 'bg-slate-200'
@@ -170,9 +170,9 @@ const MembershipPricing: React.FC = () => {
                                  </div>
 
                                  <div className={`transition-all duration-300 ${levelSettings.paymentRequired ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Price (GHS)</label>
+                                    <label className="block text-[10px] font-black text-black uppercase tracking-[0.15em] mb-2">Price (GHS)</label>
                                     <div className="relative">
-                                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">GHS</span>
+                                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-black font-bold text-sm">GHS</span>
                                        <input
                                           type="number"
                                           min="0"
@@ -180,7 +180,7 @@ const MembershipPricing: React.FC = () => {
                                           value={levelSettings.price || ''}
                                           onChange={(e) => handlePriceChange(formKey, e.target.value)}
                                           disabled={!levelSettings.paymentRequired}
-                                          className="w-full pl-14 pr-4 py-3.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition text-lg font-bold text-slate-700"
+                                          className="w-full pl-14 pr-4 py-3.5 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition text-lg font-bold text-black"
                                           placeholder="0.00"
                                        />
                                     </div>

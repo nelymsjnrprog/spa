@@ -189,8 +189,8 @@ const StudentDashboard: React.FC = () => {
         <div className="mb-6 welcome-card-enter" style={{ maxWidth: 'fit-content' }}>
           <div className="px-5 py-3.5 bg-white rounded-2xl shadow-sm border border-slate-200/80 flex items-center gap-2.5">
             <span className="text-base leading-none" role="img" aria-label="wave">👋</span>
-            <p className="text-sm font-medium text-slate-600">
-              Hey, <span className="font-semibold text-slate-800">{profile?.displayName?.split(' ')[0] || 'Student'}</span>
+            <p className="text-sm font-medium text-black">
+              Hey, <span className="font-semibold text-black">{profile?.displayName?.split(' ')[0] || 'Student'}</span>
             </p>
           </div>
         </div>
@@ -235,11 +235,11 @@ const StudentDashboard: React.FC = () => {
           {/* Main Examinations Section */}
           <section className="bento-item-large space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black text-slate-900 flex items-center uppercase tracking-widest text-xs">
+              <h2 className="text-xl font-black text-black flex items-center uppercase tracking-widest text-xs">
                 Available Modules
               </h2>
               {quizzesLoaded && (
-                <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-3 py-1 rounded-full">{quizzes.length} AVAILABLE</span>
+                <span className="text-[10px] font-black text-black bg-slate-100 px-3 py-1 rounded-full">{quizzes.length} AVAILABLE</span>
               )}
             </div>
 
@@ -252,7 +252,7 @@ const StudentDashboard: React.FC = () => {
                 <div className="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center text-slate-300 mb-6 drop-shadow-sm">
                   <i className="fas fa-wind text-3xl"></i>
                 </div>
-                <p className="text-slate-400 font-bold text-lg">Your queue is currently empty.</p>
+                <p className="text-black font-bold text-lg">Your queue is currently empty.</p>
                 <p className="text-slate-300 text-sm mt-1">Check back soon for new assignments.</p>
               </Card>
             ) : (
@@ -266,14 +266,14 @@ const StudentDashboard: React.FC = () => {
                   return (
                     <Card key={quiz.id} className="p-3 flex items-center gap-4 hover:bg-slate-50/50 transition-all border-slate-100 shadow-none group">
                       {/* Icon */}
-                      <div className="shrink-0 w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-primary-600 group-hover:bg-white transition-all">
+                      <div className="shrink-0 w-12 h-12 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-black group-hover:text-primary-600 group-hover:bg-white transition-all">
                         <i className="fas fa-file-signature text-lg"></i>
                       </div>
 
                       {/* Content Section */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <h3 className="text-sm font-bold text-slate-900 truncate group-hover:text-primary-600 transition-colors">
+                          <h3 className="text-sm font-bold text-black truncate group-hover:text-primary-600 transition-colors">
                             {quiz.title}
                           </h3>
                           {isCompleted && (
@@ -291,10 +291,10 @@ const StudentDashboard: React.FC = () => {
                         <p className="text-[9px] font-black text-primary-600 uppercase tracking-widest mb-1.5 leading-none">{quiz.subjectTitle}</p>
                         
                         <div className="flex items-center space-x-2">
-                          <div className="flex items-center text-[9px] font-bold text-slate-400 bg-slate-50 rounded-md px-2 py-0.5 border border-slate-100">
+                          <div className="flex items-center text-[9px] font-bold text-black bg-slate-50 rounded-md px-2 py-0.5 border border-slate-100">
                             <i className="far fa-clock mr-1.5 opacity-70"></i> {quiz.timeLimit}m
                           </div>
-                          <div className="flex items-center text-[9px] font-bold text-slate-400 bg-slate-50 rounded-md px-2 py-0.5 border border-slate-100">
+                          <div className="flex items-center text-[9px] font-bold text-black bg-slate-50 rounded-md px-2 py-0.5 border border-slate-100">
                             <i className="fas fa-shapes mr-1.5 opacity-70"></i> {quiz.totalQuestions} Qs
                           </div>
                         </div>

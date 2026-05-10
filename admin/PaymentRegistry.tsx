@@ -36,8 +36,8 @@ const PaymentRegistry: React.FC = () => {
             <Container>
                <div className="flex flex-col items-center justify-center py-32">
                   <i className="fas fa-shield-halved text-6xl text-slate-200 mb-6"></i>
-                  <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Restricted</h1>
-                  <p className="text-slate-500">Only Super Admins can access the payment registry.</p>
+                  <h1 className="text-2xl font-bold text-black mb-2">Access Restricted</h1>
+                  <p className="text-black">Only Super Admins can access the payment registry.</p>
                   <Link to="/admin" className="mt-6 text-primary-600 font-bold hover:underline">
                      <i className="fas fa-arrow-left mr-2"></i>Back to Dashboard
                   </Link>
@@ -55,21 +55,21 @@ const PaymentRegistry: React.FC = () => {
                <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
                   <i className="fas fa-arrow-left mr-2"></i> Back to Dashboard
                </Link>
-               <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Payment Registry</h1>
-               <p className="text-slate-500 font-medium">Full log of membership payments and account activations.</p>
+               <h1 className="text-3xl font-bold text-black tracking-tight">Payment Registry</h1>
+               <p className="text-black font-medium">Full log of membership payments and account activations.</p>
             </div>
 
             <div className="flex items-center justify-between mb-6">
                <div className="flex items-center space-x-4">
                   <div className="px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-100">
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Total Revenue</p>
-                     <p className="text-lg font-black text-slate-900">
-                        {payments.reduce((acc, p) => acc + (p.status === 'success' ? p.amount : 0), 0).toLocaleString()} <span className="text-xs text-slate-400">GHS</span>
+                     <p className="text-[10px] font-black text-black uppercase tracking-widest">Total Revenue</p>
+                     <p className="text-lg font-black text-black">
+                        {payments.reduce((acc, p) => acc + (p.status === 'success' ? p.amount : 0), 0).toLocaleString()} <span className="text-xs text-black">GHS</span>
                      </p>
                   </div>
                   <div className="px-4 py-2 bg-white rounded-xl shadow-sm border border-slate-100">
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Successful Transactions</p>
-                     <p className="text-lg font-black text-slate-900">
+                     <p className="text-[10px] font-black text-black uppercase tracking-widest">Successful Transactions</p>
+                     <p className="text-lg font-black text-black">
                         {payments.filter(p => p.status === 'success').length}
                      </p>
                   </div>
@@ -100,7 +100,7 @@ const PaymentRegistry: React.FC = () => {
                      <tbody className="divide-y divide-slate-50">
                         {loading && payments.length === 0 ? (
                            <tr>
-                              <td colSpan={6} className="px-6 py-20 text-center text-slate-400 font-medium animate-pulse">
+                              <td colSpan={6} className="px-6 py-20 text-center text-black font-medium animate-pulse">
                                  <i className="fas fa-circle-notch animate-spin text-2xl mb-4 block"></i>
                                  Synchronizing payment records...
                               </td>
@@ -115,32 +115,32 @@ const PaymentRegistry: React.FC = () => {
                            payments.map((p) => (
                               <tr key={p.id} className="hover:bg-slate-50/50 transition-colors group">
                                  <td className="px-6 py-5 whitespace-nowrap">
-                                    <p className="text-xs font-bold text-slate-900">
+                                    <p className="text-xs font-bold text-black">
                                        {new Date(p.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                     </p>
-                                    <p className="text-[10px] text-slate-400 font-medium">
+                                    <p className="text-[10px] text-black font-medium">
                                        {new Date(p.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </p>
                                  </td>
                                  <td className="px-6 py-5 whitespace-nowrap">
-                                    <p className="text-xs font-bold text-slate-700 group-hover:text-primary-600 transition-colors">{p.email}</p>
-                                    <p className="text-[9px] text-slate-400 font-mono tracking-tighter uppercase">{p.id.substring(0, 12)}...</p>
+                                    <p className="text-xs font-bold text-black group-hover:text-primary-600 transition-colors">{p.email}</p>
+                                    <p className="text-[9px] text-black font-mono tracking-tighter uppercase">{p.id.substring(0, 12)}...</p>
                                  </td>
                                  <td className="px-6 py-5 whitespace-nowrap text-center">
-                                     <span className="text-[10px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded-lg uppercase tracking-tighter ring-1 ring-slate-200">
+                                     <span className="text-[10px] font-black bg-slate-100 text-black px-2 py-1 rounded-lg uppercase tracking-tighter ring-1 ring-slate-200">
                                         {p.formLevel === 'Candidate' ? p.formLevel : `Level ${p.formLevel}`}
                                      </span>
                                  </td>
                                  <td className="px-6 py-5 whitespace-nowrap text-right">
                                     <div className="inline-block text-right">
-                                       <p className="text-sm font-black text-slate-900 leading-none">
-                                          {p.amount} <span className="text-[10px] text-slate-400 ml-0.5">GHS</span>
+                                       <p className="text-sm font-black text-black leading-none">
+                                          {p.amount} <span className="text-[10px] text-black ml-0.5">GHS</span>
                                        </p>
                                     </div>
                                  </td>
                                  <td className="px-6 py-5 whitespace-nowrap">
                                     <div className="flex items-center space-x-2">
-                                       <span className="font-mono text-[10px] text-slate-400 uppercase bg-slate-50 px-2 py-1 rounded border border-slate-100">
+                                       <span className="font-mono text-[10px] text-black uppercase bg-slate-50 px-2 py-1 rounded border border-slate-100">
                                           {p.reference}
                                        </span>
                                        <button 
@@ -156,7 +156,7 @@ const PaymentRegistry: React.FC = () => {
                                     <span className={`text-[10px] font-black px-2.5 py-1.5 rounded-full uppercase tracking-widest ${
                                        p.status === 'success' 
                                           ? 'bg-emerald-50 text-emerald-600 ring-1 ring-emerald-100' 
-                                          : 'bg-slate-100 text-slate-400 ring-1 ring-slate-200'
+                                          : 'bg-slate-100 text-black ring-1 ring-slate-200'
                                     }`}>
                                        {p.status}
                                     </span>

@@ -52,7 +52,7 @@ export const Navbar: React.FC = () => {
             {(profile?.role === 'admin' || profile?.role === 'student') && (
               <button 
                 onClick={() => setSidebarOpen(true)}
-                className="p-2 -ml-2 text-slate-500 hover:text-primary-600 transition-colors"
+                className="p-2 -ml-2 text-black hover:text-primary-600 transition-colors"
                 title="Open Navigation"
               >
                 <i className="fas fa-bars-staggered text-xl"></i>
@@ -60,14 +60,14 @@ export const Navbar: React.FC = () => {
             )}
             <Link to="/dispatch" className="flex items-center min-w-0">
 
-              <span className="text-sm font-black uppercase tracking-[0.2em] text-[#cbd5e1]">{APP_CONFIG.name}</span>
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-black">{APP_CONFIG.name}</span>
             </Link>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4 shrink-0 min-w-0">
 
             <button
               onClick={handleLogout}
-              className="p-2.5 text-slate-500 hover:text-red-600 transition-colors active:scale-95"
+              className="p-2.5 text-black hover:text-red-600 transition-colors active:scale-95"
               title="Logout"
             >
               <i className="fas fa-sign-out-alt text-lg sm:text-xl"></i>
@@ -89,14 +89,14 @@ export const Navbar: React.FC = () => {
       <aside className={`fixed top-0 left-0 h-full w-72 bg-white z-[70] shadow-2xl transition-transform duration-300 ease-out flex flex-col safe-pt ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-black uppercase tracking-[0.2em] text-[#cbd5e1]">{APP_CONFIG.name}</span>
+            <span className="text-sm font-black uppercase tracking-[0.2em] text-black">{APP_CONFIG.name}</span>
             <span className={`text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ${
-              isSuperAdmin ? 'text-amber-600 border-amber-200 bg-amber-50' : 'text-slate-400 border-slate-200'
+              isSuperAdmin ? 'text-amber-600 border-amber-200 bg-amber-50' : 'text-black border-slate-200'
             }`}>
               {effectivePerm === 'super_admin' ? 'Super' : effectivePerm === 'institution_admin' ? 'Institution' : 'View'}
             </span>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-slate-600 transition-colors" title="Close sidebar">
+          <button onClick={() => setSidebarOpen(false)} className="text-black hover:text-black transition-colors" title="Close sidebar">
             <i className="fas fa-times text-xl"></i>
           </button>
         </div>
@@ -104,14 +104,14 @@ export const Navbar: React.FC = () => {
         <nav className="flex-1 overflow-y-auto p-4 space-y-2">
           {profile?.role === 'admin' && (
             <>
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-2">Primary Systems</div>
+              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mb-2">Primary Systems</div>
               <SidebarLink to="/admin" icon="fa-th-large" label="Dashboard" onClick={() => setSidebarOpen(false)} />
               {isSuperAdmin || (profile?.assignedInstitutions && profile.assignedInstitutions.length >= 2) ? (
                 <SidebarLink to="/admin/quizzes" icon="fa-layer-group" label="Module Management" onClick={() => setSidebarOpen(false)} />
               ) : null}
 
               
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Institution Management</div>
+              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Institution Management</div>
               {filteredInstitutions.map(inst => (
                 <SidebarLink
                   key={inst.id}
@@ -122,22 +122,22 @@ export const Navbar: React.FC = () => {
                 />
               ))}
               {filteredInstitutions.length === 0 && (
-                <p className="px-4 text-[10px] text-slate-400 italic">No institutions configured.</p>
+                <p className="px-4 text-[10px] text-black italic">No institutions configured.</p>
               )}
 
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Resources</div>
+              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Resources</div>
               <SidebarLink to="/admin/library" icon="fa-book" label="Library Management" onClick={() => setSidebarOpen(false)} />
 
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Directives</div>
+              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Directives</div>
 
               <SidebarLink to="/admin/security" icon="fa-shield-halved" label="Security Ops" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="/admin/settings" icon="fa-sliders" label="System Settings" onClick={() => setSidebarOpen(false)} />
 
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Customer Service</div>
+              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Customer Service</div>
               <Link 
                 to="/admin/support" 
                 onClick={() => setSidebarOpen(false)}
-                className="flex items-center justify-between px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-slate-600 font-bold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
+                className="flex items-center justify-between px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-black font-bold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
               >
                 <div className="flex items-center space-x-3">
                   <div className="w-10 sm:w-8 flex justify-center text-xl sm:text-lg text-slate-300 group-hover:text-primary-500 transition-colors">
@@ -153,7 +153,7 @@ export const Navbar: React.FC = () => {
               </Link>
               {isSuperAdmin && (
                 <>
-                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Financials</div>
+                  <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Financials</div>
                   <SidebarLink to="/admin/payments" icon="fa-credit-card" label="Payment Registry" onClick={() => setSidebarOpen(false)} />
                 </>
               )}
@@ -162,7 +162,7 @@ export const Navbar: React.FC = () => {
 
           {profile?.role === 'student' && (
             <>
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-2">Student Services</div>
+              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mb-2">Student Services</div>
               <SidebarLink to="/student" icon="fa-th-large" label="Dashboard" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="/student/library" icon="fa-book-open" label="Library" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="#" icon="fa-comments" label="Chat" onClick={() => setSidebarOpen(false)} />
@@ -185,7 +185,7 @@ const SidebarLink: React.FC<{ to: string, icon: string, label: string, onClick: 
   <Link 
     to={to} 
     onClick={onClick}
-    className="flex items-center space-x-3 px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-slate-600 font-bold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
+    className="flex items-center space-x-3 px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-black font-bold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
   >
     <div className="w-10 sm:w-8 flex justify-center text-xl sm:text-lg text-slate-300 group-hover:text-primary-500 transition-colors">
       <i className={`fas ${icon}`}></i>
@@ -229,8 +229,8 @@ export const Modal: React.FC<{
         <div className={`w-16 h-16 rounded-2xl flex items-center justify-center text-2xl mb-6 mx-auto shadow-inner ${icons[variant]}`}>
           <i className={`fas ${icons[variant].split(' ')[0]}`}></i>
         </div>
-        <h3 className="text-xl font-black text-slate-900 text-center mb-2 uppercase tracking-tight">{title}</h3>
-        <div className="text-slate-500 text-center text-sm mb-8 leading-relaxed">
+        <h3 className="text-xl font-black text-black text-center mb-2 uppercase tracking-tight">{title}</h3>
+        <div className="text-black text-center text-sm mb-8 leading-relaxed">
           {children}
         </div>
         {footer && <div className="flex gap-3">{footer}</div>}

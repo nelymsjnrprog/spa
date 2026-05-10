@@ -164,10 +164,10 @@ const LevelManagement: React.FC = () => {
             <Container>
                <div className="flex flex-col items-center justify-center py-32">
                   
-                   <h1 className="text-2xl font-bold text-slate-900 mb-2">
+                   <h1 className="text-2xl font-bold text-black mb-2">
                       {institutionName ? decodeURIComponent(institutionName) : (level ? `Level ${level}` : 'Access')} — Access Denied
                    </h1>
-                   <p className="text-slate-500">You don't have permission to manage this {institutionName ? 'institution' : 'level'}.</p>
+                   <p className="text-black">You don't have permission to manage this {institutionName ? 'institution' : 'level'}.</p>
                   <Link to="/admin" className="mt-6 text-primary-600 font-bold hover:underline">
                      Back to Dashboard
                   </Link>
@@ -584,11 +584,11 @@ const LevelManagement: React.FC = () => {
                             <i className="fas fa-arrow-left mr-2"></i>
                             Back to Dashboard
                         </Link>
-                        <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center">
+                        <h1 className="text-4xl font-black text-black tracking-tight flex items-center">
                             <i className="fas fa-university text-primary-500 mr-4"></i>
                             {decodeURIComponent(institutionName)}
                         </h1>
-                        <p className="text-slate-500 font-medium mt-2">Select a level to manage institution-specific data and modules.</p>
+                        <p className="text-black font-medium mt-2">Select a level to manage institution-specific data and modules.</p>
                     </div>
 
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
@@ -607,15 +607,15 @@ const LevelManagement: React.FC = () => {
                                 >
                                     <Card className="p-5 sm:p-7 border-none shadow-xl shadow-slate-200/50 bg-white rounded-[1.5rem] sm:rounded-[2rem] group-hover:bg-slate-900 transition-all duration-500 relative overflow-hidden h-full">
                                         <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-5 group-hover:opacity-20 transition-opacity">
-                                            <i className="fas fa-layer-group text-3xl sm:text-6xl text-slate-900 group-hover:text-white"></i>
+                                            <i className="fas fa-layer-group text-3xl sm:text-6xl text-black group-hover:text-white"></i>
                                         </div>
                                         
                                         <div className="relative z-10">
                                             <p className="text-[7px] sm:text-[9px] font-black text-primary-600 uppercase tracking-[0.2em] mb-2 sm:mb-3 group-hover:text-primary-400">Tier</p>
-                                            <h2 className="text-base sm:text-xl font-black text-slate-900 group-hover:text-white mb-0.5 sm:mb-1 tracking-tight">
+                                            <h2 className="text-base sm:text-xl font-black text-black group-hover:text-white mb-0.5 sm:mb-1 tracking-tight">
                                                 {lvl === 'Candidate' ? lvl : `Level ${lvl}`}
                                             </h2>
-                                            <p className="text-slate-400 font-bold text-[8px] sm:text-[10px] uppercase tracking-widest group-hover:text-slate-300">
+                                            <p className="text-black font-bold text-[8px] sm:text-[10px] uppercase tracking-widest group-hover:text-slate-300">
                                                 {levelCount} Students
                                             </p>
                                             
@@ -653,11 +653,11 @@ const LevelManagement: React.FC = () => {
 
                    <div className="flex items-center gap-4">
                       <div>
-                         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-none">
+                         <h1 className="text-3xl sm:text-4xl font-black text-black tracking-tight leading-none">
                             {level === 'Candidate' ? 'Candidate' : `Level ${level}`}
                          </h1>
                          {institutionName && (
-                            <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mt-2 flex items-center">
+                            <p className="text-black font-bold text-xs uppercase tracking-widest mt-2 flex items-center">
                                <i className="fas fa-university text-primary-500 mr-2"></i>
                                {decodeURIComponent(institutionName)}
                             </p>
@@ -669,13 +669,13 @@ const LevelManagement: React.FC = () => {
                 <div className="flex flex-wrap gap-3">
                    <button 
                       onClick={() => document.getElementById('exams')?.scrollIntoView({ behavior: 'smooth' })}
-                      className="px-5 py-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all"
+                      className="px-5 py-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-black hover:bg-slate-50 transition-all"
                    >
                       Exams
                    </button>
                    <button 
                       onClick={() => document.getElementById('registry')?.scrollIntoView({ behavior: 'smooth' })}
-                      className="px-5 py-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all"
+                      className="px-5 py-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-black hover:bg-slate-50 transition-all"
                    >
                       Registry
                    </button>
@@ -699,7 +699,7 @@ const LevelManagement: React.FC = () => {
                      <div className="flex items-center justify-between mb-8">
                         <div>
 
-                           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1 tracking-widest">{level === 'Candidate' ? 'Candidate' : `Level ${level}`} Modules</p>
+                           <p className="text-xs text-black font-bold uppercase tracking-widest mt-1 tracking-widest">{level === 'Candidate' ? 'Candidate' : `Level ${level}`} Modules</p>
                         </div>
                         {canWrite && (
                            <button 
@@ -712,14 +712,14 @@ const LevelManagement: React.FC = () => {
                      </div>
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {loading ? (
-                           <div className="col-span-full p-20 text-center text-slate-400 animate-pulse font-bold uppercase tracking-widest text-xs">Accessing encrypted modules...</div>
+                           <div className="col-span-full p-20 text-center text-black animate-pulse font-bold uppercase tracking-widest text-xs">Accessing encrypted modules...</div>
                         ) : levelQuizzes.length === 0 ? (
-                           <div className="col-span-full p-20 text-center text-slate-400 text-sm font-bold uppercase tracking-widest border-2 border-dashed border-slate-100 rounded-[2rem]">No active modules for Level {level}.</div>
+                           <div className="col-span-full p-20 text-center text-black text-sm font-bold uppercase tracking-widest border-2 border-dashed border-slate-100 rounded-[2rem]">No active modules for Level {level}.</div>
                         ) : (
                            levelQuizzes.map(quiz => (
                               <Card key={quiz.id} className="p-8 border-none shadow-2xl shadow-slate-200/40 hover:translate-y-[-4px] transition-all group relative bg-white rounded-[2rem]">
                                  <div className="absolute top-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
-                                    <button onClick={() => handleOpenEdit(quiz)} className="p-2 text-slate-400 hover:text-primary-600 font-bold text-[10px] uppercase">Edit</button>
+                                    <button onClick={() => handleOpenEdit(quiz)} className="p-2 text-black hover:text-primary-600 font-bold text-[10px] uppercase">Edit</button>
                                     <button 
                                        onClick={() => handleDeleteQuiz(quiz.id, quiz.title)} 
                                        className="p-3 text-slate-300 hover:text-red-500 transition-colors"
@@ -730,28 +730,28 @@ const LevelManagement: React.FC = () => {
                                  </div>
                                  
                                  <div className="mb-6">
-                                    <h3 className="font-black text-slate-900 text-xl leading-tight mb-1">{quiz.title}</h3>
+                                    <h3 className="font-black text-black text-xl leading-tight mb-1">{quiz.title}</h3>
                                     <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mb-3">{quiz.subjectTitle}</p>
-                                    <p className="text-sm text-slate-500 font-medium line-clamp-2">{quiz.description}</p>
+                                    <p className="text-sm text-black font-medium line-clamp-2">{quiz.description}</p>
                                  </div>
 
                                  <div className="flex flex-wrap gap-3 mb-8">
-                                    <span className={`text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-wider ${quiz.published ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
+                                    <span className={`text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-wider ${quiz.published ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-black'}`}>
                                        {quiz.published ? 'Live' : 'Draft'}
                                     </span>
-                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg">
+                                    <span className="text-[9px] font-black text-black uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg">
                                        {quiz.timeLimit}m
                                     </span>
-                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg">
+                                    <span className="text-[9px] font-black text-black uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg">
                                        {quiz.totalQuestions} Qs
                                     </span>
                                  </div>
 
                                  <div className="grid grid-cols-2 gap-3">
-                                    <Link to={`/admin/questions/${quiz.id}`} className="py-3.5 bg-slate-50 text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-primary-50 hover:text-primary-600 transition-all">
+                                    <Link to={`/admin/questions/${quiz.id}`} className="py-3.5 bg-slate-50 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-primary-50 hover:text-primary-600 transition-all">
                                        Questions
                                     </Link>
-                                    <Link to={`/admin/reports?quizId=${quiz.id}`} className="py-3.5 bg-slate-50 text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-primary-50 hover:text-primary-600 transition-all">
+                                    <Link to={`/admin/reports?quizId=${quiz.id}`} className="py-3.5 bg-slate-50 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-primary-50 hover:text-primary-600 transition-all">
                                        Analysis
                                     </Link>
                                     <Link to={`/admin/live-monitor/${quiz.id}`} className="py-4 bg-emerald-50 text-emerald-700 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-emerald-600 hover:text-white transition-all col-span-2">
@@ -775,7 +775,7 @@ const LevelManagement: React.FC = () => {
                 <section id="registry" className="animate-in fade-in slide-in-from-bottom-4 scroll-mt-10">
                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
                         <div>
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Level {level} Academic Oversight</p>
+                            <p className="text-xs text-black font-bold uppercase tracking-widest mt-1">Level {level} Academic Oversight</p>
                              <div className="flex flex-wrap gap-4 mt-4">
                                 <div className="flex gap-2 p-1 bg-slate-100 rounded-xl w-fit">
                                     {[
@@ -788,7 +788,7 @@ const LevelManagement: React.FC = () => {
                                         <button
                                             key={filter.id}
                                             onClick={() => setProgramFilter(filter.id)}
-                                            className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${programFilter === filter.id ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                            className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${programFilter === filter.id ? 'bg-slate-900 text-white shadow-sm' : 'text-black hover:text-black'}`}
                                         >
                                             {filter.label}
                                         </button>
@@ -813,7 +813,7 @@ const LevelManagement: React.FC = () => {
                      <Card className="overflow-hidden border-none shadow-2xl shadow-slate-200/50 bg-white rounded-[2rem]">
                         <div className="overflow-x-auto">
                            <table className="w-full text-left">
-                              <thead className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-100">
+                              <thead className="bg-slate-50/50 text-[10px] font-black text-black uppercase tracking-widest border-b border-slate-100">
                                  <tr>
                                     <th className="px-8 py-5">Identity</th>
                                     <th className="px-8 py-5">Joined</th>
@@ -834,18 +834,18 @@ const LevelManagement: React.FC = () => {
                                                    </div>
                                                    <div>
                                                       <div className="flex items-center space-x-2">
-                                                         <p className={`font-black tracking-tight ${u.isBlocked ? 'text-red-900' : 'text-slate-900'}`}>{u.displayName || "Unnamed User"}</p>
+                                                         <p className={`font-black tracking-tight ${u.isBlocked ? 'text-red-900' : 'text-black'}`}>{u.displayName || "Unnamed User"}</p>
                                                          {u.isBlocked && <span className="text-[8px] font-black bg-red-600 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter">Blocked</span>}
                                                          <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${u.membershipStatus === 'active' || u.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
                                                             {u.membershipStatus === 'active' || u.paid ? 'Paid' : 'Unpaid'}
                                                          </span>
                                                       </div>
-                                                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-tight">{u.email}</p>
+                                                      <p className="text-[11px] text-black font-bold uppercase tracking-tight">{u.email}</p>
                                                    </div>
                                                 </div>
                                              </td>
 
-                                             <td className="px-8 py-6 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                             <td className="px-8 py-6 text-xs font-bold text-black uppercase tracking-widest">
                                                 {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'Legacy'}
                                              </td>
                                                    {isSuperAdmin && (
@@ -911,14 +911,14 @@ const LevelManagement: React.FC = () => {
             <div className="fixed inset-0 bg-slate-50 z-[200] overflow-y-auto animate-in slide-in-from-right duration-500 flex flex-col">
                <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4 flex items-center justify-between">
                   <div>
-                     <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{editingQuiz ? 'Edit Exam' : 'New Exam'}</h2>
-                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                     <h2 className="text-xl sm:text-2xl font-black text-black tracking-tight">{editingQuiz ? 'Edit Exam' : 'New Exam'}</h2>
+                     <p className="text-[10px] text-black font-bold uppercase tracking-widest mt-0.5">
                         {institutionName ? decodeURIComponent(institutionName) + ' \u2014 ' : ''}{level === 'Candidate' ? 'Candidate' : `Level ${level}`}
                      </p>
                   </div>
                   <button
                      onClick={() => setShowModal(false)}
-                     className="px-6 py-2.5 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-900 transition font-black text-[10px] uppercase tracking-widest"
+                     className="px-6 py-2.5 rounded-xl bg-slate-100 text-black hover:bg-slate-200 hover:text-black transition font-black text-[10px] uppercase tracking-widest"
                   >
                      Cancel
                   </button>
@@ -929,19 +929,19 @@ const LevelManagement: React.FC = () => {
                      <div className="bg-white p-6 sm:p-10 rounded-[2rem] shadow-2xl shadow-slate-200/50 border border-slate-100">
                         <div className="space-y-6">
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Exam Title</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Exam Title</label>
                               <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-slate-50 border-slate-200 font-bold" placeholder="e.g. Mid-Semester Exam" required />
                            </div>
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Subject Title</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Subject Title</label>
                               <input type="text" value={subjectTitle} onChange={e => setSubjectTitle(e.target.value)} className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-slate-50 border-slate-200 font-bold" placeholder="e.g. Medical Surgical Nursing" required />
                            </div>
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Curriculum Overview</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Curriculum Overview</label>
                               <textarea value={desc} onChange={e => setDesc(e.target.value)} className="w-full p-4 border rounded-2xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-slate-50 border-slate-200 font-medium min-h-[100px]" placeholder="Brief description for student dashboard..." required />
                            </div>
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Default Answer Options</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Default Answer Options</label>
                               <div className="flex gap-2 h-[54px]">
                                  {[
                                     { count: 2, label: 'A \u2014 B', desc: '2 Ops' },
@@ -955,7 +955,7 @@ const LevelManagement: React.FC = () => {
                                        className={`flex-1 rounded-2xl border-2 text-center transition-all ${
                                           optionsCount === opt.count
                                              ? 'bg-primary-600 border-primary-600 text-white shadow-lg shadow-primary-200'
-                                             : 'bg-slate-50 border-slate-100 text-slate-400 hover:border-slate-300'
+                                             : 'bg-slate-50 border-slate-100 text-black hover:border-slate-300'
                                        }`}
                                     >
                                        <span className="block text-xs font-black">{opt.label}</span>
@@ -967,36 +967,36 @@ const LevelManagement: React.FC = () => {
 
                         <div className="mt-8 space-y-8">
                            <section>
-                              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
+                              <h3 className="text-[10px] font-black text-black uppercase tracking-widest mb-4 flex items-center">
                                  Scheduling & Access
                               </h3>
                               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-6 bg-slate-50 rounded-[2rem]">
                                  <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Duration (Minutes)</label>
+                                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Duration (Minutes)</label>
                                     <input type="number" value={time} onChange={e => setTime(Number(e.target.value))} className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-sm font-bold" required min="1" />
                                  </div>
                                  <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Lock Code (Optional)</label>
+                                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Lock Code (Optional)</label>
                                     <input type="text" value={lockCode} onChange={e => setLockCode(e.target.value)} className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-sm font-bold" placeholder="e.g. SECRET123" />
                                  </div>
                                  <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Available From</label>
+                                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Available From</label>
                                     <input type="datetime-local" value={availableFrom} onChange={e => setAvailableFrom(e.target.value)} className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-sm font-bold" />
                                  </div>
                                  <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">Available Until</label>
+                                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Available Until</label>
                                     <input type="datetime-local" value={availableUntil} onChange={e => setAvailableUntil(e.target.value)} className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-sm font-bold" />
                                  </div>
                               </div>
                            </section>
 
                            <section>
-                              <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
+                              <h3 className="text-[10px] font-black text-black uppercase tracking-widest mb-4 flex items-center">
                                  Target Audience
                               </h3>
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6 bg-slate-50 rounded-[2rem]">
                                  <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Target Programs</label>
+                                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-3">Target Programs</label>
                                     <div className="flex flex-wrap gap-2">
                                        {['RCN', 'RGN', 'RMN', 'RPHN'].map(prog => (
                                           <button
@@ -1009,7 +1009,7 @@ const LevelManagement: React.FC = () => {
                                                    setAllowedPrograms([...allowedPrograms, prog]);
                                                 }
                                              }}
-                                             className={`px-4 py-2.5 rounded-xl text-[10px] font-black transition-all border-2 ${allowedPrograms.includes(prog) ? 'bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-200' : 'bg-white text-slate-400 border-white hover:border-slate-200'}`}
+                                             className={`px-4 py-2.5 rounded-xl text-[10px] font-black transition-all border-2 ${allowedPrograms.includes(prog) ? 'bg-primary-600 text-white border-primary-600 shadow-lg shadow-primary-200' : 'bg-white text-black border-white hover:border-slate-200'}`}
                                           >
                                              {prog}
                                           </button>
@@ -1017,15 +1017,15 @@ const LevelManagement: React.FC = () => {
                                     </div>
                                  </div>
                                  <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Direct Assignments</label>
+                                    <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-3">Direct Assignments</label>
                                     <input type="text" value={allowedUsers} onChange={e => setAllowedUsers(e.target.value)} className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition bg-white border-slate-200 text-sm" placeholder="Emails separated by commas..." />
                                  </div>
                               </div>
                            </section>
 
                            <section>
-                               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
-                                  <i className="fas fa-shield-alt mr-2 text-slate-400"></i> SECURITY ENFORCEMENT
+                               <h3 className="text-[10px] font-black text-black uppercase tracking-widest mb-4 flex items-center">
+                                  <i className="fas fa-shield-alt mr-2 text-black"></i> SECURITY ENFORCEMENT
                                </h3>
                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-6 bg-slate-50 rounded-[2rem]">
                                   {[
@@ -1045,7 +1045,7 @@ const LevelManagement: React.FC = () => {
                                         key={label}
                                         type="button"
                                         onClick={toggle}
-                                        className={`p-4 rounded-2xl border-2 flex items-center justify-between transition ${state ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-white text-slate-400 hover:border-primary-100'}`}
+                                        className={`p-4 rounded-2xl border-2 flex items-center justify-between transition ${state ? 'bg-red-50 border-red-200 text-red-700' : 'bg-white border-white text-black hover:border-primary-100'}`}
                                      >
                                         <span className="text-[10px] font-black uppercase tracking-widest">{label}</span>
                                         <i className={`fas ${state ? onIcon : offIcon} text-sm`}></i>
@@ -1055,19 +1055,19 @@ const LevelManagement: React.FC = () => {
                             </section>
  
                             <section>
-                               <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center">
-                                  <i className="fas fa-cog mr-2 text-slate-400"></i> CONFIGURATION
+                               <h3 className="text-[10px] font-black text-black uppercase tracking-widest mb-4 flex items-center">
+                                  <i className="fas fa-cog mr-2 text-black"></i> CONFIGURATION
                                </h3>
                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6 bg-slate-50 rounded-[2rem]">
                                   <div>
-                                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Questions Per Page</label>
+                                     <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-3">Questions Per Page</label>
                                      <div className="flex flex-wrap gap-2">
                                         {[0, 1, 2, 5, 10].map(num => (
                                            <button
                                               key={num}
                                               type="button"
                                               onClick={() => setQuestionsPerPage(num)}
-                                              className={`flex-1 min-w-[40px] py-3 rounded-xl border-2 font-black text-[10px] transition ${questionsPerPage === num ? 'bg-primary-600 border-primary-600 text-white shadow-lg shadow-primary-200' : 'bg-white border-white text-slate-400 hover:border-slate-200'}`}
+                                              className={`flex-1 min-w-[40px] py-3 rounded-xl border-2 font-black text-[10px] transition ${questionsPerPage === num ? 'bg-primary-600 border-primary-600 text-white shadow-lg shadow-primary-200' : 'bg-white border-white text-black hover:border-slate-200'}`}
                                            >
                                               {num === 0 ? 'ALL' : num}
                                            </button>
@@ -1075,7 +1075,7 @@ const LevelManagement: React.FC = () => {
                                      </div>
                                   </div>
                                   <div>
-                                     <label className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Required Answers %</label>
+                                     <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-3">Required Answers %</label>
                                      <div className="relative">
                                         <input
                                            type="number"
@@ -1086,7 +1086,7 @@ const LevelManagement: React.FC = () => {
                                            max="100"
                                            placeholder="e.g. 100"
                                         />
-                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">%</div>
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-black">%</div>
                                      </div>
                                   </div>
                                </div>
@@ -1112,7 +1112,7 @@ const LevelManagement: React.FC = () => {
                <>
                   <button 
                      onClick={() => setConfirmModal(null)}
-                     className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                     className="flex-1 py-4 bg-slate-100 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
                   >
                      Cancel
                   </button>

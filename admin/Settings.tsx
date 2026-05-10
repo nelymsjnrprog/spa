@@ -83,8 +83,8 @@ const Settings: React.FC = () => {
                     >
                         Back to Previous Page
                     </button>
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">System Settings</h1>
-                    <p className="text-slate-500 font-medium">Configure core academic and administrative parameters.</p>
+                    <h1 className="text-3xl font-bold text-black tracking-tight">System Settings</h1>
+                    <p className="text-black font-medium">Configure core academic and administrative parameters.</p>
                 </div>
 
                 {/* Administration Suite - Moved from Navigation as requested */}
@@ -98,9 +98,9 @@ const Settings: React.FC = () => {
                         ].map((item, i) => (
                             <Link key={i} to={item.link}>
                                 <Card className="p-6 border-none shadow-xl shadow-slate-200/50 hover:translate-y-[-4px] transition-all group bg-white">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Administration</p>
-                                    <h3 className="text-lg font-black text-slate-900 mb-2">{item.title}</h3>
-                                    <p className="text-sm text-slate-500 font-medium">{item.desc}</p>
+                                    <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Administration</p>
+                                    <h3 className="text-lg font-black text-black mb-2">{item.title}</h3>
+                                    <p className="text-sm text-black font-medium">{item.desc}</p>
                                     <div className="mt-4 text-[10px] font-black text-primary-600 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
                                         Access Module
                                     </div>
@@ -122,7 +122,7 @@ const Settings: React.FC = () => {
                                 type="text"
                                 value={newInstitutionName}
                                 onChange={(e) => setNewInstitutionName(e.target.value)}
-                                className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition text-sm text-slate-700"
+                                className="flex-1 px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition text-sm text-black"
                                 placeholder="Enter Institution Name (e.g., Ho Poly)"
                             />
                             <button
@@ -135,7 +135,7 @@ const Settings: React.FC = () => {
                         </div>
 
                         {loading ? (
-                            <div className="py-10 text-center text-slate-400 font-bold uppercase tracking-widest animate-pulse">Loading institutions...</div>
+                            <div className="py-10 text-center text-black font-bold uppercase tracking-widest animate-pulse">Loading institutions...</div>
                         ) : institutions.length === 0 ? (
                             <div className="py-10 text-center text-slate-300 italic">No institutions configured.</div>
                         ) : (
@@ -143,7 +143,7 @@ const Settings: React.FC = () => {
                                 {institutions.map(inst => (
                                     <div key={inst.id} className="p-6 bg-white rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between group">
                                         <div className="flex items-center space-x-3">
-                                            <p className="font-bold text-slate-900">{inst.name}</p>
+                                            <p className="font-bold text-black">{inst.name}</p>
                                         </div>
                                         <button
                                             onClick={() => handleDeleteInstitution(inst.id, inst.name)}
@@ -169,7 +169,7 @@ const Settings: React.FC = () => {
                     <>
                         <button 
                             onClick={() => setConfirmModal(null)}
-                            className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                            className="flex-1 py-4 bg-slate-100 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
                         >
                             Cancel
                         </button>

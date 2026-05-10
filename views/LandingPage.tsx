@@ -16,7 +16,7 @@ const ProductDemoScenes: React.FC<{ activeScene: number }> = ({ activeScene }) =
         <div className="w-full max-w-sm bg-white rounded-xl shadow-lg border border-slate-100 p-6 space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-50 pb-3">
             <div className="w-8 h-8 bg-primary-100 rounded text-primary-600 flex items-center justify-center font-bold">+</div>
-            <span className="font-bold text-slate-800">Create Quiz</span>
+            <span className="font-bold text-black">Create Quiz</span>
           </div>
           <div className="space-y-3">
             <div className="h-4 w-3/4 bg-slate-50 rounded animate-typing"></div>
@@ -37,7 +37,7 @@ const ProductDemoScenes: React.FC<{ activeScene: number }> = ({ activeScene }) =
       {/* Scene 2: Student Enters Code */}
       <div className={`absolute inset-0 p-8 flex flex-col items-center justify-center transition-all duration-700 ${activeScene === 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         <div className="w-full max-w-sm space-y-6 text-center">
-          <h3 className="text-xl font-extrabold text-slate-800">Join a Quiz</h3>
+          <h3 className="text-xl font-extrabold text-black">Join a Quiz</h3>
           <div className="flex items-center bg-white p-2 rounded-xl shadow-xl border border-slate-200">
             <div className="flex-1 px-4 py-3 text-lg font-mono font-bold text-[#1a732a] animate-type-code">
               #ACA247
@@ -207,7 +207,7 @@ const LandingPage: React.FC = () => {
       <nav className="fixed top-0 w-full z-50 bg-white border-b border-slate-100 px-5 py-3.5 md:px-6 flex items-center justify-between safe-pt">
         {/* Left: Logo */}
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-          <span className="text-lg font-bold tracking-tight text-slate-900 leading-tight">SMARTPREPACA</span>
+          <span className="text-lg font-bold tracking-tight text-black leading-tight">SMARTPREPACA</span>
         </div>
 
         {/* Center: Empty (for balance) */}
@@ -217,7 +217,7 @@ const LandingPage: React.FC = () => {
         <div className="flex items-center gap-3 md:gap-4">
           <button 
             onClick={() => openAuth('login')}
-            className="text-[14px] md:text-[15px] font-medium text-slate-600 hover:text-slate-900 transition-colors px-2"
+            className="text-[14px] md:text-[15px] font-medium text-black hover:text-black transition-colors px-2"
           >
             Log In
           </button>
@@ -238,7 +238,7 @@ const LandingPage: React.FC = () => {
             <p className="text-slate-300 text-sm font-medium">Access your session instantly</p>
           </div>
           <form onSubmit={handleBannerJoin} className="w-full max-w-sm flex items-center bg-white p-1 rounded-lg border-4 border-[#ffffff20]">
-            <span className="pl-4 text-slate-400 font-mono text-xl">#</span>
+            <span className="pl-4 text-black font-mono text-xl">#</span>
             <input 
               type="text" 
               placeholder="Enter 6-digit code"
@@ -322,7 +322,7 @@ const LandingPage: React.FC = () => {
               <h2 className="text-3xl lg:text-4xl font-black text-[#1a1a1a] tracking-tight leading-snug">
                 Need help with something?
               </h2>
-              <p className="text-[15px] text-slate-500 font-medium leading-relaxed">
+              <p className="text-[15px] text-black font-medium leading-relaxed">
                 Send us a message and we'll get back to you within 24 hours.
               </p>
             </div>
@@ -335,7 +335,7 @@ const LandingPage: React.FC = () => {
                     <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#1a732a]" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                   </div>
                   <h3 className="text-lg font-black text-[#1a1a1a]">Message sent.</h3>
-                  <p className="text-slate-500 font-medium text-sm">We'll get back to you within 24 hours.</p>
+                  <p className="text-black font-medium text-sm">We'll get back to you within 24 hours.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSupportSubmit} className="space-y-3">
@@ -346,7 +346,7 @@ const LandingPage: React.FC = () => {
                       required
                       value={supportData.name}
                       onChange={e => setSupportData({...supportData, name: e.target.value})}
-                      className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-slate-400 focus:border-[#1a732a] focus:outline-none transition-colors font-medium"
+                      className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-black focus:border-[#1a732a] focus:outline-none transition-colors font-medium"
                     />
                     <input
                       type="email"
@@ -354,7 +354,7 @@ const LandingPage: React.FC = () => {
                       required
                       value={supportData.email}
                       onChange={e => setSupportData({...supportData, email: e.target.value})}
-                      className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-slate-400 focus:border-[#1a732a] focus:outline-none transition-colors font-medium"
+                      className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-black focus:border-[#1a732a] focus:outline-none transition-colors font-medium"
                     />
                   </div>
                   <input
@@ -363,7 +363,7 @@ const LandingPage: React.FC = () => {
                     required
                     value={supportData.subject}
                     onChange={e => setSupportData({...supportData, subject: e.target.value})}
-                    className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-slate-400 focus:border-[#1a732a] focus:outline-none transition-colors font-medium"
+                    className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-black focus:border-[#1a732a] focus:outline-none transition-colors font-medium"
                   />
                   <textarea
                     placeholder="How can we help you?"
@@ -371,7 +371,7 @@ const LandingPage: React.FC = () => {
                     rows={5}
                     value={supportData.message}
                     onChange={e => setSupportData({...supportData, message: e.target.value})}
-                    className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-slate-400 focus:border-[#1a732a] focus:outline-none transition-colors font-medium resize-none"
+                    className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-black focus:border-[#1a732a] focus:outline-none transition-colors font-medium resize-none"
                   ></textarea>
                   <button
                     type="submit"
@@ -504,7 +504,7 @@ const TermsSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ i
       <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
         <div className="w-full max-w-4xl">
           <div className="flex justify-between items-center mb-16">
-            <button onClick={onClose} className="group flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-black uppercase text-[10px] tracking-widest">
+            <button onClick={onClose} className="group flex items-center gap-2 text-black hover:text-black transition-all font-black uppercase text-[10px] tracking-widest">
               <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-all">
                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
               </div>
@@ -513,25 +513,25 @@ const TermsSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ i
           </div>
 
           <div className="mb-16">
-            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-4 text-slate-900">Terms of Service</h2>
-            <p className="text-slate-500 font-medium text-xl">Last Updated: April 27, 2026</p>
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-4 text-black">Terms of Service</h2>
+            <p className="text-black font-medium text-xl">Last Updated: April 27, 2026</p>
           </div>
 
           <div className="prose prose-slate max-w-none space-y-10">
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Acceptance of Terms</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">By accessing or using SmartPrepAca, you agree to be bound by these Terms of Service. If you do not agree to all of these terms, you should not use our services.</p>
+              <h3 className="text-2xl font-black text-black">Acceptance of Terms</h3>
+              <p className="text-black leading-relaxed font-medium">By accessing or using SmartPrepAca, you agree to be bound by these Terms of Service. If you do not agree to all of these terms, you should not use our services.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Description of Service</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">SmartPrepAca provides an online examination and academic preparation platform. We reserve the right to modify or discontinue any part of the service at any time without prior notice.</p>
+              <h3 className="text-2xl font-black text-black">Description of Service</h3>
+              <p className="text-black leading-relaxed font-medium">SmartPrepAca provides an online examination and academic preparation platform. We reserve the right to modify or discontinue any part of the service at any time without prior notice.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">User Conduct</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">You agree to use the platform for lawful purposes only. Prohibited conduct includes but is not limited to:</p>
-              <ul className="list-disc pl-6 space-y-2 text-slate-600 font-medium">
+              <h3 className="text-2xl font-black text-black">User Conduct</h3>
+              <p className="text-black leading-relaxed font-medium">You agree to use the platform for lawful purposes only. Prohibited conduct includes but is not limited to:</p>
+              <ul className="list-disc pl-6 space-y-2 text-black font-medium">
                 <li>Attempting to cheat or bypass examination security measures.</li>
                 <li>Sharing account credentials with third parties.</li>
                 <li>Using the service to transmit malicious software or spam.</li>
@@ -540,18 +540,18 @@ const TermsSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ i
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Intellectual Property</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">All content on SmartPrepAca, including text, graphics, logos, and software, is the property of SmartPrepAca or its content suppliers and is protected by intellectual property laws.</p>
+              <h3 className="text-2xl font-black text-black">Intellectual Property</h3>
+              <p className="text-black leading-relaxed font-medium">All content on SmartPrepAca, including text, graphics, logos, and software, is the property of SmartPrepAca or its content suppliers and is protected by intellectual property laws.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Limitation of Liability</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">SmartPrepAca shall not be liable for any indirect, incidental, special, or consequential damages resulting from the use or inability to use the service.</p>
+              <h3 className="text-2xl font-black text-black">Limitation of Liability</h3>
+              <p className="text-black leading-relaxed font-medium">SmartPrepAca shall not be liable for any indirect, incidental, special, or consequential damages resulting from the use or inability to use the service.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Governing Law</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which SmartPrepAca operates, without regard to its conflict of law principles.</p>
+              <h3 className="text-2xl font-black text-black">Governing Law</h3>
+              <p className="text-black leading-relaxed font-medium">These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which SmartPrepAca operates, without regard to its conflict of law principles.</p>
             </section>
           </div>
         </div>
@@ -566,7 +566,7 @@ const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
       <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
         <div className="w-full max-w-4xl">
           <div className="flex justify-between items-center mb-16">
-            <button onClick={onClose} className="group flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-black uppercase text-[10px] tracking-widest">
+            <button onClick={onClose} className="group flex items-center gap-2 text-black hover:text-black transition-all font-black uppercase text-[10px] tracking-widest">
               <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-all">
                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
               </div>
@@ -575,15 +575,15 @@ const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
           </div>
 
           <div className="mb-16">
-            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-4 text-slate-900">Privacy Policy</h2>
-            <p className="text-slate-500 font-medium text-xl">Last Updated: April 27, 2026</p>
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-4 text-black">Privacy Policy</h2>
+            <p className="text-black font-medium text-xl">Last Updated: April 27, 2026</p>
           </div>
 
           <div className="prose prose-slate max-w-none space-y-10">
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Information We Collect</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">We collect information you provide directly to us, such as when you create an account, participate in an exam, or contact support. This may include:</p>
-              <ul className="list-disc pl-6 space-y-2 text-slate-600 font-medium">
+              <h3 className="text-2xl font-black text-black">Information We Collect</h3>
+              <p className="text-black leading-relaxed font-medium">We collect information you provide directly to us, such as when you create an account, participate in an exam, or contact support. This may include:</p>
+              <ul className="list-disc pl-6 space-y-2 text-black font-medium">
                 <li>Name, email address, and phone number.</li>
                 <li>Institution and academic program details.</li>
                 <li>Quiz responses and performance data.</li>
@@ -592,9 +592,9 @@ const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">How We Use Your Information</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">We use the information we collect to provide, maintain, and improve our services, including:</p>
-              <ul className="list-disc pl-6 space-y-2 text-slate-600 font-medium">
+              <h3 className="text-2xl font-black text-black">How We Use Your Information</h3>
+              <p className="text-black leading-relaxed font-medium">We use the information we collect to provide, maintain, and improve our services, including:</p>
+              <ul className="list-disc pl-6 space-y-2 text-black font-medium">
                 <li>Processing your registration and verifying your identity.</li>
                 <li>Generating and storing your exam results.</li>
                 <li>Enabling real-time monitoring for authorized instructors.</li>
@@ -603,23 +603,23 @@ const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Data Security</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">We implement a variety of security measures to maintain the safety of your personal information. However, no method of transmission over the Internet or electronic storage is 100% secure.</p>
+              <h3 className="text-2xl font-black text-black">Data Security</h3>
+              <p className="text-black leading-relaxed font-medium">We implement a variety of security measures to maintain the safety of your personal information. However, no method of transmission over the Internet or electronic storage is 100% secure.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Sharing of Information</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">We do not sell or rent your personal information to third parties. We may share information with your institution or authorized instructors for academic purposes.</p>
+              <h3 className="text-2xl font-black text-black">Sharing of Information</h3>
+              <p className="text-black leading-relaxed font-medium">We do not sell or rent your personal information to third parties. We may share information with your institution or authorized instructors for academic purposes.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Your Rights</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">You have the right to access, correct, or delete your personal information. You can manage most of your data through your profile dashboard.</p>
+              <h3 className="text-2xl font-black text-black">Your Rights</h3>
+              <p className="text-black leading-relaxed font-medium">You have the right to access, correct, or delete your personal information. You can manage most of your data through your profile dashboard.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">Cookies</h3>
-              <p className="text-slate-600 leading-relaxed font-medium">We use cookies to improve your browsing experience and analyze site traffic. You can choose to disable cookies through your browser settings, though this may affect platform functionality.</p>
+              <h3 className="text-2xl font-black text-black">Cookies</h3>
+              <p className="text-black leading-relaxed font-medium">We use cookies to improve your browsing experience and analyze site traffic. You can choose to disable cookies through your browser settings, though this may affect platform functionality.</p>
             </section>
           </div>
         </div>
@@ -641,7 +641,7 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
       <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
         <div className="w-full max-w-7xl">
           <div className="flex justify-between items-center mb-16">
-            <button onClick={onClose} className="group flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-black uppercase text-[10px] tracking-widest">
+            <button onClick={onClose} className="group flex items-center gap-2 text-black hover:text-black transition-all font-black uppercase text-[10px] tracking-widest">
               <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-all">
                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
               </div>
@@ -650,8 +650,8 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
           </div>
 
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-6 text-slate-900">Pricing Plans</h2>
-            <p className="text-slate-500 font-medium text-xl max-w-2xl mx-auto">
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-6 text-black">Pricing Plans</h2>
+            <p className="text-black font-medium text-xl max-w-2xl mx-auto">
               Real-time subscription plans based on your academic level.
             </p>
           </div>
@@ -666,14 +666,14 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
                   <div className="mb-8">
                     <h3 className="text-sm font-black uppercase tracking-widest text-primary-600 mb-2">{lvl.name}</h3>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-black text-slate-900">GHS {lvlSettings.price}</span>
-                      <span className="text-slate-400 font-bold">/term</span>
+                      <span className="text-4xl font-black text-black">GHS {lvlSettings.price}</span>
+                      <span className="text-black font-bold">/term</span>
                     </div>
                     {isFree && <span className="inline-block mt-2 px-3 py-1 bg-red-50 text-red-600 text-[10px] font-black uppercase rounded-full">Enrollment Closed</span>}
                   </div>
                   <ul className="space-y-3 mb-8 flex-1">
                     {lvl.features.map((feat, i) => (
-                      <li key={i} className="flex items-center gap-3 text-slate-600 text-sm font-medium">
+                      <li key={i} className="flex items-center gap-3 text-black text-sm font-medium">
                         <svg viewBox="0 0 24 24" className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
                         {feat}
                       </li>
@@ -693,7 +693,7 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
 
 
           <div className="max-w-3xl mx-auto space-y-12">
-            <h3 className="text-3xl font-black text-slate-900 text-center">Frequently Asked Questions</h3>
+            <h3 className="text-3xl font-black text-black text-center">Frequently Asked Questions</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {[
                 { q: "Can I cancel anytime?", a: "Yes, you can cancel your subscription at any time from your account settings. You will maintain access until the end of your billing cycle." },
@@ -702,8 +702,8 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
                 { q: "Can I upgrade or downgrade?", a: "Yes, you can change your plan at any time. Changes are applied immediately with pro-rated billing." }
               ].map((faq, i) => (
                 <div key={i} className="space-y-3">
-                  <h4 className="font-black text-slate-900">{faq.q}</h4>
-                  <p className="text-slate-500 font-medium leading-relaxed">{faq.a}</p>
+                  <h4 className="font-black text-black">{faq.q}</h4>
+                  <p className="text-black font-medium leading-relaxed">{faq.a}</p>
                 </div>
               ))}
             </div>

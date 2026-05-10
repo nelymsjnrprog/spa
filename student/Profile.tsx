@@ -59,8 +59,8 @@ const Profile: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
 
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Settings</h1>
-            <p className="text-slate-500">Manage your identity and security preferences.</p>
+            <h1 className="text-3xl font-bold text-black tracking-tight">Settings</h1>
+            <p className="text-black">Manage your identity and security preferences.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -69,8 +69,8 @@ const Profile: React.FC = () => {
                 <div className="w-24 h-24 bg-primary-600 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl text-white font-black shadow-lg">
                   {profile?.displayName?.charAt(0)}
                 </div>
-                <h2 className="text-xl font-bold text-slate-900">{profile?.displayName}</h2>
-                <p className="text-sm text-slate-500 mb-6">{profile?.email}</p>
+                <h2 className="text-xl font-bold text-black">{profile?.displayName}</h2>
+                <p className="text-sm text-black mb-6">{profile?.email}</p>
                 <span className="bg-primary-50 text-primary-600 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-primary-100">
                   {profile?.role} Account
                 </span>
@@ -84,20 +84,20 @@ const Profile: React.FC = () => {
                 </h3>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Full Name</label>
-                    <div className="p-3 bg-slate-50 rounded-lg text-slate-700 font-medium border border-slate-100">{profile?.displayName}</div>
+                    <label className="block text-xs font-bold text-black uppercase mb-1">Full Name</label>
+                    <div className="p-3 bg-slate-50 rounded-lg text-black font-medium border border-slate-100">{profile?.displayName}</div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Email Address</label>
-                    <div className="p-3 bg-slate-50 rounded-lg text-slate-700 font-medium border border-slate-100">{profile?.email}</div>
+                    <label className="block text-xs font-bold text-black uppercase mb-1">Email Address</label>
+                    <div className="p-3 bg-slate-50 rounded-lg text-black font-medium border border-slate-100">{profile?.email}</div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Phone Number</label>
-                    <div className="p-3 bg-slate-50 rounded-lg text-slate-700 font-medium border border-slate-100">{profile?.phoneNumber || 'N/A'}</div>
+                    <label className="block text-xs font-bold text-black uppercase mb-1">Phone Number</label>
+                    <div className="p-3 bg-slate-50 rounded-lg text-black font-medium border border-slate-100">{profile?.phoneNumber || 'N/A'}</div>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Account Created</label>
-                    <div className="p-3 bg-slate-50 rounded-lg text-slate-700 font-medium border border-slate-100">
+                    <label className="block text-xs font-bold text-black uppercase mb-1">Account Created</label>
+                    <div className="p-3 bg-slate-50 rounded-lg text-black font-medium border border-slate-100">
                       {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString() : 'N/A'}
                     </div>
                   </div>
@@ -121,7 +121,7 @@ const Profile: React.FC = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Institution</label>
+                    <label className="block text-xs font-bold text-black uppercase mb-1">Institution</label>
                     {isEditing ? (
                       <div className="relative">
                         <select
@@ -129,7 +129,7 @@ const Profile: React.FC = () => {
                           disabled={profile?.institution !== 'Pending' && !!profile?.institution}
                           value={editInstitution}
                           onChange={(e) => setEditInstitution(e.target.value)}
-                          className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition bg-white ${profile?.institution !== 'Pending' && !!profile?.institution ? 'bg-slate-50 border-slate-200 cursor-not-allowed text-slate-500 appearance-none' : 'border-primary-200 focus:ring-primary-500'}`}
+                          className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition bg-white ${profile?.institution !== 'Pending' && !!profile?.institution ? 'bg-slate-50 border-slate-200 cursor-not-allowed text-black appearance-none' : 'border-primary-200 focus:ring-primary-500'}`}
                         >
                           <option value="" disabled>Select Institution</option>
                           {institutions.map(inst => (
@@ -137,13 +137,13 @@ const Profile: React.FC = () => {
                           ))}
                         </select>
                         {profile?.institution !== 'Pending' && !!profile?.institution && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-black pointer-events-none">
                             <i className="fas fa-lock text-xs"></i>
                           </div>
                         )}
                       </div>
                     ) : (
-                      <div className="p-3 bg-slate-50 rounded-lg text-slate-800 font-bold border border-slate-100 flex items-center">
+                      <div className="p-3 bg-slate-50 rounded-lg text-black font-bold border border-slate-100 flex items-center">
                         {profile?.institution === 'Pending' ? (
                           <span className="text-orange-500"><i className="fas fa-exclamation-triangle mr-2"></i> Needs Update</span>
                         ) : (
@@ -153,7 +153,7 @@ const Profile: React.FC = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Academic Level</label>
+                    <label className="block text-xs font-bold text-black uppercase mb-1">Academic Level</label>
                     {isEditing ? (
                       <div className="relative">
                         <select
@@ -161,7 +161,7 @@ const Profile: React.FC = () => {
                           disabled={!!profile?.level}
                           value={editLevel}
                           onChange={(e) => setEditLevel(e.target.value)}
-                          className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition bg-white ${profile?.level ? 'bg-slate-50 border-slate-200 cursor-not-allowed text-slate-500 appearance-none' : 'border-primary-200 focus:ring-primary-500'}`}
+                          className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition bg-white ${profile?.level ? 'bg-slate-50 border-slate-200 cursor-not-allowed text-black appearance-none' : 'border-primary-200 focus:ring-primary-500'}`}
                         >
                           <option value="" disabled>Select Level</option>
                           <option value="100">Level 100</option>
@@ -170,13 +170,13 @@ const Profile: React.FC = () => {
                           <option value="Candidate">Candidate</option>
                         </select>
                         {profile?.level && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" title="Contact admin to promote or change level">
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-black" title="Contact admin to promote or change level">
                             <i className="fas fa-lock text-xs"></i>
                           </div>
                         )}
                       </div>
                     ) : (
-                      <div className="p-3 bg-slate-50 rounded-lg text-slate-800 font-bold border border-slate-100 flex items-center">
+                      <div className="p-3 bg-slate-50 rounded-lg text-black font-bold border border-slate-100 flex items-center">
                         {profile?.level ? (
                           `Level ${profile.level}`
                         ) : (
@@ -186,7 +186,7 @@ const Profile: React.FC = () => {
                     )}
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-slate-400 uppercase mb-1">Academic Program</label>
+                    <label className="block text-xs font-bold text-black uppercase mb-1">Academic Program</label>
                     {isEditing ? (
                       <div className="relative">
                         <select
@@ -194,7 +194,7 @@ const Profile: React.FC = () => {
                           disabled={!!profile?.program}
                           value={editProgram}
                           onChange={(e) => setEditProgram(e.target.value)}
-                          className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition bg-white ${profile?.program ? 'bg-slate-50 border-slate-200 cursor-not-allowed text-slate-500 appearance-none' : 'border-primary-200 focus:ring-primary-500'}`}
+                          className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition bg-white ${profile?.program ? 'bg-slate-50 border-slate-200 cursor-not-allowed text-black appearance-none' : 'border-primary-200 focus:ring-primary-500'}`}
                         >
                           <option value="" disabled>Select Program</option>
                           <option value="RCN">RCN</option>
@@ -203,13 +203,13 @@ const Profile: React.FC = () => {
                           <option value="RPHN">RPHN</option>
                         </select>
                         {profile?.program && (
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" title="Contact admin to change program">
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-black" title="Contact admin to change program">
                             <i className="fas fa-lock text-xs"></i>
                           </div>
                         )}
                       </div>
                     ) : (
-                      <div className="p-3 bg-slate-50 rounded-lg text-slate-800 font-bold border border-slate-100 flex items-center">
+                      <div className="p-3 bg-slate-50 rounded-lg text-black font-bold border border-slate-100 flex items-center">
                         {profile?.program || (
                           <span className="text-orange-500"><i className="fas fa-exclamation-triangle mr-2"></i> Needs Update</span>
                         )}
@@ -224,7 +224,7 @@ const Profile: React.FC = () => {
                   <i className="fas fa-shield-alt mr-3"></i>
                   Security
                 </h3>
-                <p className="text-sm text-slate-500 mb-6">Changing your password or email requires re-authentication for security purposes.</p>
+                <p className="text-sm text-black mb-6">Changing your password or email requires re-authentication for security purposes.</p>
                 <button
                   onClick={handleLogout}
                   className="bg-white border border-red-200 text-red-600 px-6 py-2 rounded-lg font-bold text-sm hover:bg-red-600 hover:text-white transition"

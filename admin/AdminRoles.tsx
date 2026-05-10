@@ -206,8 +206,8 @@ const AdminRoles: React.FC = () => {
             <Container>
                <div className="flex flex-col items-center justify-center py-32">
                   <i className="fas fa-shield-halved text-6xl text-slate-200 mb-6"></i>
-                  <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Restricted</h1>
-                  <p className="text-slate-500">Only Super Admins can manage admin roles and permissions.</p>
+                  <h1 className="text-2xl font-bold text-black mb-2">Access Restricted</h1>
+                  <p className="text-black">Only Super Admins can manage admin roles and permissions.</p>
                   <Link to="/admin/settings" className="mt-6 text-primary-600 font-bold hover:underline">
                      <i className="fas fa-arrow-left mr-2"></i>Back to Settings
                   </Link>
@@ -226,8 +226,8 @@ const AdminRoles: React.FC = () => {
                   <Link to="/admin/settings" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
                      <i className="fas fa-arrow-left mr-2"></i> Back to Settings
                   </Link>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Admin Roles & Permissions</h1>
-                  <p className="text-slate-500 font-medium text-sm sm:text-base">Manage who has access to what.</p>
+                  <h1 className="text-2xl sm:text-3xl font-bold text-black tracking-tight">Admin Roles & Permissions</h1>
+                  <p className="text-black font-medium text-sm sm:text-base">Manage who has access to what.</p>
                </div>
                <button
                   onClick={() => setShowPromoteModal(true)}
@@ -241,28 +241,28 @@ const AdminRoles: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
                <Card className="p-4 border-l-4 border-l-amber-500">
                   <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">Super Admin</p>
-                  <p className="text-xs text-slate-500">Full access to all institutions, levels, and administrative settings.</p>
+                  <p className="text-xs text-black">Full access to all institutions, levels, and administrative settings.</p>
                </Card>
                <Card className="p-4 border-l-4 border-l-primary-500">
                   <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mb-1">Admin</p>
-                  <p className="text-xs text-slate-500">Can manage quizzes and students for assigned institutions only.</p>
+                  <p className="text-xs text-black">Can manage quizzes and students for assigned institutions only.</p>
                </Card>
                <Card className="p-4 border-l-4 border-l-slate-400">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Viewer</p>
-                  <p className="text-xs text-slate-500">Read-only access. Cannot modify institutions or examination data.</p>
+                  <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Viewer</p>
+                  <p className="text-xs text-black">Read-only access. Cannot modify institutions or examination data.</p>
                </Card>
             </div>
 
             {/* Admin List */}
             {loading ? (
-               <Card className="p-20 text-center text-slate-400 font-bold uppercase tracking-widest animate-pulse">Loading Admins...</Card>
+               <Card className="p-20 text-center text-black font-bold uppercase tracking-widest animate-pulse">Loading Admins...</Card>
             ) : (
                <Card className="overflow-hidden border-none shadow-xl shadow-slate-200/50">
                   <div className="px-6 sm:px-8 py-5 bg-slate-900 text-white flex items-center justify-between">
                      <h2 className="text-sm font-black uppercase tracking-widest flex items-center">
                         <i className="fas fa-users-cog mr-2 text-primary-400"></i> Admin Registry
                      </h2>
-                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                     <span className="text-[10px] font-black text-black uppercase tracking-widest">
                         {admins.length} Admin{admins.length !== 1 ? 's' : ''}
                      </span>
                   </div>
@@ -288,17 +288,17 @@ const AdminRoles: React.FC = () => {
                                     </div>
                                     <div>
                                        <div className="flex items-center space-x-2">
-                                          <p className="font-bold text-slate-900">{admin.displayName}</p>
+                                          <p className="font-bold text-black">{admin.displayName}</p>
                                           {isOwner && (
                                              <span className="text-[8px] font-black bg-amber-500 text-white px-1.5 py-0.5 rounded-full uppercase">OWNER</span>
                                           )}
                                           {isOnline ? (
                                              <span className="text-[8px] font-black bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-full uppercase">Online</span>
                                           ) : (
-                                             <span className="text-[8px] font-black bg-slate-100 text-slate-400 px-1.5 py-0.5 rounded-full uppercase">Offline</span>
+                                             <span className="text-[8px] font-black bg-slate-100 text-black px-1.5 py-0.5 rounded-full uppercase">Offline</span>
                                           )}
                                        </div>
-                                       <p className="text-[11px] text-slate-400">{admin.email}</p>
+                                       <p className="text-[11px] text-black">{admin.email}</p>
                                     </div>
                                  </div>
 
@@ -309,7 +309,7 @@ const AdminRoles: React.FC = () => {
                                           <span className={`text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-wider ${
                                              perm === 'super_admin' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
                                              perm === 'institution_admin' ? 'bg-primary-50 text-primary-700 border border-primary-200' :
-                                             'bg-slate-50 text-slate-500 border border-slate-200'
+                                             'bg-slate-50 text-black border border-slate-200'
                                           }`}>
                                              {perm === 'institution_admin' ? 'Admin' : perm.replace('_', ' ')}
                                           </span>
@@ -360,7 +360,7 @@ const AdminRoles: React.FC = () => {
                                                       className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border-2 transition uppercase ${
                                                          editInstitutions.includes(inst.name)
                                                             ? 'bg-primary-600 border-primary-600 text-white'
-                                                            : 'bg-white border-slate-200 text-slate-400 hover:border-primary-200'
+                                                            : 'bg-white border-slate-200 text-black hover:border-primary-200'
                                                       }`}
                                                    >
                                                       {inst.name}
@@ -378,7 +378,7 @@ const AdminRoles: React.FC = () => {
                                              </button>
                                              <button
                                                 onClick={() => setEditingUser(null)}
-                                                className="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-200 transition"
+                                                className="px-4 py-2 bg-slate-100 text-black rounded-lg text-xs font-bold hover:bg-slate-200 transition"
                                              >
                                                 Cancel
                                              </button>
@@ -391,7 +391,7 @@ const AdminRoles: React.FC = () => {
                         );
                      })}
                      {admins.length === 0 && (
-                        <div className="p-20 text-center text-slate-400 text-sm">No admin accounts found.</div>
+                        <div className="p-20 text-center text-black text-sm">No admin accounts found.</div>
                      )}
                   </div>
                </Card>
@@ -403,21 +403,21 @@ const AdminRoles: React.FC = () => {
                   <Card className="max-w-lg w-full p-6 sm:p-8 relative border-none shadow-2xl animate-in zoom-in-95 max-h-[90vh] overflow-y-auto">
                      <button
                         onClick={resetModalState}
-                        className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 transition"
+                        className="absolute top-4 right-4 text-black hover:text-black transition"
                         title="Close modal"
                      >
                         <i className="fas fa-times text-xl"></i>
                      </button>
 
-                     <h2 className="text-xl font-black text-slate-900 mb-1">Add New Admin</h2>
-                     <p className="text-sm text-slate-500 mb-4">Create a new admin account or promote an existing student.</p>
+                     <h2 className="text-xl font-black text-black mb-1">Add New Admin</h2>
+                     <p className="text-sm text-black mb-4">Create a new admin account or promote an existing student.</p>
 
                      {/* Tab Switcher */}
                      <div className="flex bg-slate-100 rounded-xl p-1 mb-6">
                         <button
                            onClick={() => setModalTab('create')}
                            className={`flex-1 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${
-                              modalTab === 'create' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                              modalTab === 'create' ? 'bg-white text-black shadow-sm' : 'text-black hover:text-black'
                            }`}
                         >
                            <i className="fas fa-user-plus mr-1.5"></i>Create New
@@ -425,7 +425,7 @@ const AdminRoles: React.FC = () => {
                         <button
                            onClick={() => setModalTab('promote')}
                            className={`flex-1 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${
-                              modalTab === 'promote' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'
+                              modalTab === 'promote' ? 'bg-white text-black shadow-sm' : 'text-black hover:text-black'
                            }`}
                         >
                            <i className="fas fa-arrow-up mr-1.5"></i>Promote Student
@@ -446,15 +446,15 @@ const AdminRoles: React.FC = () => {
                               </div>
                            )}
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Full Name</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Full Name</label>
                               <input type="text" value={createName} onChange={e => setCreateName(e.target.value)} placeholder="Admin Name" required className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none" />
                            </div>
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Email Address</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Email Address</label>
                               <input type="email" value={createEmail} onChange={e => setCreateEmail(e.target.value)} placeholder="admin@example.com" required className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none" />
                            </div>
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Password</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Password</label>
                               <div className="relative">
                                  <input 
                                     type={showCreatePassword ? "text" : "password"} 
@@ -467,14 +467,14 @@ const AdminRoles: React.FC = () => {
                                  <button
                                     type="button"
                                     onClick={() => setShowCreatePassword(!showCreatePassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-black hover:text-black transition"
                                  >
                                     <i className={`fas ${showCreatePassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
                                  </button>
                               </div>
                            </div>
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Permission Level</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Permission Level</label>
                               <select value={createPermission} onChange={e => setCreatePermission(e.target.value as AdminPermission)} title="Permission" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-primary-500 outline-none">
                                  <option value="super_admin">Super Admin — Full Access</option>
                                  <option value="institution_admin">Admin — Assigned Institutions Only</option>
@@ -483,10 +483,10 @@ const AdminRoles: React.FC = () => {
                            </div>
                            {createPermission === 'institution_admin' && (
                               <div>
-                                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Assign Institutions</label>
+                                 <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Assign Institutions</label>
                                  <div className="flex flex-wrap gap-2">
                                     {institutions.map(inst => (
-                                       <button key={inst.id} type="button" onClick={() => toggleInstitution(inst.name, createInstitutions, setCreateInstitutions)} className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border-2 transition uppercase ${createInstitutions.includes(inst.name) ? 'bg-primary-600 border-primary-600 text-white' : 'bg-white border-slate-200 text-slate-400 hover:border-primary-200'}`}>
+                                       <button key={inst.id} type="button" onClick={() => toggleInstitution(inst.name, createInstitutions, setCreateInstitutions)} className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border-2 transition uppercase ${createInstitutions.includes(inst.name) ? 'bg-primary-600 border-primary-600 text-white' : 'bg-white border-slate-200 text-black hover:border-primary-200'}`}>
                                           {inst.name}
                                        </button>
                                     ))}
@@ -504,7 +504,7 @@ const AdminRoles: React.FC = () => {
                      {modalTab === 'promote' && (
                         <div className="space-y-4">
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Permission Level</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Permission Level</label>
                               <select value={promotePermission} onChange={(e) => setPromotePermission(e.target.value as AdminPermission)} title="Select Permission" className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-primary-500 outline-none">
                                  <option value="super_admin">Super Admin — Full Access</option>
                                  <option value="institution_admin">Admin — Assigned Institutions Only</option>
@@ -513,10 +513,10 @@ const AdminRoles: React.FC = () => {
                            </div>
                            {promotePermission === 'institution_admin' && (
                               <div>
-                                 <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Assign Institutions</label>
+                                 <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Assign Institutions</label>
                                  <div className="flex flex-wrap gap-2">
                                     {institutions.map(inst => (
-                                       <button key={inst.id} type="button" onClick={() => toggleInstitution(inst.name, promoteInstitutions, setPromoteInstitutions)} className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border-2 transition uppercase ${promoteInstitutions.includes(inst.name) ? 'bg-primary-600 border-primary-600 text-white' : 'bg-white border-slate-200 text-slate-400 hover:border-primary-200'}`}>
+                                       <button key={inst.id} type="button" onClick={() => toggleInstitution(inst.name, promoteInstitutions, setPromoteInstitutions)} className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border-2 transition uppercase ${promoteInstitutions.includes(inst.name) ? 'bg-primary-600 border-primary-600 text-white' : 'bg-white border-slate-200 text-black hover:border-primary-200'}`}>
                                           {inst.name}
                                        </button>
                                     ))}
@@ -524,23 +524,23 @@ const AdminRoles: React.FC = () => {
                               </div>
                            )}
                            <div>
-                              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Search Student</label>
+                              <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-1.5">Search Student</label>
                               <div className="relative">
-                                 <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                 <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-black text-xs"></i>
                                  <input type="text" value={promoteSearch} onChange={(e) => setPromoteSearch(e.target.value)} placeholder="Search by name or email..." className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm focus:ring-2 focus:ring-primary-500 outline-none" />
                               </div>
                            </div>
                            <div className="max-h-60 overflow-y-auto rounded-xl border border-slate-100 divide-y divide-slate-50">
                               {filteredStudents.length === 0 ? (
-                                 <div className="p-8 text-center text-slate-400 text-sm italic">No students found.</div>
+                                 <div className="p-8 text-center text-black text-sm italic">No students found.</div>
                               ) : (
                                  filteredStudents.slice(0, 20).map(student => (
                                     <div key={student.uid} className="p-3 flex items-center justify-between hover:bg-slate-50 transition group">
                                        <div className="flex items-center space-x-3">
-                                          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-500">{student.displayName?.charAt(0) || '?'}</div>
+                                          <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center text-xs font-bold text-black">{student.displayName?.charAt(0) || '?'}</div>
                                           <div>
-                                             <p className="text-sm font-bold text-slate-900">{student.displayName}</p>
-                                             <p className="text-[10px] text-slate-400">{student.email}</p>
+                                             <p className="text-sm font-bold text-black">{student.displayName}</p>
+                                             <p className="text-[10px] text-black">{student.email}</p>
                                           </div>
                                        </div>
                                        <button onClick={() => handlePromoteStudent(student)} disabled={saving} className="px-3 py-1.5 bg-primary-600 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest hover:bg-primary-700 transition disabled:opacity-50 shadow-sm">Promote</button>
@@ -564,7 +564,7 @@ const AdminRoles: React.FC = () => {
                <>
                   <button 
                      onClick={() => setConfirmModal(null)}
-                     className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                     className="flex-1 py-4 bg-slate-100 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
                   >
                      Cancel
                   </button>
