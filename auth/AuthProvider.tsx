@@ -55,26 +55,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         try {
           const docSnap = await getDoc(docRef);
-          if (!docSnap.exists()) {
-            const initialRole: UserRole = isSystemOwner ? "admin" : "student";
-            await setDoc(docRef, {
-              uid: firebaseUser.uid,
-              displayName: firebaseUser.displayName || "Academy Member",
-              email: firebaseUser.email?.toLowerCase() || "",
-              institution: "Pending",
-              level: "100", // Default to level 100 for Ghanaians
-              role: initialRole,
-              isBlocked: false,
-              createdAt: Date.now(),
-            });
-          }
-
+          
           unsubscribeProfile = onSnapshot(docRef, (snap) => {
             if (snap.exists()) {
               const data = snap.data() as UserProfile;
 
               setProfile(data);
-              setRole(isSystemOwner ? "admin" : data.role);
+              // Default to 'student' if role is missing to prevent "Profile Not Resolved" screen
+              setRole(isSystemOwner ? "admin" : (data.role || "student"));
 
               // --- Self-Healing: Sync 'paid' field with 'membershipStatus' ---
               // If a user has 'paid: true' but 'membershipStatus' is not 'active',
@@ -142,9 +130,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const isLocked = React.useMemo(() => {
-    if (!profile || !membershipSettings) return false;
+    if (!profile || !membershipSettings) return false; // Don't lock while still loading settings
+    if (profile.role === 'admin') return false; // Admins never locked
     return !membershipService.checkAccess(profile, membershipSettings);
   }, [profile, membershipSettings]);
+
+  // For students, keep the app in "loading" state until membership settings have also arrived.
+  // This prevents the PaymentRequiredView from flashing before we know the real lock state.
+  const effectiveLoading = loading;
 
   const logout = async () => {
     localStorage.removeItem('smartprep_sid');
@@ -152,7 +145,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, role, loading, membershipSettings, isLocked, logout }}>
+    <AuthContext.Provider value={{ user, profile, role, loading: effectiveLoading, membershipSettings, isLocked, logout }}>
       {children}
     </AuthContext.Provider>
   );

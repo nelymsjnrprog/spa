@@ -4,7 +4,7 @@ import { Navbar, Container, Card } from '../ui/Layout';
 import { useAuth } from '../auth/AuthProvider';
 import { adminService } from '../services/adminService';
 import { membershipService } from '../services/membershipService';
-import { MembershipSettings, MembershipLevelSettings, PaymentRecord } from '../core/types';
+import { MembershipSettings } from '../core/types';
 
 const LEVELS = [
    { key: '100', label: 'Level 100', formKey: 'form1' as keyof MembershipSettings },
@@ -28,31 +28,13 @@ const MembershipPricing: React.FC = () => {
    const [saving, setSaving] = useState(false);
    const [saved, setSaved] = useState(false);
 
-   // Payment history state
-   const [payments, setPayments] = useState<PaymentRecord[]>([]);
-   const [loadingPayments, setLoadingPayments] = useState(true);
-
    useEffect(() => {
       const unsub = membershipService.subscribeMembershipSettings((data) => {
          setSettings(data);
          setLoading(false);
       });
-
-      fetchPayments();
-
       return () => unsub();
    }, []);
-
-   const fetchPayments = async () => {
-      setLoadingPayments(true);
-      try {
-         const data = await membershipService.getRecentPayments(20);
-         setPayments(data);
-      } catch (err) {
-         console.error("Failed to fetch payments:", err);
-      }
-      setLoadingPayments(false);
-   };
 
    const handleToggle = (formKey: keyof MembershipSettings) => {
       setSettings(prev => ({
@@ -94,7 +76,6 @@ const MembershipPricing: React.FC = () => {
       setSaving(false);
    };
 
-   // Access control: super_admin only
    if (!isSuperAdmin) {
       return (
          <div className="min-h-screen bg-slate-50">
@@ -104,8 +85,8 @@ const MembershipPricing: React.FC = () => {
                   <i className="fas fa-shield-halved text-6xl text-slate-200 mb-6"></i>
                   <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Restricted</h1>
                   <p className="text-slate-500">Only Super Admins can manage membership pricing.</p>
-                  <Link to="/admin" className="mt-6 text-primary-600 font-bold hover:underline">
-                     <i className="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                  <Link to="/admin/settings" className="mt-6 text-primary-600 font-bold hover:underline">
+                     <i className="fas fa-arrow-left mr-2"></i>Back to Settings
                   </Link>
                </div>
             </Container>
@@ -118,14 +99,13 @@ const MembershipPricing: React.FC = () => {
          <Navbar />
          <Container>
             <div className="mb-10">
-               <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
-                  <i className="fas fa-arrow-left mr-2"></i> Back to Dashboard
+               <Link to="/admin/settings" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
+                  <i className="fas fa-arrow-left mr-2"></i> Back to Settings
                </Link>
                <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Membership & Pricing Control</h1>
                <p className="text-slate-500 font-medium">Configure which levels require payment before signup and set membership prices.</p>
             </div>
 
-            {/* Info Banner */}
             <Card className="p-0 overflow-hidden border-none shadow-xl shadow-slate-200/50 mb-8">
                <div className="px-8 py-5 bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100/50">
                   <div className="flex items-start space-x-3">
@@ -145,7 +125,6 @@ const MembershipPricing: React.FC = () => {
                <Card className="p-20 text-center text-slate-400 font-bold uppercase tracking-widest animate-pulse">Loading Settings...</Card>
             ) : (
                <>
-                  {/* Level Cards */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                      {LEVELS.map(({ key, label, formKey }) => {
                         const levelSettings = settings[formKey] || { paymentRequired: false, price: 0 };
@@ -154,7 +133,6 @@ const MembershipPricing: React.FC = () => {
                               ? 'shadow-primary-200/50 ring-2 ring-primary-200'
                               : 'shadow-slate-200/50'
                               }`}>
-                              {/* Header */}
                               <div className={`px-6 py-5 border-b transition-colors ${levelSettings.paymentRequired
                                  ? 'bg-primary-50 border-primary-100'
                                  : 'bg-slate-50 border-slate-100'
@@ -178,23 +156,19 @@ const MembershipPricing: React.FC = () => {
                                  </div>
                               </div>
 
-                              {/* Body */}
                               <div className="p-6 space-y-5">
-                                 {/* Toggle */}
                                  <div className="flex items-center justify-between">
                                     <label className="text-xs font-black text-slate-500 uppercase tracking-widest">Require Payment</label>
                                     <button
                                        onClick={() => handleToggle(formKey)}
                                        className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${levelSettings.paymentRequired ? 'bg-primary-600' : 'bg-slate-200'
                                           }`}
-                                       title={levelSettings.paymentRequired ? 'Disable payment' : 'Enable payment'}
                                     >
                                        <span className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${levelSettings.paymentRequired ? 'left-[26px]' : 'left-0.5'
                                           }`}></span>
                                     </button>
                                  </div>
 
-                                 {/* Price Input */}
                                  <div className={`transition-all duration-300 ${levelSettings.paymentRequired ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
                                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-2">Price (GHS)</label>
                                     <div className="relative">
@@ -212,7 +186,6 @@ const MembershipPricing: React.FC = () => {
                                     </div>
                                  </div>
 
-                                 {/* Preview */}
                                  {levelSettings.paymentRequired && levelSettings.price > 0 && (
                                     <div className="bg-primary-50 rounded-xl p-4 text-center animate-in fade-in zoom-in-95 duration-300">
                                        <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mb-1">Student Sees</p>
@@ -228,7 +201,6 @@ const MembershipPricing: React.FC = () => {
                      })}
                   </div>
 
-                  {/* Save Button */}
                   <div className="flex justify-end">
                      <button
                         onClick={handleSaveAll}
@@ -246,91 +218,9 @@ const MembershipPricing: React.FC = () => {
                            <><i className="fas fa-save mr-2"></i>Save All Settings</>
                         )}
                      </button>
-                   </div>
-
-                   {/* Payment History Registry */}
-                   <div className="mt-16 mb-10">
-                      <div className="flex items-center justify-between mb-6">
-                         <div>
-                            <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Payment Registry</h2>
-                            <p className="text-sm text-slate-500 font-medium">Verified membership payments for account activation.</p>
-                         </div>
-                         <button
-                            onClick={fetchPayments}
-                            disabled={loadingPayments}
-                            className="p-3 text-primary-600 hover:bg-primary-50 rounded-xl transition-colors"
-                            title="Refresh payments"
-                         >
-                            <i className={`fas fa-sync-alt ${loadingPayments ? 'animate-spin' : ''}`}></i>
-                         </button>
-                      </div>
-
-                      <Card className="overflow-hidden border-none shadow-xl shadow-slate-200/50">
-                         <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                               <thead>
-                                  <tr className="bg-slate-900 text-white">
-                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Date</th>
-                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Student Email</th>
-                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Level</th>
-                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">Amount</th>
-                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest">Reference</th>
-                                     <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-center">Status</th>
-                                  </tr>
-                               </thead>
-                               <tbody className="divide-y divide-slate-50">
-                                  {loadingPayments && payments.length === 0 ? (
-                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-slate-400 font-medium animate-pulse">
-                                           Synchronizing payment records...
-                                        </td>
-                                     </tr>
-                                  ) : payments.length === 0 ? (
-                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-slate-300 italic text-sm">
-                                           No payment records found.
-                                        </td>
-                                     </tr>
-                                  ) : (
-                                     payments.map((p) => (
-                                        <tr key={p.id} className="hover:bg-slate-50/50 transition-colors">
-                                           <td className="px-6 py-4 whitespace-nowrap">
-                                              <p className="text-xs font-bold text-slate-900">
-                                                 {new Date(p.createdAt).toLocaleDateString()}
-                                              </p>
-                                              <p className="text-[10px] text-slate-400">
-                                                 {new Date(p.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                              </p>
-                                           </td>
-                                           <td className="px-6 py-4 whitespace-nowrap text-xs font-medium text-slate-600">
-                                              {p.email}
-                                           </td>
-                                           <td className="px-6 py-4 whitespace-nowrap text-center">
-                                               <span className="text-[10px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded uppercase tracking-tighter">
-                                                  {p.formLevel === 'Candidate' ? p.formLevel : `L${p.formLevel}`}
-                                               </span>
-                                           </td>
-                                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-black text-slate-900">
-                                              {p.amount} <span className="text-[10px] text-slate-400">GHS</span>
-                                           </td>
-                                           <td className="px-6 py-4 whitespace-nowrap font-mono text-[10px] text-slate-400 uppercase">
-                                              {p.reference}
-                                           </td>
-                                           <td className="px-6 py-4 whitespace-nowrap text-center">
-                                              <span className={`text-[10px] font-black px-2 py-1 rounded uppercase ${p.status === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-slate-400'}`}>
-                                                 {p.status}
-                                              </span>
-                                           </td>
-                                        </tr>
-                                     ))
-                                  )}
-                               </tbody>
-                            </table>
-                         </div>
-                      </Card>
-                   </div>
-                </>
-             )}
+                  </div>
+               </>
+            )}
          </Container>
       </div>
    );

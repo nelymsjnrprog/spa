@@ -92,6 +92,7 @@ const Settings: React.FC = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                         {[
                             { title: 'Student Directory', desc: 'Manage student accounts and records.', link: '/admin/students', color: 'bg-blue-600' },
+                            { title: 'Student Enrollment', desc: 'Manually create and enroll students.', link: '/admin/enrollment', color: 'bg-amber-600' },
                             { title: 'Admin Roles', desc: 'Configure permissions and assignments.', link: '/admin/roles', color: 'bg-purple-600' },
                             { title: 'Membership & Pricing', desc: 'Manage subscriptions and paywalls.', link: '/admin/membership', color: 'bg-emerald-600' },
                         ].map((item, i) => (

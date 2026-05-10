@@ -5,15 +5,16 @@ import { quizService } from '../services/quizService';
 import { userService } from '../services/userService';
 import { submissionService } from '../services/submissionService';
 import { adminService } from '../services/adminService';
+import { membershipService } from '../services/membershipService';
 import { Quiz, UserProfile, Submission } from '../core/types';
 import { useAuth } from '../auth/AuthProvider';
 import { institutionService, Institution } from '../services/institutionService';
 import { generateStudentInfoPDF } from '../utils/pdfGenerator';
 
 const LevelManagement: React.FC = () => {
-   const { level: levelParam, institutionName } = useParams<{ level?: string, institutionName?: string }>();
-   const navigate = useNavigate();
-   const [selectedLevel, setSelectedLevel] = useState<string>(levelParam || '100');
+    const { level: levelParam, institutionName } = useParams<{ level?: string, institutionName?: string }>();
+    const navigate = useNavigate();
+    const [selectedLevel, setSelectedLevel] = useState<string>(levelParam || ''); // Default to empty to trigger selection view if no levelParam
    const level = selectedLevel; // Alias for compatibility with existing logic
    const { profile } = useAuth();
    const [quizzes, setQuizzes] = useState<Quiz[]>([]);
@@ -23,7 +24,6 @@ const LevelManagement: React.FC = () => {
    const [loading, setLoading] = useState(true);
    const [searchQuery, setSearchQuery] = useState('');
    const [promotingAll, setPromotingAll] = useState(false);
-   const [activeTab, setActiveTab] = useState<'exams' | 'registry' | 'paid' | 'unpaid'>('exams');
    
    // Quiz Modal State
    const [showModal, setShowModal] = useState(false);
@@ -67,7 +67,9 @@ const LevelManagement: React.FC = () => {
    const [allowedPrograms, setAllowedPrograms] = useState<string[]>([]);
 
    const effectivePerm = adminService.getEffectivePermission(profile);
-   const canManage = level ? adminService.canManageLevel(profile, level) : false;
+   const canManage = institutionName 
+      ? adminService.canManageInstitution(profile, decodeURIComponent(institutionName))
+      : (level ? adminService.canManageLevel(profile, level) : false);
    const canWrite = adminService.canWrite(profile);
    const isSuperAdmin = effectivePerm === 'super_admin';
 
@@ -79,16 +81,21 @@ const LevelManagement: React.FC = () => {
    }, [levelParam]);
 
    useEffect(() => {
-      if (!level) return;
+      if (!level && !institutionName) return;
 
       const unsubQuizzes = quizService.subscribeToQuizzes((data) => {
          setQuizzes(data.filter(q => {
             // Filter by Level
             const quizLevel = q.level || '';
             const targetLevel = level || '';
-            const matchesLevel = targetLevel.toLowerCase() === 'candidate' 
-               ? (quizLevel.toLowerCase() === 'candidate' || quizLevel === '400')
-               : (quizLevel.toLowerCase() === targetLevel.toLowerCase());
+            
+            // If we're on the institution selection page (no specific level), load all for the institution
+            // If we're on a specific level page, filter strictly
+            const matchesLevel = !targetLevel 
+               ? true 
+               : targetLevel.toLowerCase() === 'candidate' 
+                  ? (quizLevel.toLowerCase() === 'candidate' || quizLevel === '400')
+                  : (quizLevel.toLowerCase() === targetLevel.toLowerCase());
             
             if (!matchesLevel) return false;
 
@@ -108,10 +115,15 @@ const LevelManagement: React.FC = () => {
             
             // Filter by Level
             const userLevel = u.level || '100';
-            const targetLevel = level || '100';
-            const matchesLevel = targetLevel.toLowerCase() === 'candidate'
-               ? (userLevel.toLowerCase() === 'candidate' || userLevel === '400')
-               : (userLevel.toLowerCase() === targetLevel.toLowerCase());
+            const targetLevel = level || '';
+            
+            // If we're on the institution selection page (no specific level), load all for the institution
+            // If we're on a specific level page, filter strictly
+            const matchesLevel = !targetLevel
+               ? true
+               : targetLevel.toLowerCase() === 'candidate'
+                  ? (userLevel.toLowerCase() === 'candidate' || userLevel === '400')
+                  : (userLevel.toLowerCase() === targetLevel.toLowerCase());
             
             if (!matchesLevel) return false;
 
@@ -127,6 +139,8 @@ const LevelManagement: React.FC = () => {
       const unsubSubs = submissionService.subscribeToAllSubmissions((data) => {
          setSubmissions(data);
       });
+
+      const decodedInstitution = institutionName ? decodeURIComponent(institutionName) : '';
 
       const unsubInst = institutionService.subscribeToInstitutions(setInstitutions);
 
@@ -150,8 +164,10 @@ const LevelManagement: React.FC = () => {
             <Container>
                <div className="flex flex-col items-center justify-center py-32">
                   
-                  <h1 className="text-2xl font-bold text-slate-900 mb-2">Level {level} — Access Denied</h1>
-                  <p className="text-slate-500">You don't have permission to manage this level.</p>
+                   <h1 className="text-2xl font-bold text-slate-900 mb-2">
+                      {institutionName ? decodeURIComponent(institutionName) : (level ? `Level ${level}` : 'Access')} — Access Denied
+                   </h1>
+                   <p className="text-slate-500">You don't have permission to manage this {institutionName ? 'institution' : 'level'}.</p>
                   <Link to="/admin" className="mt-6 text-primary-600 font-bold hover:underline">
                      Back to Dashboard
                   </Link>
@@ -172,41 +188,91 @@ const LevelManagement: React.FC = () => {
       ? Math.round((completedSubmissions.reduce((a, s) => a + ((s.correctCount !== undefined && s.totalQuestions) ? (s.correctCount / s.totalQuestions) : (s.score / s.totalPossible)), 0) / completedSubmissions.length) * 100)
       : 0;
 
-    const handlePromoteStudent = async (student: UserProfile) => {
-       if (student.level === 'Candidate') return;
-       
-       let nextLevel = '';
-       if (student.level === '300') {
-          nextLevel = 'Candidate';
-       } else {
-          const currentLevelNum = parseInt(student.level || '100');
-          nextLevel = (currentLevelNum + 100).toString();
-       }
 
-       const nextLevelLabel = nextLevel === 'Candidate' ? 'Candidate' : `Level ${nextLevel}`;
-       
-       setConfirmModal({
-          title: "Promote Student",
-          message: `Are you sure you want to promote ${student.displayName} to ${nextLevelLabel}?`,
-          variant: 'info',
-          confirmText: "Promote Now",
-          onConfirm: async () => {
-             try {
-                setConfirmModal(null);
-                await userService.updateUserProfile(student.uid, { level: nextLevel });
-                await adminService.logAction(
-                   profile!.uid,
-                   profile!.displayName,
-                   'PROMOTE_STUDENT',
-                   `Promoted ${student.displayName} from ${student.level === 'Candidate' ? 'Candidate' : 'Level ' + student.level} to ${nextLevelLabel}`,
-                   level
-                );
-             } catch (err) {
-                alert("Failed to promote student.");
-             }
-          }
-       });
-    };
+   const handlePromoteStudent = async (student: UserProfile) => {
+      if (student.level === 'Candidate') return;
+      
+      let nextLevel = '';
+      if (student.level === '300') {
+         nextLevel = 'Candidate';
+      } else {
+         const currentLevelNum = parseInt(student.level || '100');
+         nextLevel = (currentLevelNum + 100).toString();
+      }
+
+      const nextLevelLabel = nextLevel === 'Candidate' ? 'Candidate' : `Level ${nextLevel}`;
+      
+      setConfirmModal({
+         title: "Promote Student",
+         message: `Are you sure you want to promote ${student.displayName} to ${nextLevelLabel}? They will be marked as UNPAID for the new level and will need to purchase access.`,
+         variant: 'info',
+         confirmText: "Promote Now",
+         onConfirm: async () => {
+            try {
+               setConfirmModal(null);
+               await userService.updateUserProfile(student.uid, { 
+                  level: nextLevel,
+                  membershipStatus: 'pending',
+                  paid: false
+               });
+               await adminService.logAction(
+                  profile!.uid,
+                  profile!.displayName,
+                  'PROMOTE_STUDENT',
+                  `Promoted ${student.displayName} to ${nextLevelLabel} (Reset to Unpaid)`,
+                  level
+               );
+            } catch (err) {
+               alert("Failed to promote student.");
+            }
+         }
+      });
+   };
+
+   const handleDemoteStudent = async (student: UserProfile) => {
+      if (student.level === '100') return;
+      
+      let prevLevel = '';
+      if (student.level === 'Candidate') {
+         prevLevel = '300';
+      } else {
+         const currentLevelNum = parseInt(student.level || '100');
+         prevLevel = (currentLevelNum - 100).toString();
+      }
+
+      const prevLevelLabel = `Level ${prevLevel}`;
+      
+      setConfirmModal({
+         title: "Demote Student",
+         message: `Are you sure you want to demote ${student.displayName} to ${prevLevelLabel}? We will check their payment history to see if they previously paid for this level.`,
+         variant: 'danger',
+         confirmText: "Demote Now",
+         onConfirm: async () => {
+            try {
+               setConfirmModal(null);
+               
+               // Check if they previously paid for this level
+               const hasPaid = await membershipService.hasPaidForLevel(student.uid, prevLevel);
+               
+               await userService.updateUserProfile(student.uid, { 
+                  level: prevLevel,
+                  membershipStatus: hasPaid ? 'active' : 'pending',
+                  paid: hasPaid
+               });
+
+               await adminService.logAction(
+                  profile!.uid,
+                  profile!.displayName,
+                  'DEMOTE_STUDENT',
+                  `Demoted ${student.displayName} to ${prevLevelLabel} (${hasPaid ? 'Access Restored' : 'Remains Unpaid'})`,
+                  level
+               );
+            } catch (err) {
+               alert("Failed to demote student.");
+            }
+         }
+      });
+   };
 
     const handlePromoteAll = async () => {
        if (!isSuperAdmin || promotingAll || level === 'Candidate') return;
@@ -222,7 +288,7 @@ const LevelManagement: React.FC = () => {
        
        setConfirmModal({
           title: "Bulk Promotion",
-          message: `CRITICAL ACTION: Are you sure you want to promote ALL ${students.length} students to ${nextLevelLabel}? This will affect their curriculum access immediately.`,
+          message: `CRITICAL ACTION: Are you sure you want to promote ALL ${students.length} students to ${nextLevelLabel}? They will ALL be marked as UNPAID for the new level and will need to purchase access.`,
           variant: 'danger',
           confirmText: `Promote ${students.length} Students`,
           onConfirm: async () => {
@@ -230,9 +296,13 @@ const LevelManagement: React.FC = () => {
              setPromotingAll(true);
              try {
                 const results = await Promise.all(students.map(u => 
-                   userService.updateUserProfile(u.uid, { level: nextLevel })
+                   userService.updateUserProfile(u.uid, { 
+                      level: nextLevel,
+                      membershipStatus: 'pending',
+                      paid: false
+                   })
                 ));
-                alert(`Success! ${results.length} students promoted.`);
+                alert(`Success! ${results.length} students promoted and reset to unpaid.`);
              } catch (err) {
                 console.error(err);
                 alert("Promotion failed for one or more students.");
@@ -242,6 +312,30 @@ const LevelManagement: React.FC = () => {
           }
        });
     };
+
+   const handleActivateStudent = async (student: UserProfile) => {
+      setConfirmModal({
+         title: "Activate Student",
+         message: `Are you sure you want to manually activate ${student.displayName}? This will grant them full access to Level ${level} content.`,
+         variant: 'info',
+         confirmText: "Activate Now",
+         onConfirm: async () => {
+            try {
+               setConfirmModal(null);
+               await userService.updateUserProfile(student.uid, { membershipStatus: 'active' });
+               await adminService.logAction(
+                  profile!.uid,
+                  profile!.displayName,
+                  'ACTIVATE_STUDENT',
+                  `Manually activated ${student.displayName} in Level ${level}`,
+                  level
+               );
+            } catch (err) {
+               alert("Failed to activate student.");
+            }
+         }
+      });
+   };
 
    const handleViewStudentInfo = (student: UserProfile) => {
       generateStudentInfoPDF(student);
@@ -460,138 +554,148 @@ const LevelManagement: React.FC = () => {
 
 
 
-   const filteredStudents = students.filter(s => {
-      const search = searchQuery.toLowerCase();
-      return (
-         (s.displayName || "").toLowerCase().includes(search) ||
-         (s.email || "").toLowerCase().includes(search)
-      );
-   });
+    const [programFilter, setProgramFilter] = useState<string>('all');
 
-   const displayStudents = useMemo(() => {
-      if (activeTab === 'paid') {
-         return filteredStudents.filter(s => s.paid || s.membershipStatus === 'active');
-      }
-      if (activeTab === 'unpaid') {
-         return filteredStudents.filter(s => !s.paid && s.membershipStatus !== 'active');
-      }
-      return filteredStudents;
-   }, [filteredStudents, activeTab]);
+    const displayStudents = useMemo(() => {
+        let results = students.filter(s => {
+            const search = searchQuery.toLowerCase();
+            return (
+                (s.displayName || "").toLowerCase().includes(search) ||
+                (s.email || "").toLowerCase().includes(search)
+            );
+        });
+
+        // Apply Program Filter
+        if (programFilter !== 'all') {
+            results = results.filter(s => s.program === programFilter);
+        }
+
+        return results;
+    }, [students, searchQuery, programFilter]);
+
+    // Step 1: Level Selection View
+    if (institutionName && !levelParam) {
+        return (
+            <div className="min-h-screen bg-slate-50">
+                <Navbar />
+                <Container>
+                    <div className="mb-12">
+                        <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-4 hover:translate-x-[-4px] transition-all w-fit">
+                            <i className="fas fa-arrow-left mr-2"></i>
+                            Back to Dashboard
+                        </Link>
+                        <h1 className="text-4xl font-black text-slate-900 tracking-tight flex items-center">
+                            <i className="fas fa-university text-primary-500 mr-4"></i>
+                            {decodeURIComponent(institutionName)}
+                        </h1>
+                        <p className="text-slate-500 font-medium mt-2">Select a level to manage institution-specific data and modules.</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+                        {['100', '200', '300', 'Candidate'].map((lvl) => {
+                            const levelCount = students.filter(s => {
+                                const uLevel = s.level || '100';
+                                if (lvl === 'Candidate') return uLevel === 'Candidate' || uLevel === '400';
+                                return uLevel === lvl;
+                            }).length;
+
+                            return (
+                                <button 
+                                    key={lvl}
+                                    onClick={() => navigate(`/admin/institution/${institutionName}/level/${lvl}`)}
+                                    className="text-left group"
+                                >
+                                    <Card className="p-5 sm:p-7 border-none shadow-xl shadow-slate-200/50 bg-white rounded-[1.5rem] sm:rounded-[2rem] group-hover:bg-slate-900 transition-all duration-500 relative overflow-hidden h-full">
+                                        <div className="absolute top-0 right-0 p-4 sm:p-6 opacity-5 group-hover:opacity-20 transition-opacity">
+                                            <i className="fas fa-layer-group text-3xl sm:text-6xl text-slate-900 group-hover:text-white"></i>
+                                        </div>
+                                        
+                                        <div className="relative z-10">
+                                            <p className="text-[7px] sm:text-[9px] font-black text-primary-600 uppercase tracking-[0.2em] mb-2 sm:mb-3 group-hover:text-primary-400">Tier</p>
+                                            <h2 className="text-base sm:text-xl font-black text-slate-900 group-hover:text-white mb-0.5 sm:mb-1 tracking-tight">
+                                                {lvl === 'Candidate' ? lvl : `Level ${lvl}`}
+                                            </h2>
+                                            <p className="text-slate-400 font-bold text-[8px] sm:text-[10px] uppercase tracking-widest group-hover:text-slate-300">
+                                                {levelCount} Students
+                                            </p>
+                                            
+                                            <div className="mt-4 sm:mt-8 flex items-center text-primary-600 font-black text-[7px] sm:text-[9px] uppercase tracking-widest group-hover:text-white">
+                                                Manage
+                                                <i className="fas fa-chevron-right ml-1 sm:ml-1.5 group-hover:translate-x-1 transition-transform"></i>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </button>
+                            );
+                        })}
+                    </div>
+                </Container>
+            </div>
+        );
+    }
 
    return (
       <div className="min-h-screen bg-slate-50">
          <Navbar />
-         <Container>
-            <div className="mb-8">
+         <Container>             <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div>
+                   {institutionName ? (
+                      <Link to={`/admin/institution/${institutionName}`} className="text-primary-600 text-sm font-bold flex items-center mb-4 hover:translate-x-[-4px] transition-all w-fit">
+                          <i className="fas fa-arrow-left mr-2 text-[10px]"></i>
+                          Back to Level Selection
+                      </Link>
+                   ) : (
+                      <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-4 hover:translate-x-[-4px] transition-all w-fit">
+                          <i className="fas fa-arrow-left mr-2 text-[10px]"></i>
+                          Back to Dashboard
+                      </Link>
+                   )}
 
-               <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
+                   <div className="flex items-center gap-4">
+                      <div>
+                         <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-none">
+                            {level === 'Candidate' ? 'Candidate' : `Level ${level}`}
+                         </h1>
+                         {institutionName && (
+                            <p className="text-slate-400 font-bold text-xs uppercase tracking-widest mt-2 flex items-center">
+                               <i className="fas fa-university text-primary-500 mr-2"></i>
+                               {decodeURIComponent(institutionName)}
+                            </p>
+                         )}
+                      </div>
+                   </div>
+                </div>
 
-                   Back to Dashboard
-
-               </Link>
-
-               {institutionName ? (
-
-                  <>
-
-                     <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight flex items-center">
-
-                        <i className="fas fa-university text-primary-500 mr-3"></i>
-
-                        {decodeURIComponent(institutionName)}
-
-                     </h1>
-
-                     <p className="text-slate-500 font-medium text-sm mt-1">Institution Management &mdash; {students.length} student{students.length !== 1 ? 's' : ''} enrolled</p>
-
-                  </>
-
-               ) : (
-
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-
-                     {level === 'Candidate' ? 'Candidate' : `Level ${level}`} Management
-
-                  </h1>
-
-               )}
-
-            </div>
+                <div className="flex flex-wrap gap-3">
+                   <button 
+                      onClick={() => document.getElementById('exams')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="px-5 py-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all"
+                   >
+                      Exams
+                   </button>
+                   <button 
+                      onClick={() => document.getElementById('registry')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="px-5 py-3 rounded-xl bg-white border border-slate-200 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:bg-slate-50 transition-all"
+                   >
+                      Registry
+                   </button>
+                   
+                   {isSuperAdmin && level !== 'Candidate' && students.length > 0 && (
+                      <button
+                         onClick={handlePromoteAll}
+                         disabled={promotingAll}
+                         className="bg-primary-600 text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-primary-700 transition-all shadow-lg shadow-primary-100 disabled:opacity-50"
+                      >
+                         {promotingAll ? 'Processing...' : `Promote All Students`}
+                      </button>
+                   )}
+                </div>
+             </div>
 
 
-            {/* Level Selection Tabs (Institution Mode) */}
-
-            {institutionName && (
-
-               <div className="mb-6 flex flex-wrap gap-2 p-1.5 bg-white rounded-2xl border border-slate-200 shadow-sm w-fit">
-
-                  {['100', '200', '300', 'Candidate'].map(lvl => (
-
-                     <button
-
-                        key={lvl}
-
-                        onClick={() => setSelectedLevel(lvl)}
-
-                        className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest transition-all ${
-
-                           selectedLevel === lvl
-
-                              ? 'bg-primary-600 text-white shadow-lg shadow-primary-200'
-
-                              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
-
-                        }`}
-
-                     >
-
-                        {lvl === 'Candidate' ? 'Candidate' : `Level ${lvl}`}
-
-                     </button>
-
-                  ))}
-
-               </div>
-
-            )}
-
-            {/* Top Toolbar - Tab Switches */}
-            <div className="mb-10 flex flex-wrap items-center gap-4">
-               <div className="flex flex-wrap gap-2 p-1.5 bg-slate-100/50 rounded-2xl border border-slate-200/60 backdrop-blur-sm shadow-inner w-fit">
-                  {[
-                     { id: 'exams', label: 'Exams' },
-                     { id: 'registry', label: 'Student Registry' },
-                     { id: 'paid', label: 'Paid Students' },
-                     { id: 'unpaid', label: 'Unpaid Students' }
-                  ].map((tab) => (
-                     <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id as any)}
-                        className={`px-6 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${
-                           activeTab === tab.id 
-                              ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' 
-                              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-200/50'
-                        }`}
-                     >
-                        {tab.label}
-                     </button>
-                  ))}
-               </div>
-
-               {isSuperAdmin && level !== 'Candidate' && students.length > 0 && (
-                  <button
-                     onClick={handlePromoteAll}
-                     disabled={promotingAll}
-                     className="bg-slate-900 text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-primary-600 transition-all shadow-lg shadow-slate-200 disabled:opacity-50"
-                  >
-                     {promotingAll ? 'Processing...' : `Promote All to ${level === '300' ? 'Candidate' : 'L' + (parseInt(level) + 100)}`}
-                  </button>
-               )}
-            </div>
-
-            <div className="space-y-12">
-               {activeTab === 'exams' && (
-                  <section className="animate-in fade-in slide-in-from-bottom-4">
+            <div className="space-y-24">
+               {/* Exams Section */}
+               <section id="exams" className="animate-in fade-in slide-in-from-bottom-4 scroll-mt-10">
                      <div className="flex items-center justify-between mb-8">
                         <div>
 
@@ -657,23 +761,42 @@ const LevelManagement: React.FC = () => {
                                        onClick={() => togglePublish(quiz)}
                                        className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center transition-all col-span-2 mt-1 ${quiz.published ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-primary-600 text-white shadow-xl shadow-primary-200'}`}
                                     >
-                                       {quiz.published ? 'Stop Distribution' : 'Publish to Level'}
+                                       {quiz.published ? 'Stop Distribution' : 'Publish'}
                                     </button>
                                  </div>
                               </Card>
                            ))
                         )}
                      </div>
-                  </section>
-               )}
+                   </section>
 
-               {activeTab !== 'exams' && (
-                  <section className="animate-in fade-in slide-in-from-bottom-4">
+
+                {/* Student Registry Section */}
+                <section id="registry" className="animate-in fade-in slide-in-from-bottom-4 scroll-mt-10">
                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-8">
                         <div>
+                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Level {level} Academic Oversight</p>
+                             <div className="flex flex-wrap gap-4 mt-4">
+                                <div className="flex gap-2 p-1 bg-slate-100 rounded-xl w-fit">
+                                    {[
+                                        { id: 'all', label: 'All Programs' },
+                                        { id: 'RCN', label: 'RCN' },
+                                        { id: 'RGN', label: 'RGN' },
+                                        { id: 'RMN', label: 'RMN' },
+                                        { id: 'RPHN', label: 'RPHN' }
+                                    ].map(filter => (
+                                        <button
+                                            key={filter.id}
+                                            onClick={() => setProgramFilter(filter.id)}
+                                            className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all ${programFilter === filter.id ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                                        >
+                                            {filter.label}
+                                        </button>
+                                    ))}
+                                </div>
+                             </div>
 
-                           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Level {level} Academic Oversight</p>
-                        </div>
+                         </div>
 
                         {/* Search Bar */}
                         <div className="relative w-full sm:w-80">
@@ -696,8 +819,7 @@ const LevelManagement: React.FC = () => {
                                     <th className="px-8 py-5">Joined</th>
                                     {isSuperAdmin && <th className="px-8 py-5 text-right">Actions</th>}
                                  </tr>
-                              </thead>
-                              <tbody className="divide-y divide-slate-50">
+                              </thead>                              <tbody className="divide-y divide-slate-50">
                                  {displayStudents.length === 0 ? (
                                     <tr><td colSpan={4} className="p-20 text-center text-slate-300 font-bold uppercase tracking-widest">No matching records found</td></tr>
                                  ) : (
@@ -714,6 +836,9 @@ const LevelManagement: React.FC = () => {
                                                       <div className="flex items-center space-x-2">
                                                          <p className={`font-black tracking-tight ${u.isBlocked ? 'text-red-900' : 'text-slate-900'}`}>{u.displayName || "Unnamed User"}</p>
                                                          {u.isBlocked && <span className="text-[8px] font-black bg-red-600 text-white px-2 py-0.5 rounded-full uppercase tracking-tighter">Blocked</span>}
+                                                         <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter ${u.membershipStatus === 'active' || u.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                                                            {u.membershipStatus === 'active' || u.paid ? 'Paid' : 'Unpaid'}
+                                                         </span>
                                                       </div>
                                                       <p className="text-[11px] text-slate-400 font-bold uppercase tracking-tight">{u.email}</p>
                                                    </div>
@@ -723,44 +848,62 @@ const LevelManagement: React.FC = () => {
                                              <td className="px-8 py-6 text-xs font-bold text-slate-400 uppercase tracking-widest">
                                                 {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'Legacy'}
                                              </td>
-                                             {isSuperAdmin && (
-                                                <td className="px-8 py-6 text-right space-x-4">
-                                                   <button
-                                                      onClick={() => handleViewStudentInfo(u)}
-                                                      className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-colors"
-                                                   >
-                                                      View Info
-                                                   </button>
-                                                   <button
-                                                       onClick={() => handlePromoteStudent(u)}
-                                                       disabled={u.level === 'Candidate'}
-                                                       className={`text-[10px] font-black uppercase tracking-widest transition-colors ${u.level !== 'Candidate' ? 'text-primary-600 hover:text-primary-800' : 'text-slate-300 cursor-not-allowed'}`}
-                                                    >
-                                                      {parseInt(u.level || '100') < 300 ? `To L${parseInt(u.level || '100') + 100}` : u.level === '300' ? 'To CANDIDATE' : 'MAX'}
-                                                   </button>
-                                                   <button
-                                                      onClick={() => handleBlockToggle(u)}
-                                                      className={`text-[10px] font-black uppercase tracking-widest transition-colors ${u.isBlocked ? 'text-emerald-600 hover:text-emerald-800' : 'text-red-500 hover:text-red-700'}`}
-                                                   >
-                                                      {u.isBlocked ? 'Unblock' : 'Block'}
-                                                   </button>
-                                                   <button
-                                                      onClick={() => handleDeleteUser(u)}
-                                                      className="text-[10px] font-black uppercase tracking-widest text-red-600 hover:text-red-800 transition-colors"
-                                                   >
-                                                      Remove
-                                                   </button>
+                                                   {isSuperAdmin && (
+                                                <td className="px-8 py-6 text-right">
+                                                   <div className="flex flex-wrap justify-end gap-3 sm:gap-4">
+                                                      <button
+                                                         onClick={() => handleViewStudentInfo(u)}
+                                                         className="text-[10px] font-black uppercase tracking-widest text-indigo-600 hover:text-indigo-800 transition-colors"
+                                                      >
+                                                         View Info
+                                                      </button>
+                                                      <button
+                                                         onClick={() => handlePromoteStudent(u)}
+                                                         disabled={u.level === 'Candidate'}
+                                                         className={`text-[10px] font-black uppercase tracking-widest transition-all ${u.level !== 'Candidate' ? 'text-primary-600 hover:text-primary-800' : 'text-slate-300 cursor-not-allowed'}`}
+                                                      >
+                                                         {parseInt(u.level || '100') < 300 ? `To L${parseInt(u.level || '100') + 100}` : u.level === '300' ? 'To CANDIDATE' : 'MAX'}
+                                                      </button>
+                                                      {u.membershipStatus !== 'active' && !u.paid && (
+                                                         <button
+                                                            onClick={() => handleActivateStudent(u)}
+                                                            className="text-[10px] font-black uppercase tracking-widest text-emerald-600 hover:text-emerald-800 transition-colors"
+                                                         >
+                                                            Activate
+                                                         </button>
+                                                      )}
+                                                      {u.level && u.level !== '100' && (
+                                                         <button
+                                                            onClick={() => handleDemoteStudent(u)}
+                                                            className="text-[10px] font-black uppercase tracking-widest text-orange-600 hover:text-orange-800 transition-colors"
+                                                         >
+                                                            Demote
+                                                         </button>
+                                                      )}
+                                                      <button
+                                                         onClick={() => handleBlockToggle(u)}
+                                                         className={`text-[10px] font-black uppercase tracking-widest transition-colors ${u.isBlocked ? 'text-emerald-600 hover:text-emerald-800' : 'text-red-500 hover:text-red-700'}`}
+                                                      >
+                                                         {u.isBlocked ? 'Unblock' : 'Block'}
+                                                      </button>
+                                                      <button
+                                                         onClick={() => handleDeleteUser(u)}
+                                                         className="text-[10px] font-black uppercase tracking-widest text-red-600 hover:text-red-800 transition-colors"
+                                                      >
+                                                         Remove
+                                                      </button>
+                                                   </div>
                                                 </td>
                                              )}
                                           </tr>
                                        ))
                                  )}
                               </tbody>
+
                            </table>
                         </div>
                      </Card>
-                  </section>
-               )}
+                   </section>
             </div>
 
          {/* Quiz Creation / Edit — Full Page Slide-over */}
@@ -984,6 +1127,8 @@ const LevelManagement: React.FC = () => {
          >
             {confirmModal?.message}
          </Modal>
+
+
       </div>
    );
 };

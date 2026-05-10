@@ -49,7 +49,7 @@ const StudentLibrary: React.FC = () => {
       <Navbar />
       <Container>
         <div className="mb-10">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Digital Library</h1>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Library</h1>
           <p className="text-slate-500 font-medium mt-1">Access your handouts, books, and study materials.</p>
         </div>
 
@@ -63,13 +63,13 @@ const StudentLibrary: React.FC = () => {
             <div className="w-20 h-20 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
               <i className="fas fa-book-open text-3xl"></i>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">Shelf is Empty</h3>
-            <p className="text-slate-500 max-w-sm mx-auto">No study materials have been uploaded for Level {profile?.level} yet. Check back soon!</p>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Empty</h3>
+            <p className="text-slate-500 max-w-sm mx-auto">Check back soon!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-8">
             {resources.map((resource) => (
-              <Card key={resource.id} className="group flex flex-col h-full bg-white border-none shadow-xl shadow-slate-200/50 rounded-[2.5rem] overflow-hidden hover:shadow-2xl hover:shadow-primary-600/10 transition-all duration-500">
+              <Card key={resource.id} className="group flex flex-col h-full bg-white border-none shadow-lg shadow-slate-200/50 rounded-[1.2rem] sm:rounded-[2.5rem] overflow-hidden hover:shadow-2xl hover:shadow-primary-600/10 transition-all duration-500">
                 {/* Visual Cover */}
                 <div className="aspect-[3/4] bg-slate-100 relative overflow-hidden">
                   {resource.thumbnailUrl ? (
@@ -80,47 +80,36 @@ const StudentLibrary: React.FC = () => {
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-slate-300">
-                      <i className="fas fa-file-pdf text-6xl mb-4 group-hover:scale-110 transition-transform duration-500"></i>
-                      <span className="text-[10px] font-black uppercase tracking-widest bg-white px-4 py-2 rounded-full shadow-sm">PDF HANDOUT</span>
+                      <i className="fas fa-file-pdf text-3xl sm:text-6xl mb-2 sm:mb-4 group-hover:scale-110 transition-transform duration-500"></i>
+                      <span className="text-[7px] sm:text-[10px] font-black uppercase tracking-widest bg-white px-2 sm:px-4 py-1 sm:py-2 rounded-full shadow-sm">PDF</span>
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 </div>
 
                 {/* Info */}
-                <div className="p-8 flex-1 flex flex-col">
+                <div className="p-3 sm:p-8 flex-1 flex flex-col">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary-600 bg-primary-50 px-3 py-1 rounded-full">
-                      Level {resource.level}
-                    </span>
                     {resource.fileSize && (
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
-                        {(resource.fileSize / 1024 / 1024).toFixed(1)} MB
+                      <span className="text-[7px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        {(resource.fileSize / 1024 / 1024).toFixed(1)}MB
                       </span>
                     )}
                   </div>
                   
-                  <h3 className="text-xl font-black text-slate-900 mb-3 leading-tight group-hover:text-primary-600 transition-colors">{resource.title}</h3>
-                  <p className="text-slate-500 text-sm font-medium line-clamp-3 mb-8 flex-1">
-                    {resource.description || 'Explore this study material to enhance your preparation and master your subjects.'}
+                  <h3 className="text-xs sm:text-xl font-black text-slate-900 mb-1 sm:mb-3 leading-tight group-hover:text-primary-600 transition-colors line-clamp-1">{resource.title}</h3>
+                  <p className="text-slate-500 text-[10px] sm:text-sm font-medium line-clamp-2 sm:line-clamp-3 mb-4 sm:mb-8 flex-1">
+                    {resource.description || 'Access this study material.'}
                   </p>
 
                   <div className="flex gap-3">
                     <button 
                       onClick={() => setSelectedResource(resource)}
-                      className="flex-1 bg-slate-900 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-primary-600 transition-all shadow-lg shadow-slate-200 active:scale-95"
+                      className="flex-1 bg-slate-900 text-white py-2 sm:py-5 rounded-xl sm:rounded-[1.5rem] font-black text-[8px] sm:text-[11px] uppercase tracking-[0.15em] hover:bg-primary-600 transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2"
                     >
-                      <i className="fas fa-book-reader mr-2"></i>
-                      Open Book
+                      <i className="fas fa-book-reader"></i>
+                      <span>Read Handout</span>
                     </button>
-                    <a 
-                      href={resource.fileUrl} 
-                      download={resource.fileName}
-                      className="w-14 bg-slate-50 text-slate-400 border border-slate-100 rounded-2xl flex items-center justify-center hover:bg-primary-50 hover:text-primary-600 hover:border-primary-100 transition-all active:scale-95"
-                      title="Download PDF"
-                    >
-                      <i className="fas fa-download"></i>
-                    </a>
                   </div>
                 </div>
               </Card>
@@ -128,52 +117,52 @@ const StudentLibrary: React.FC = () => {
           </div>
         )}
 
-        {/* PDF Reader Modal */}
+        {/* Enhanced PDF Reader Modal */}
         {selectedResource && (
-          <div className="fixed inset-0 z-[100] flex flex-col bg-slate-900 animate-in fade-in duration-300">
-            {/* Header */}
-            <div className="h-20 bg-slate-900 border-b border-white/10 flex items-center justify-between px-6 md:px-10">
-              <div className="flex items-center gap-4 min-w-0">
-                <button 
-                  onClick={() => setSelectedResource(null)}
-                  className="w-10 h-10 rounded-full bg-white/5 text-white flex items-center justify-center hover:bg-white/10 transition-all"
-                >
-                  <i className="fas fa-arrow-left"></i>
-                </button>
-                <div className="min-w-0">
-                  <h2 className="text-white font-black text-sm uppercase tracking-widest truncate">{selectedResource.title}</h2>
-                  <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Digital Reader</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <a 
-                  href={selectedResource.fileUrl} 
-                  download={selectedResource.fileName}
-                  className="hidden md:flex items-center gap-2 bg-white/5 text-white px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-white/10 transition-all"
-                >
-                  <i className="fas fa-download"></i>
-                  Download
-                </a>
-                <button 
-                  onClick={() => setSelectedResource(null)}
-                  className="bg-red-500/10 text-red-500 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-xl shadow-red-500/10"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-
-            {/* Viewer Content */}
-            <div className="flex-1 bg-slate-800 relative">
-              <iframe 
-                src={`${selectedResource.fileUrl}#toolbar=0`} 
-                className="w-full h-full border-none"
-                title={selectedResource.title}
-              ></iframe>
-            </div>
-          </div>
+          <PDFViewer 
+            resource={selectedResource} 
+            onClose={() => setSelectedResource(null)} 
+          />
         )}
       </Container>
+    </div>
+  );
+};
+
+const PDFViewer: React.FC<{ resource: LibraryResource; onClose: () => void }> = ({ resource, onClose }) => {
+
+  useEffect(() => {
+    const handleContextMenu = (e: MouseEvent) => e.preventDefault();
+    const handleKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+
+    document.addEventListener('contextmenu', handleContextMenu);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex flex-col bg-[#525659] animate-in fade-in duration-300">
+      {/* Floating Close Button */}
+      <button 
+        onClick={onClose}
+        className="absolute top-6 right-6 z-[110] w-12 h-12 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/60 transition-all shadow-2xl active:scale-90 border border-white/10 backdrop-blur-md"
+        title="Close Reader (Esc)"
+      >
+        <i className="fas fa-times text-xl"></i>
+      </button>
+
+      {/* Full Screen PDF Content */}
+      <div className="flex-1 relative">
+        <iframe 
+          src={`${resource.fileUrl}#toolbar=0&navpanes=0`} 
+          className="w-full h-full border-none"
+          title={resource.title}
+        ></iframe>
+      </div>
     </div>
   );
 };

@@ -143,18 +143,27 @@ const PaymentRequiredView: React.FC = () => {
             <p className="text-xs text-[#9aada4] font-medium">One-time payment · Term access</p>
           </div>
 
-          <button
-            onClick={handlePayment}
-            disabled={loading}
-            className="w-full relative group bg-gradient-to-br from-[#0F6E56] to-[#1D9E75] text-white py-4 rounded-xl font-bold text-sm tracking-wider shadow-[0_8px_20px_rgba(29,158,117,0.3)] hover:shadow-[0_12px_28px_rgba(29,158,117,0.4)] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 overflow-hidden"
-          >
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            {loading ? (
-              <i className="fas fa-circle-notch animate-spin text-lg"></i>
-            ) : (
-              'PAY'
-            )}
-          </button>
+          {levelSettings?.price && levelSettings.price > 0 ? (
+            <button
+              onClick={handlePayment}
+              disabled={loading}
+              className="w-full relative group bg-gradient-to-br from-[#0F6E56] to-[#1D9E75] text-white py-4 rounded-xl font-bold text-sm tracking-wider shadow-[0_8px_20px_rgba(29,158,117,0.3)] hover:shadow-[0_12px_28px_rgba(29,158,117,0.4)] transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              {loading ? (
+                <i className="fas fa-circle-notch animate-spin text-lg"></i>
+              ) : (
+                'ACTIVATE NOW'
+              )}
+            </button>
+          ) : (
+            <div className="w-full py-4 px-6 bg-slate-50 border border-slate-100 rounded-xl text-center">
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Awaiting Activation</p>
+              <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                Your account is pending review. Please contact administration to complete your enrollment.
+              </p>
+            </div>
+          )}
 
           <button
             onClick={handleLogout}

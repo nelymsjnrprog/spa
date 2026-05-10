@@ -1,4 +1,3 @@
-
 import { auth, db } from "../core/firebase";
 import { membershipService } from "../services/membershipService";
 import {
@@ -13,7 +12,7 @@ import {
   signInWithPopup
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { UserRole } from "../core/types";
+import { UserRole, UserProfile } from "../core/types";
 
 /**
  * Translate Firebase Auth errors into user-friendly messages.
@@ -54,12 +53,9 @@ export const authService = {
       const credential = await signInWithEmailAndPassword(auth, email, pass);
       const user = credential.user;
 
-      // Check email verification is REMOVED
-
       const sessionId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       localStorage.setItem('smartprep_sid', sessionId);
       
-      // Update session ID in background, don't let rules overhead block the UI
       setDoc(doc(db, "users", user.uid), { currentSessionId: sessionId }, { merge: true })
         .catch(err => console.error("Session sync failed:", err));
 
@@ -72,10 +68,8 @@ export const authService = {
 
   /**
    * Sign up a new user
-   * Role is now passed from the UI selection.
    */
   async signup(email: string, pass: string, name: string, institution: string, phoneNumber: string, level: string, program: string, selectedRole: UserRole = "student", paymentReference?: string, paymentAmount?: number) {
-    // Pre-check: reject signup immediately if offline
     if (!navigator.onLine) {
       throw new Error('No internet connection. Please check your network and try again.');
     }
@@ -83,30 +77,16 @@ export const authService = {
     let user: any = null;
 
     try {
-      // Step 1: Create the Firebase Auth account
       const credential = await createUserWithEmailAndPassword(auth, email, pass);
       user = credential.user;
 
-      // Step 2: Update display name
       await updateProfile(user, { displayName: name });
 
-      // Step 3: Send verification email - REMOVED
-
-      // Step 4: Determine role
       const finalRole: UserRole = email.toLowerCase() === SYSTEM_OWNER_EMAIL.toLowerCase()
         ? "admin"
         : selectedRole;
 
-      // Step 4b: Determine if user is joining during a free period for their level
-      let joinedAsFree = true; // Default to true (free signup)
-      try {
-        const settings = await membershipService.getMembershipSettings();
-        const levelSettings = membershipService.getFormLevelSettings(settings, level);
-        joinedAsFree = !levelSettings.paymentRequired;
-      } catch { /* If we can't check, default to true */ }
-
-      // Step 5: Create Firestore profile
-      await setDoc(doc(db, "users", user.uid), {
+      const userProfile: UserProfile = {
         uid: user.uid,
         displayName: name,
         email: email.toLowerCase(),
@@ -116,12 +96,12 @@ export const authService = {
         program: program,
         role: finalRole,
         isBlocked: false,
-        membershipStatus: 'active', // Default to active. If payment is required, Login.tsx handles it before signup.
-        joinedAsFree,
+        membershipStatus: paymentReference ? 'active' : 'pending',
         createdAt: Date.now(),
-      });
+      };
 
-      // Step 5b: Record payment if a payment reference exists
+      await setDoc(doc(db, "users", user.uid), userProfile);
+
       if (paymentReference) {
         try {
           await membershipService.recordPayment({
@@ -134,45 +114,30 @@ export const authService = {
             createdAt: Date.now(),
           });
         } catch (payErr) {
-          console.error("Payment record failed (non-blocking):", payErr);
+          console.error("Payment record failed:", payErr);
         }
       }
 
-      // Step 6: Log the session
       const sessionId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
       localStorage.setItem('smartprep_sid', sessionId);
       await setDoc(doc(db, "users", user.uid), { currentSessionId: sessionId }, { merge: true });
 
       return user;
     } catch (error: any) {
-      // ROLLBACK: If the auth account was created but a later step failed,
-      // delete the account so no half-created users exist.
       if (user) {
-        try {
-          await deleteUser(user);
-        } catch (_) {
-          // If delete fails (e.g., already signed out), sign in briefly to delete
+        try { await deleteUser(user); } catch (_) {
           try {
             const reAuth = await signInWithEmailAndPassword(auth, email, pass);
             await deleteUser(reAuth.user);
           } catch (_) {
-            // Last resort: sign out whatever state we're in
             await signOut(auth).catch(() => { });
           }
         }
-      }
-
-      // Return a user-friendly error
-      if (error.code === 'auth/network-request-failed' || !navigator.onLine) {
-        throw new Error('Network error. Your account was not created. Please check your connection and try again.');
       }
       throw new Error(translateError(error.code || error.message));
     }
   },
 
-  /**
-   * Send a password reset email to the user
-   */
   async sendPasswordReset(email: string) {
     try {
       await sendPasswordResetEmail(auth, email);
@@ -181,20 +146,15 @@ export const authService = {
     }
   },
 
-  /**
-   * Auto-detect / OAuth Sign in with Google
-   */
   async signInWithGoogle(selectedRole: UserRole = "student") {
     try {
       const provider = new GoogleAuthProvider();
-
       const credential = await signInWithPopup(auth, provider);
       const user = credential.user;
 
       const docRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(docRef);
 
-      // Determine final role: Manual selection OR System Owner override
       const finalRole: UserRole = user.email?.toLowerCase() === SYSTEM_OWNER_EMAIL.toLowerCase()
         ? "admin"
         : selectedRole;
@@ -203,15 +163,16 @@ export const authService = {
       localStorage.setItem('smartprep_sid', sessionId);
 
       if (!docSnap.exists()) {
-        // Determine if user is joining during a free period for level 100
-        let joinedAsFree = true;
-        try {
+        // Block new student account creation if Level 100 enrollment is closed
+        if (finalRole === 'student') {
           const settings = await membershipService.getMembershipSettings();
           const levelSettings = membershipService.getFormLevelSettings(settings, '100');
-          joinedAsFree = !levelSettings.paymentRequired;
-        } catch { /* Default to true */ }
+          if (!levelSettings.paymentRequired) {
+            throw new Error("Enrollment is currently closed. Please contact your institution.");
+          }
+        }
 
-        await setDoc(docRef, {
+        const userProfile: UserProfile = {
           uid: user.uid,
           displayName: user.displayName || "Unknown User",
           email: user.email?.toLowerCase() || "",
@@ -219,36 +180,28 @@ export const authService = {
           level: "100",
           role: finalRole,
           isBlocked: false,
-          membershipStatus: 'active',
-          joinedAsFree,
+          membershipStatus: 'pending',
           currentSessionId: sessionId,
           createdAt: Date.now(),
-        });
+        };
+
+        await setDoc(docRef, userProfile);
+        
         return { user, isNewUser: true, sessionId, finalRole };
       } else {
         await setDoc(docRef, { currentSessionId: sessionId }, { merge: true });
         return { user, isNewUser: false, sessionId, finalRole };
       }
     } catch (error: any) {
-      if (error.code === 'auth/popup-closed-by-user') {
-        throw new Error('Sign-in cancelled');
-      }
+      if (error.code === 'auth/popup-closed-by-user') throw new Error('Sign-in cancelled');
       throw new Error(translateError(error.code));
     }
   },
 
-  /**
-   * Update student Profile Details explicitly
-   */
   async updateProfileDetails(uid: string, institution: string, phoneNumber: string, level: string, program: string) {
     try {
       const docRef = doc(db, "users", uid);
-      await setDoc(docRef, {
-        institution,
-        phoneNumber,
-        level,
-        program,
-      }, { merge: true });
+      await setDoc(docRef, { institution, phoneNumber, level, program }, { merge: true });
     } catch (error: any) {
       throw new Error("Failed to update profile details");
     }

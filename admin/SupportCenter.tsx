@@ -35,7 +35,7 @@ const SupportCenter: React.FC = () => {
       <Navbar />
       <Container>
         <div className="mb-10">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Support Center</h1>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Support</h1>
           <p className="text-slate-500 font-medium mt-1">Manage and respond to student inquiries.</p>
         </div>
 

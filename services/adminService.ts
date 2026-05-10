@@ -6,9 +6,23 @@ import {
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  updateProfile
+  updateProfile,
+  getAuth,
+  signOut,
+  setPersistence,
+  inMemoryPersistence
 } from "firebase/auth";
+import { initializeApp, getApps } from "firebase/app";
+import { APP_CONFIG } from "../core/config";
 import { AdminPermission, AdminLog, UserProfile } from "../core/types";
+
+// Initialize a secondary Firebase instance for administrative user creation
+// This prevents the administrator from being signed out during the process.
+const secondaryApp = getApps().find(a => a.name === 'Secondary') || initializeApp(APP_CONFIG.firebaseConfig, 'Secondary');
+const secondaryAuth = getAuth(secondaryApp);
+
+// Ensure secondary instance doesn't persist to local storage/interfere with main auth
+setPersistence(secondaryAuth, inMemoryPersistence).catch(console.error);
 
 const SYSTEM_OWNER_EMAIL = "nelymsjnr@gmail.com";
 
@@ -117,21 +131,18 @@ export const adminService = {
     password: string,
     displayName: string,
     permission: AdminPermission,
-    assignedInstitutions: string[],
-    callerEmail: string,
-    callerPassword: string
+    assignedInstitutions: string[]
   ): Promise<void> {
-    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    // 1. Create user using the secondary auth instance (so admin isn't signed out)
+    const credential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
     const newUserUid = credential.user.uid;
     const newUser = credential.user;
     
-    // Update display name while still signed in as the new user
+    // 2. Update display name on the secondary instance
     await updateProfile(newUser, { displayName });
 
-    // Re-authenticate as the superadmin BEFORE creating the Firestore profile
-    // This ensures the security rules allow the 'admin' role to be set
-    await signInWithEmailAndPassword(auth, callerEmail, callerPassword);
-
+    // 3. Create the Firestore profile using the primary db instance.
+    // Since the main 'auth' is still the admin, this write uses admin permissions.
     await setDoc(doc(db, "users", newUserUid), {
       uid: newUserUid,
       displayName,
@@ -147,6 +158,53 @@ export const adminService = {
       membershipStatus: 'active',
       createdAt: Date.now(),
     });
+
+    // 4. Sign out of secondary instance to be clean
+    await signOut(secondaryAuth);
+  },
+
+  /**
+   * Create a brand new student account (superadmin only).
+   * Bypasses the public signup and payment gates.
+   */
+  async createStudentAccount(
+    email: string,
+    password: string,
+    displayName: string,
+    phoneNumber: string,
+    institution: string,
+    level: string,
+    program: string,
+    membershipStatus: 'active' | 'pending'
+  ): Promise<void> {
+    // 1. Create student using secondary auth instance
+    const credential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+    const newUserUid = credential.user.uid;
+    const newUser = credential.user;
+    
+    // 2. Set profile name
+    await updateProfile(newUser, { displayName });
+
+    // 3. Create Firestore document using primary db (Admin session)
+    await setDoc(doc(db, "users", newUserUid), {
+      uid: newUserUid,
+      displayName: displayName.trim(),
+      email: email.toLowerCase().trim(),
+      phoneNumber: phoneNumber?.trim() || '',
+      institution: institution || 'Pending',
+      level: level || '100',
+      program: program?.trim() || '',
+      role: 'student',
+      isBlocked: false,
+      membershipStatus: membershipStatus,
+      paid: membershipStatus === 'active',
+      createdAt: Date.now(),
+      lastActiveAt: Date.now(),
+      currentSessionId: null
+    });
+
+    // 4. Cleanup
+    await signOut(secondaryAuth);
   },
 
   // ==================== ACTION LOGGING ====================

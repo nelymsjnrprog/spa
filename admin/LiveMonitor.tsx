@@ -102,7 +102,7 @@ const LiveMonitor: React.FC = () => {
     if (!quiz) return <div className="p-8 text-center text-red-500">Module not found.</div>;
 
     const now = Date.now();
-    const activeSubmissions = submissions.filter(s => s.status === 'active');
+    const activeSubmissions = quiz.status === 'completed' ? [] : submissions.filter(s => s.status === 'active');
     const completedSubmissions = submissions.filter(s => s.status === 'completed');
     const stoppedSubmissions = completedSubmissions.filter(s => s.stoppedByAdmin);
 
@@ -127,6 +127,11 @@ const LiveMonitor: React.FC = () => {
                         {quiz.status === 'active' && (
                             <button onClick={() => handleStatusChange('paused')} className="flex-1 sm:flex-none bg-amber-500 text-white px-6 py-3 sm:py-2 rounded-xl font-bold hover:bg-amber-600 transition-all text-sm">
                                  Pause
+                            </button>
+                        )}
+                        {quiz.status === 'paused' && (
+                            <button onClick={() => handleStatusChange('active')} className="flex-1 sm:flex-none bg-emerald-600 text-white px-6 py-3 sm:py-2 rounded-xl font-bold hover:bg-emerald-700 transition-all text-sm">
+                                 Resume
                             </button>
                         )}
                         {quiz.status !== 'completed' && (
@@ -243,6 +248,7 @@ const LiveMonitor: React.FC = () => {
                     </Card>
                 )}
 
+                {quiz.status !== 'completed' && (
                 <Card className="p-8 border-none shadow-xl shadow-slate-100/50">
                     <h2 className="text-xl font-black text-slate-900 mb-6 border-b pb-4">Real-Time Presence</h2>
 
@@ -385,6 +391,7 @@ const LiveMonitor: React.FC = () => {
                         </div>
                     )}
                 </Card>
+                )}
             </Container>
         </div>
     );

@@ -20,7 +20,6 @@ const Results: React.FC = () => {
   const [isContentBlurred, setIsContentBlurred] = useState(false);
   const [showScreenshotOverlay, setShowScreenshotOverlay] = useState(false);
   const [watermarkPos, setWatermarkPos] = useState({ top: '20%', left: '20%' });
-  const [showBreakdown, setShowBreakdown] = useState(false);
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -181,7 +180,7 @@ const Results: React.FC = () => {
           </Link>
 
           <header className="mb-6 sm:mb-12">
-            <h1 className="text-2xl sm:text-4xl font-black text-slate-900 mb-2 tracking-tight">Examination Performance Summary</h1>
+            <h1 className="text-2xl sm:text-4xl font-black text-slate-900 mb-2 tracking-tight">Performance</h1>
             <p className="text-slate-500 font-medium">Verified result record for {quiz?.title}</p>
           </header>
 
@@ -201,9 +200,9 @@ const Results: React.FC = () => {
                     )}
                   </div>
                 </div>
-                <div className="mt-6 sm:mt-0 sm:ml-6 flex flex-col items-center">
+                  <div className="mt-6 sm:mt-0 sm:ml-6 flex flex-col items-center">
                   <button 
-                    onClick={() => setShowBreakdown(true)}
+                    onClick={() => navigate(`/student/review/${submissionId}`)}
                     className="text-[10px] font-black text-primary-600 uppercase tracking-widest hover:underline flex items-center"
                   >
                     <i className="fas fa-file-invoice mr-2"></i> View Breakdown
@@ -240,104 +239,6 @@ const Results: React.FC = () => {
                 </div>
               )}
             </div>
-
-            {/* Breakdown Modal/PDF View */}
-            {showBreakdown && quiz?.showResults !== false && (
-              <div className="fixed inset-0 z-[400] flex flex-col bg-slate-900/90 backdrop-blur-md animate-in fade-in duration-300">
-                <div className="flex items-center justify-between p-4 sm:p-6 text-white bg-slate-900/50">
-                  <div>
-                    <h3 className="text-lg font-black uppercase tracking-tight">Performance Breakdown</h3>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Document Mode • Confidential</p>
-                  </div>
-                  <button 
-                    onClick={() => setShowBreakdown(false)}
-                    className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all"
-                  >
-                    <i className="fas fa-times"></i>
-                  </button>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-4 sm:p-8 custom-scrollbar">
-                  <div className="max-w-4xl w-full mx-auto bg-white shadow-2xl rounded-sm p-6 sm:p-16 relative pdf-view printable-content">
-                    {/* Internal Watermark */}
-                    <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden select-none opacity-[0.03]">
-                      <div className="absolute inset-0 grid grid-cols-2 grid-rows-6 gap-20 transform -rotate-45 scale-150">
-                        {Array.from({ length: 12 }).map((_, i) => (
-                          <div key={i} className="text-xl font-black whitespace-nowrap text-slate-900 tracking-tighter uppercase italic">
-                            {profile?.displayName} • {profile?.email}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="relative z-20">
-                      <header className="border-b-4 border-primary-600 pb-8 mb-10 flex justify-between items-end">
-                        <div>
-                          <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter mb-2">{quiz?.title}</h2>
-                          <p className="text-slate-500 font-bold uppercase tracking-[0.2em] text-xs">Official Performance Evaluation Record</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Date of Evaluation</p>
-                          <p className="text-sm font-bold text-slate-900">{new Date(submission.completedAt || Date.now()).toLocaleDateString()}</p>
-                        </div>
-                      </header>
-
-                      <div className="grid grid-cols-2 gap-8 mb-12 bg-slate-50 p-8 rounded-xl border border-slate-100">
-                        <div>
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Student Particulars</p>
-                          <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight">{submission.studentName}</h4>
-                          <p className="text-xs font-bold text-slate-500 mt-1">{profile?.email}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Examination Result</p>
-                          <h4 className="text-3xl font-black text-slate-900">{percentage}%</h4>
-
-                        </div>
-                      </div>
-
-                      <div className="space-y-10">
-                        {questions.map((q, idx) => {
-                          const answers = submission.answers || {};
-                          const studentAnswerIdx = answers[q.id];
-                          const isCorrect = studentAnswerIdx === q.correctOptionIndex;
-                          
-                          const options = q.options || [];
-                          const studentAnswerText = options[studentAnswerIdx] || "No Answer Provided";
-                          const correctAnswerText = options[q.correctOptionIndex] || "N/A";
-
-                          return (
-                            <div key={q.id || idx} className="pb-10 border-b border-slate-100 last:border-0">
-                              <div className="flex items-start mb-6">
-                                <span className="font-black text-slate-300 text-4xl mr-6 shrink-0 leading-none">{String(idx + 1).padStart(2, '0')}</span>
-                                <div className="flex-1">
-                                  <h3 className="text-lg font-bold text-slate-900 leading-snug mb-4">{q.text || "Question text missing"}</h3>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className={`p-4 rounded-lg border ${isCorrect ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
-                                      <p className="text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Student Response</p>
-                                      <p className={`text-sm font-bold ${isCorrect ? 'text-green-800' : 'text-red-800'}`}>{studentAnswerText}</p>
-                                    </div>
-                                    {!isCorrect && (
-                                      <div className="p-4 rounded-lg bg-primary-50 border border-primary-200">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase mb-1 tracking-widest">Expected Solution</p>
-                                        <p className="text-sm font-bold text-primary-800">{correctAnswerText}</p>
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      <footer className="mt-16 pt-8 border-t-2 border-slate-100 text-center">
-                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.3em]">SmartPrep Examination Management System • Secure Result Portal</p>
-                      </footer>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
         </div>
       </Container>
 

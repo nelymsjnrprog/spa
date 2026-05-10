@@ -154,9 +154,9 @@ const LibraryManagement: React.FC = () => {
             <p className="text-slate-500">Start by uploading your first PDF handout or book.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {resources.map((resource) => (
-              <Card key={resource.id} className="group relative overflow-hidden flex flex-col h-full bg-white border-none shadow-xl shadow-slate-200/50 rounded-[2rem]">
+              <Card key={resource.id} className="group relative overflow-hidden flex flex-col h-full bg-white border-none shadow-lg shadow-slate-200/50 rounded-[1.2rem] sm:rounded-[2rem]">
                 {/* Thumbnail Area */}
                 <div className="aspect-[4/3] bg-slate-100 relative overflow-hidden">
                   {resource.thumbnailUrl ? (
@@ -170,38 +170,35 @@ const LibraryManagement: React.FC = () => {
                   
                   {/* Status Badges */}
                   <div className="absolute top-4 left-4 flex flex-col gap-2">
-                    <span className="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-900 shadow-sm">
-                      Level {resource.level}
-                    </span>
                     {resource.published ? (
-                      <span className="bg-emerald-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">Published</span>
+                      <span className="bg-emerald-500 text-white px-2 py-0.5 rounded-full text-[7px] sm:text-[10px] font-black uppercase tracking-widest shadow-sm">Published</span>
                     ) : (
-                      <span className="bg-slate-500 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm">Draft</span>
+                      <span className="bg-slate-500 text-white px-2 py-0.5 rounded-full text-[7px] sm:text-[10px] font-black uppercase tracking-widest shadow-sm">Draft</span>
                     )}
                   </div>
                 </div>
 
-                <div className="p-6 flex-1 flex flex-col">
-                  <h3 className="text-lg font-black text-slate-900 mb-2 line-clamp-1">{resource.title}</h3>
-                  <p className="text-slate-500 text-sm font-medium line-clamp-2 mb-6 flex-1">{resource.description || 'No description provided.'}</p>
+                <div className="p-3 sm:p-6 flex-1 flex flex-col">
+                  <h3 className="text-xs sm:text-lg font-black text-slate-900 mb-1 sm:mb-2 line-clamp-1">{resource.title}</h3>
+                  <p className="text-slate-500 text-[10px] sm:text-sm font-medium line-clamp-2 mb-3 sm:mb-6 flex-1">{resource.description || 'No description provided.'}</p>
                   
                   <div className="flex items-center justify-between pt-6 border-t border-slate-50">
                     <div className="flex gap-2">
                       <button 
                         onClick={() => togglePublish(resource)}
                         title={resource.published ? "Unpublish" : "Publish"}
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center transition-all ${
                           resource.published ? 'bg-slate-100 text-slate-600 hover:bg-slate-200' : 'bg-primary-50 text-primary-600 hover:bg-primary-100'
                         }`}
                       >
-                        <i className={`fas ${resource.published ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                        <i className={`fas ${resource.published ? 'fa-eye-slash' : 'fa-eye'} text-xs sm:text-base`}></i>
                       </button>
                       <button 
                         onClick={() => setDeleteModalData(resource)}
                         title="Delete"
-                        className="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center hover:bg-red-100 transition-all"
+                        className="w-8 h-8 sm:w-10 sm:h-10 bg-red-50 text-red-500 rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-red-100 transition-all"
                       >
-                        <i className="fas fa-trash-alt"></i>
+                        <i className="fas fa-trash-alt text-xs sm:text-base"></i>
                       </button>
                     </div>
                     <a 
@@ -210,8 +207,8 @@ const LibraryManagement: React.FC = () => {
                       rel="noopener noreferrer"
                       className="text-[10px] font-black uppercase tracking-widest text-primary-600 hover:text-primary-700 transition-colors flex items-center gap-1.5"
                     >
-                      View File
-                      <i className="fas fa-external-link-alt"></i>
+                      <span className="hidden sm:inline">View File</span>
+                      <i className="fas fa-external-link-alt text-xs sm:text-base"></i>
                     </a>
                   </div>
                 </div>

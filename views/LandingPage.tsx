@@ -87,19 +87,27 @@ const LandingPage: React.FC = () => {
 
   // Additional Panels State
   const [isPricingOpen, setIsPricingOpen] = useState(false);
-  const [isContactOpen, setIsContactOpen] = useState(false);
+
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [membershipSettings, setMembershipSettings] = useState<MembershipSettings | null>(null);
 
   // Body Scroll Lock
   useEffect(() => {
-    if (isAuthOpen || isPricingOpen || isContactOpen || isTermsOpen || isPrivacyOpen) {
+    if (isAuthOpen || isPricingOpen || isTermsOpen || isPrivacyOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
     }
-  }, [isAuthOpen, isPricingOpen, isContactOpen, isTermsOpen, isPrivacyOpen]);
+
+    // Ensure scrolling is restored when leaving the page or component unmounts
+    return () => {
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+    };
+  }, [isAuthOpen, isPricingOpen, isTermsOpen, isPrivacyOpen]);
 
   // Subscribe to membership settings
   useEffect(() => {
@@ -196,7 +204,7 @@ const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-white font-['Inter'] text-[#1a1a1a]">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-white border-b border-slate-100 px-5 py-3.5 md:px-6 flex items-center justify-between">
+      <nav className="fixed top-0 w-full z-50 bg-white border-b border-slate-100 px-5 py-3.5 md:px-6 flex items-center justify-between safe-pt">
         {/* Left: Logo */}
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
           <span className="text-lg font-bold tracking-tight text-slate-900 leading-tight">SMARTPREPACA</span>
@@ -304,68 +312,78 @@ const LandingPage: React.FC = () => {
       </section>
 
       {/* Support Section */}
-      <section className="py-24 px-6 bg-white">
+      <section className="py-20 px-6 bg-white border-t border-slate-100">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-slate-50 rounded-[3rem] p-8 lg:p-16 shadow-xl border border-slate-100 flex flex-col lg:flex-row gap-16 items-start">
-            <div className="lg:w-1/2 space-y-6">
-              <h2 className="text-3xl lg:text-5xl font-black text-[#1a1a1a] tracking-tight">Need help with something?</h2>
+          <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
+
+            {/* Left: Heading + descriptor */}
+            <div className="lg:w-5/12 space-y-5 lg:pt-2">
+
+              <h2 className="text-3xl lg:text-4xl font-black text-[#1a1a1a] tracking-tight leading-snug">
+                Need help with something?
+              </h2>
+              <p className="text-[15px] text-slate-500 font-medium leading-relaxed">
+                Send us a message and we'll get back to you within 24 hours.
+              </p>
             </div>
 
-            <div className="lg:w-1/2 w-full">
+            {/* Right: Form */}
+            <div className="lg:w-7/12 w-full">
               {supportSubmitted ? (
-                <div className="bg-[#1a732a] text-white p-12 rounded-[2rem] text-center space-y-4 animate-in zoom-in-95 duration-500">
-                  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <svg viewBox="0 0 24 24" className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
+                <div className="py-12 text-center space-y-3">
+                  <div className="w-12 h-12 bg-[#ecfdf5] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg viewBox="0 0 24 24" className="w-6 h-6 text-[#1a732a]" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M20 6L9 17l-5-5"/></svg>
                   </div>
-                  <h3 className="text-2xl font-black">Message Sent!</h3>
-                  <p className="opacity-80 font-medium">We'll get back to you within 24 hours.</p>
+                  <h3 className="text-lg font-black text-[#1a1a1a]">Message sent.</h3>
+                  <p className="text-slate-500 font-medium text-sm">We'll get back to you within 24 hours.</p>
                 </div>
               ) : (
-                <form onSubmit={handleSupportSubmit} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <input 
-                      type="text" 
-                      placeholder="Your Name" 
+                <form onSubmit={handleSupportSubmit} className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Your Name"
                       required
                       value={supportData.name}
                       onChange={e => setSupportData({...supportData, name: e.target.value})}
-                      className="w-full bg-white border border-slate-200 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-[#1a732a] focus:border-transparent transition-all outline-none font-medium" 
+                      className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-slate-400 focus:border-[#1a732a] focus:outline-none transition-colors font-medium"
                     />
-                    <input 
-                      type="email" 
-                      placeholder="Your Email" 
+                    <input
+                      type="email"
+                      placeholder="Your Email"
                       required
                       value={supportData.email}
                       onChange={e => setSupportData({...supportData, email: e.target.value})}
-                      className="w-full bg-white border border-slate-200 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-[#1a732a] focus:border-transparent transition-all outline-none font-medium" 
+                      className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-slate-400 focus:border-[#1a732a] focus:outline-none transition-colors font-medium"
                     />
                   </div>
-                  <input 
-                    type="text" 
-                    placeholder="Subject" 
+                  <input
+                    type="text"
+                    placeholder="Subject"
                     required
                     value={supportData.subject}
                     onChange={e => setSupportData({...supportData, subject: e.target.value})}
-                    className="w-full bg-white border border-slate-200 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-[#1a732a] focus:border-transparent transition-all outline-none font-medium" 
+                    className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-slate-400 focus:border-[#1a732a] focus:outline-none transition-colors font-medium"
                   />
-                  <textarea 
-                    placeholder="How can we help you?" 
+                  <textarea
+                    placeholder="How can we help you?"
                     required
-                    rows={4}
+                    rows={5}
                     value={supportData.message}
                     onChange={e => setSupportData({...supportData, message: e.target.value})}
-                    className="w-full bg-white border border-slate-200 rounded-2xl py-4 px-6 focus:ring-2 focus:ring-[#1a732a] focus:border-transparent transition-all outline-none font-medium resize-none"
+                    className="w-full bg-transparent border border-slate-200 rounded-lg py-3 px-4 text-[14px] text-[#1a1a1a] placeholder:text-slate-400 focus:border-[#1a732a] focus:outline-none transition-colors font-medium resize-none"
                   ></textarea>
-                  <button 
+                  <button
                     type="submit"
                     disabled={isSubmittingSupport}
-                    className="w-full bg-[#1a1a1a] text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-[#1a1a1a] text-white py-3.5 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {isSubmittingSupport ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
               )}
             </div>
+
           </div>
         </div>
       </section>
@@ -394,7 +412,7 @@ const LandingPage: React.FC = () => {
               <ul className="space-y-3">
                 <li><button onClick={() => setIsPrivacyOpen(true)} className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Privacy</button></li>
                 <li><button onClick={() => setIsTermsOpen(true)} className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Terms</button></li>
-                <li><button onClick={() => setIsContactOpen(true)} className="text-[14px] font-bold text-white/75 hover:text-white transition-colors">Contact Us</button></li>
+
               </ul>
             </div>
 
@@ -463,11 +481,7 @@ const LandingPage: React.FC = () => {
         }}
       />
 
-      {/* Contact Slide Panel */}
-      <ContactSlidePanel 
-        isOpen={isContactOpen} 
-        onClose={() => setIsContactOpen(false)} 
-      />
+
 
       {/* Terms Slide Panel */}
       <TermsSlidePanel 
@@ -486,7 +500,7 @@ const LandingPage: React.FC = () => {
 
 const TermsSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   return (
-    <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto`}>
+    <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto safe-pt`}>
       <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
         <div className="w-full max-w-4xl">
           <div className="flex justify-between items-center mb-16">
@@ -505,17 +519,17 @@ const TermsSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ i
 
           <div className="prose prose-slate max-w-none space-y-10">
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">1. Acceptance of Terms</h3>
+              <h3 className="text-2xl font-black text-slate-900">Acceptance of Terms</h3>
               <p className="text-slate-600 leading-relaxed font-medium">By accessing or using SmartPrepAca, you agree to be bound by these Terms of Service. If you do not agree to all of these terms, you should not use our services.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">2. Description of Service</h3>
+              <h3 className="text-2xl font-black text-slate-900">Description of Service</h3>
               <p className="text-slate-600 leading-relaxed font-medium">SmartPrepAca provides an online examination and academic preparation platform. We reserve the right to modify or discontinue any part of the service at any time without prior notice.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">3. User Conduct</h3>
+              <h3 className="text-2xl font-black text-slate-900">User Conduct</h3>
               <p className="text-slate-600 leading-relaxed font-medium">You agree to use the platform for lawful purposes only. Prohibited conduct includes but is not limited to:</p>
               <ul className="list-disc pl-6 space-y-2 text-slate-600 font-medium">
                 <li>Attempting to cheat or bypass examination security measures.</li>
@@ -526,17 +540,17 @@ const TermsSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ i
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">4. Intellectual Property</h3>
+              <h3 className="text-2xl font-black text-slate-900">Intellectual Property</h3>
               <p className="text-slate-600 leading-relaxed font-medium">All content on SmartPrepAca, including text, graphics, logos, and software, is the property of SmartPrepAca or its content suppliers and is protected by intellectual property laws.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">5. Limitation of Liability</h3>
+              <h3 className="text-2xl font-black text-slate-900">Limitation of Liability</h3>
               <p className="text-slate-600 leading-relaxed font-medium">SmartPrepAca shall not be liable for any indirect, incidental, special, or consequential damages resulting from the use or inability to use the service.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">6. Governing Law</h3>
+              <h3 className="text-2xl font-black text-slate-900">Governing Law</h3>
               <p className="text-slate-600 leading-relaxed font-medium">These terms shall be governed by and construed in accordance with the laws of the jurisdiction in which SmartPrepAca operates, without regard to its conflict of law principles.</p>
             </section>
           </div>
@@ -548,7 +562,7 @@ const TermsSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ i
 
 const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   return (
-    <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto`}>
+    <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto safe-pt`}>
       <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
         <div className="w-full max-w-4xl">
           <div className="flex justify-between items-center mb-16">
@@ -567,7 +581,7 @@ const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
 
           <div className="prose prose-slate max-w-none space-y-10">
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">1. Information We Collect</h3>
+              <h3 className="text-2xl font-black text-slate-900">Information We Collect</h3>
               <p className="text-slate-600 leading-relaxed font-medium">We collect information you provide directly to us, such as when you create an account, participate in an exam, or contact support. This may include:</p>
               <ul className="list-disc pl-6 space-y-2 text-slate-600 font-medium">
                 <li>Name, email address, and phone number.</li>
@@ -578,7 +592,7 @@ const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">2. How We Use Your Information</h3>
+              <h3 className="text-2xl font-black text-slate-900">How We Use Your Information</h3>
               <p className="text-slate-600 leading-relaxed font-medium">We use the information we collect to provide, maintain, and improve our services, including:</p>
               <ul className="list-disc pl-6 space-y-2 text-slate-600 font-medium">
                 <li>Processing your registration and verifying your identity.</li>
@@ -589,22 +603,22 @@ const PrivacySlidePanel: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">3. Data Security</h3>
+              <h3 className="text-2xl font-black text-slate-900">Data Security</h3>
               <p className="text-slate-600 leading-relaxed font-medium">We implement a variety of security measures to maintain the safety of your personal information. However, no method of transmission over the Internet or electronic storage is 100% secure.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">4. Sharing of Information</h3>
+              <h3 className="text-2xl font-black text-slate-900">Sharing of Information</h3>
               <p className="text-slate-600 leading-relaxed font-medium">We do not sell or rent your personal information to third parties. We may share information with your institution or authorized instructors for academic purposes.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">5. Your Rights</h3>
+              <h3 className="text-2xl font-black text-slate-900">Your Rights</h3>
               <p className="text-slate-600 leading-relaxed font-medium">You have the right to access, correct, or delete your personal information. You can manage most of your data through your profile dashboard.</p>
             </section>
 
             <section className="space-y-4">
-              <h3 className="text-2xl font-black text-slate-900">6. Cookies</h3>
+              <h3 className="text-2xl font-black text-slate-900">Cookies</h3>
               <p className="text-slate-600 leading-relaxed font-medium">We use cookies to improve your browsing experience and analyze site traffic. You can choose to disable cookies through your browser settings, though this may affect platform functionality.</p>
             </section>
           </div>
@@ -623,7 +637,7 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
   ];
 
   return (
-    <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto`}>
+    <div className={`fixed inset-0 h-full w-full bg-white z-[110] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto safe-pt`}>
       <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
         <div className="w-full max-w-7xl">
           <div className="flex justify-between items-center mb-16">
@@ -655,7 +669,7 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
                       <span className="text-4xl font-black text-slate-900">GHS {lvlSettings.price}</span>
                       <span className="text-slate-400 font-bold">/term</span>
                     </div>
-                    {isFree && <span className="inline-block mt-2 px-3 py-1 bg-green-50 text-green-600 text-[10px] font-black uppercase rounded-full">Free Access Active</span>}
+                    {isFree && <span className="inline-block mt-2 px-3 py-1 bg-red-50 text-red-600 text-[10px] font-black uppercase rounded-full">Enrollment Closed</span>}
                   </div>
                   <ul className="space-y-3 mb-8 flex-1">
                     {lvl.features.map((feat, i) => (
@@ -667,28 +681,16 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
                   </ul>
                   <button 
                     onClick={() => !isFree && onSelectPlan(lvl.id)}
-                    className={`w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${isFree ? 'bg-slate-100 text-slate-500 cursor-default' : 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-600/10 active:scale-95'}`}
+                    className={`w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all ${isFree ? 'bg-red-50 text-red-400 cursor-not-allowed' : 'bg-primary-600 text-white hover:bg-primary-700 shadow-lg shadow-primary-600/10 active:scale-95'}`}
                   >
-                    {isFree ? 'Current Plan' : 'Choose Plan'}
+                    {isFree ? 'Enrollment Closed' : 'Choose Plan'}
                   </button>
                 </div>
               );
             })}
           </div>
 
-          <div className="bg-slate-900 rounded-[3rem] p-10 md:p-16 text-center text-white mb-20 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-primary-600 opacity-10 rounded-full -mr-32 -mt-32"></div>
-            <div className="relative z-10">
-              <h3 className="text-lg font-black uppercase tracking-widest text-primary-500 mb-4">Institution</h3>
-              <h2 className="text-3xl md:text-5xl font-black mb-6">Need a custom solution?</h2>
-              <p className="text-slate-400 font-medium text-lg max-w-2xl mx-auto mb-10">
-                We offer tailored packages for nursing schools and academic institutions including multi-user licenses and administrative controls.
-              </p>
-              <button className="bg-white text-slate-900 px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-100 transition-all active:scale-95">
-                Contact for Pricing
-              </button>
-            </div>
-          </div>
+
 
           <div className="max-w-3xl mx-auto space-y-12">
             <h3 className="text-3xl font-black text-slate-900 text-center">Frequently Asked Questions</h3>

@@ -16,7 +16,6 @@ export interface UserProfile {
   createdAt: number;
   membershipStatus?: 'active' | 'pending';
   paid?: boolean; // For backward compatibility with older profile structures
-  joinedAsFree?: boolean; // Tracks if user signed up when their level had no payment requirement
   // Admin-specific fields
   adminPermission?: AdminPermission;
   assignedInstitutions?: string[];
@@ -153,3 +152,4 @@ export interface LibraryResource {
   uploadedAt: any; // Firestore serverTimestamp
   published: boolean;
 }
+

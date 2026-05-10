@@ -30,6 +30,9 @@ const StudentDashboard: React.FC = () => {
       
       const filtered = qDataRaw.filter(quiz => {
         if (!quiz.published) return false;
+        // NOTE: We do NOT filter by quiz.status here.
+        // A quiz with status 'completed' (ended by admin) still shows on the dashboard
+        // but the attempt button will be disabled in the UI below.
         const studentEmail = profile.email?.toLowerCase().trim();
         const studentInst = profile.institution;
         const studentLevel = profile.level;

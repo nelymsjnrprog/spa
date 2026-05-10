@@ -58,10 +58,8 @@ const Profile: React.FC = () => {
       <Container>
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
-            <Link to="/student" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
-              <i className="fas fa-arrow-left mr-2"></i> Back to Dashboard
-            </Link>
-            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Account Settings</h1>
+
+            <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Settings</h1>
             <p className="text-slate-500">Manage your identity and security preferences.</p>
           </div>
 
@@ -82,7 +80,6 @@ const Profile: React.FC = () => {
             <div className="md:col-span-2 space-y-6">
               <Card className="p-6">
                 <h3 className="text-lg font-bold mb-6 flex items-center">
-                  <i className="fas fa-user-circle mr-3 text-primary-600"></i>
                   Personal Information
                 </h3>
                 <div className="space-y-4">
@@ -118,38 +115,8 @@ const Profile: React.FC = () => {
               <Card className="p-6">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-bold flex items-center">
-                    <i className="fas fa-graduation-cap mr-3 text-primary-600"></i>
                     Academic Details
                   </h3>
-                  {!isEditing ? (
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="text-primary-600 hover:text-primary-700 font-bold text-sm bg-primary-50 px-4 py-2 rounded-lg transition"
-                    >
-                      <i className="fas fa-edit mr-2"></i> Edit
-                    </button>
-                  ) : (
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => {
-                          setIsEditing(false);
-                          setEditInstitution(profile?.institution || '');
-                          setEditLevel(profile?.level || '');
-                        }}
-                        className="bg-slate-100 text-slate-600 hover:bg-slate-200 px-4 py-2 rounded-lg font-bold text-sm transition"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={handleSaveProfile}
-                        disabled={saving || !editInstitution || !editLevel || !editProgram}
-                        className="bg-primary-600 text-white hover:bg-primary-700 px-4 py-2 rounded-lg font-bold text-sm transition disabled:opacity-50 flex items-center"
-                      >
-                        {saving ? <i className="fas fa-spinner fa-spin mr-2"></i> : <i className="fas fa-save mr-2"></i>}
-                        Save
-                      </button>
-                    </div>
-                  )}
                 </div>
 
                 <div className="space-y-4">
@@ -223,10 +190,11 @@ const Profile: React.FC = () => {
                     {isEditing ? (
                       <div className="relative">
                         <select
-                          title="Select Academic Program"
+                          title={profile?.program ? "Program is locked. Contact admin to change." : "Select Academic Program"}
+                          disabled={!!profile?.program}
                           value={editProgram}
                           onChange={(e) => setEditProgram(e.target.value)}
-                          className="w-full px-4 py-3 rounded-xl border border-primary-200 focus:ring-2 focus:ring-primary-500 outline-none transition bg-white"
+                          className={`w-full px-4 py-3 rounded-xl border focus:ring-2 outline-none transition bg-white ${profile?.program ? 'bg-slate-50 border-slate-200 cursor-not-allowed text-slate-500 appearance-none' : 'border-primary-200 focus:ring-primary-500'}`}
                         >
                           <option value="" disabled>Select Program</option>
                           <option value="RCN">RCN</option>
@@ -234,6 +202,11 @@ const Profile: React.FC = () => {
                           <option value="RMN">RMN</option>
                           <option value="RPHN">RPHN</option>
                         </select>
+                        {profile?.program && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" title="Contact admin to change program">
+                            <i className="fas fa-lock text-xs"></i>
+                          </div>
+                        )}
                       </div>
                     ) : (
                       <div className="p-3 bg-slate-50 rounded-lg text-slate-800 font-bold border border-slate-100 flex items-center">

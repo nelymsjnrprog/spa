@@ -26,16 +26,10 @@ const AdminRoles: React.FC = () => {
       confirmText?: string;
    } | null>(null);
 
-   // Password Re-auth Modal
-   const [reAuthModal, setReAuthModal] = useState<{
-      email: string;
-      onConfirm: (password: string) => void;
-   } | null>(null);
-   const [callerPassword, setCallerPassword] = useState('');
+   const [modalTab, setModalTab] = useState<'create' | 'promote'>('create');
 
    // Promote student modal state
    const [showPromoteModal, setShowPromoteModal] = useState(false);
-   const [modalTab, setModalTab] = useState<'create' | 'promote'>('create');
    const [students, setStudents] = useState<UserProfile[]>([]);
    const [promoteSearch, setPromoteSearch] = useState('');
    const [promotePermission, setPromotePermission] = useState<AdminPermission>('institution_admin');
@@ -161,41 +155,31 @@ const AdminRoles: React.FC = () => {
          return;
       }
 
-      // Open re-auth modal instead of using window.prompt
-      setReAuthModal({
-         email: profile!.email,
-         onConfirm: async (password) => {
-            setSaving(true);
-            try {
-               await adminService.createAdminAccount(
-                  createEmail.trim(),
-                  createPassword,
-                  createName.trim(),
-                  createPermission,
-                  createInstitutions,
-                  profile!.email,
-                  password
-               );
-               await adminService.logAction(
-                  profile!.uid,
-                  profile!.displayName,
-                  'CREATE_ADMIN',
-                  `Created admin account: ${createName.trim()} (${createEmail.trim()}) as ${createPermission}`
-               );
-               setCreateSuccess(`Admin account created successfully for ${createEmail.trim()}`);
-               setCreateName('');
-               setCreateEmail('');
-               setCreatePassword('');
-               setCreateInstitutions([]);
-               setReAuthModal(null);
-               setCallerPassword('');
-            } catch (err: any) {
-               setCreateError(err.message || 'Failed to create admin account. Check your password.');
-            } finally {
-               setSaving(false);
-            }
-         }
-      });
+      setSaving(true);
+      try {
+         await adminService.createAdminAccount(
+            createEmail.trim(),
+            createPassword,
+            createName.trim(),
+            createPermission,
+            createInstitutions
+         );
+         await adminService.logAction(
+            profile!.uid,
+            profile!.displayName,
+            'CREATE_ADMIN',
+            `Created admin account: ${createName.trim()} (${createEmail.trim()}) as ${createPermission}`
+         );
+         setCreateSuccess(`Admin account created successfully for ${createEmail.trim()}`);
+         setCreateName('');
+         setCreateEmail('');
+         setCreatePassword('');
+         setCreateInstitutions([]);
+      } catch (err: any) {
+         setCreateError(err.message || 'Failed to create admin account.');
+      } finally {
+         setSaving(false);
+      }
    };
 
    const resetModalState = () => {
@@ -224,8 +208,8 @@ const AdminRoles: React.FC = () => {
                   <i className="fas fa-shield-halved text-6xl text-slate-200 mb-6"></i>
                   <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Restricted</h1>
                   <p className="text-slate-500">Only Super Admins can manage admin roles and permissions.</p>
-                  <Link to="/admin" className="mt-6 text-primary-600 font-bold hover:underline">
-                     <i className="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                  <Link to="/admin/settings" className="mt-6 text-primary-600 font-bold hover:underline">
+                     <i className="fas fa-arrow-left mr-2"></i>Back to Settings
                   </Link>
                </div>
             </Container>
@@ -239,8 +223,8 @@ const AdminRoles: React.FC = () => {
          <Container>
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
                <div>
-                  <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
-                     <i className="fas fa-arrow-left mr-2"></i> Back to Dashboard
+                  <Link to="/admin/settings" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
+                     <i className="fas fa-arrow-left mr-2"></i> Back to Settings
                   </Link>
                   <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Admin Roles & Permissions</h1>
                   <p className="text-slate-500 font-medium text-sm sm:text-base">Manage who has access to what.</p>
@@ -594,43 +578,6 @@ const AdminRoles: React.FC = () => {
             }
          >
             {confirmModal?.message}
-         </Modal>
-
-         <Modal
-            isOpen={!!reAuthModal}
-            onClose={() => { setReAuthModal(null); setCallerPassword(''); }}
-            title="Identity Verification"
-            variant="info"
-            footer={
-               <>
-                  <button 
-                     onClick={() => { setReAuthModal(null); setCallerPassword(''); }}
-                     className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
-                  >
-                     Cancel
-                  </button>
-                  <button 
-                     onClick={() => reAuthModal?.onConfirm(callerPassword)}
-                     disabled={!callerPassword || saving}
-                     className="flex-1 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary-600 shadow-xl shadow-slate-200 transition-all disabled:opacity-50"
-                  >
-                     {saving ? <i className="fas fa-circle-notch animate-spin"></i> : 'Verify & Create'}
-                  </button>
-               </>
-            }
-         >
-            <p className="mb-6">For security purposes, please enter your password to authorize this administrative action.</p>
-            <div className="text-left">
-               <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Your Password ({profile?.email})</label>
-               <input 
-                  type="password" 
-                  value={callerPassword} 
-                  onChange={e => setCallerPassword(e.target.value)} 
-                  placeholder="••••••••" 
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-medium focus:ring-2 focus:ring-primary-500 outline-none tracking-widest"
-                  autoFocus
-               />
-            </div>
          </Modal>
       </div>
    );

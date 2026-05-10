@@ -46,6 +46,7 @@ const StudentDirectory: React.FC = () => {
     };
     fetchPayments();
 
+
     return () => unsubscribe();
   }, [isSuperAdmin]);
 
@@ -79,6 +80,7 @@ const StudentDirectory: React.FC = () => {
     students.forEach(s => set.add(s.level || '100'));
     return Array.from(set).sort((a, b) => parseInt(a) - parseInt(b));
   }, [students]);
+
 
   const filteredStudents = useMemo(() => {
     return students.filter(s => {
@@ -150,8 +152,9 @@ const StudentDirectory: React.FC = () => {
         await adminService.logAction(user!.uid, profile!.displayName, 'STUDENT_UNPAID_MANUAL',
           `Manually marked ${student.displayName} as UNPAID`);
       }
-    } catch {
-      alert('Action failed. Check your permissions and try again.');
+    } catch (err: any) {
+      console.error(`Action [${type}] failed:`, err);
+      alert(`Action failed: ${err.message || 'Unknown error'}. If you are trying to delete a student, ensure your Cloud Functions are deployed and you have Super Admin permissions.`);
     } finally {
       setActionLoading(null);
     }
@@ -182,8 +185,8 @@ const StudentDirectory: React.FC = () => {
         {/* ── Header ────────────────────────────────────────────────────────── */}
         <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <Link to="/admin" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
-              <i className="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            <Link to="/admin/settings" className="text-primary-600 text-sm font-bold flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit">
+              <i className="fas fa-arrow-left mr-2"></i> Back to Settings
             </Link>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Student Directory</h1>
             <p className="text-slate-500 font-medium text-sm mt-0.5">
@@ -263,7 +266,9 @@ const StudentDirectory: React.FC = () => {
           {/* Institution filter */}
           <select
             value={institutionFilter}
-            onChange={e => setInstitutionFilter(e.target.value)}
+            onChange={e => {
+              setInstitutionFilter(e.target.value);
+            }}
             title="Filter by Institution"
             className="px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-bold text-slate-600 focus:ring-2 focus:ring-primary-500 outline-none shadow-sm flex-1"
           >
@@ -272,6 +277,7 @@ const StudentDirectory: React.FC = () => {
               <option key={inst} value={inst}>{inst}</option>
             ))}
           </select>
+
         </div>
 
         {/* ── Student Table ─────────────────────────────────────────────────── */}

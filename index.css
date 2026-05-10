@@ -1,3 +1,8 @@
+html, body {
+  touch-action: manipulation;
+  overflow-x: hidden;
+}
+
 :root {
   --slido-green: #1a732a;
   --slido-green-dark: #145920;

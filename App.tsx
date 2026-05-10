@@ -23,14 +23,17 @@ import AdminRoles from './admin/AdminRoles';
 import MembershipPricing from './admin/MembershipPricing';
 import LevelManagement from './admin/LevelManagement';
 import StudentDirectory from './admin/StudentDirectory';
+import StudentEnrollment from './admin/StudentEnrollment';
 import AdminLogs from './admin/AdminLogs';
 import SupportCenter from './admin/SupportCenter';
 import LibraryManagement from './admin/LibraryManagement';
+import PaymentRegistry from './admin/PaymentRegistry';
 import StudentDashboard from './student/Dashboard';
 import QuizRoom from './student/QuizRoom';
 import Results from './student/Results';
 import Profile from './student/Profile';
 import Library from './student/Library';
+import AnswerReview from './student/AnswerReview';
 import PaymentRequiredView from './student/PaymentRequiredView';
 import MembershipGuard from './components/MembershipGuard';
 
@@ -39,17 +42,17 @@ const App: React.FC = () => {
 
   useEffect(() => {
     const root = document.documentElement;
-    // Emerald Theme for Smart Prep
+    // Slido Green Theme for Smart Prep
     root.style.setProperty('--color-primary-50', '#ecfdf5');
     root.style.setProperty('--color-primary-100', '#d1fae5');
     root.style.setProperty('--color-primary-200', '#a7f3d0');
     root.style.setProperty('--color-primary-300', '#6ee7b7');
     root.style.setProperty('--color-primary-400', '#34d399');
-    root.style.setProperty('--color-primary-500', '#10b981');
-    root.style.setProperty('--color-primary-600', '#059669');
-    root.style.setProperty('--color-primary-700', '#047857');
-    root.style.setProperty('--color-primary-800', '#065f46');
-    root.style.setProperty('--color-primary-900', '#064e3b');
+    root.style.setProperty('--color-primary-500', '#1fa33b');
+    root.style.setProperty('--color-primary-600', '#1a732a');
+    root.style.setProperty('--color-primary-700', '#145920');
+    root.style.setProperty('--color-primary-800', '#0e3d16');
+    root.style.setProperty('--color-primary-900', '#0a2b10');
 
     // No more offline handling
   }, [navigate]);
@@ -148,7 +151,21 @@ const App: React.FC = () => {
               </RoleGuard>
             </AuthGuard>
           } />
+          <Route path="/admin/payments" element={
+            <AuthGuard>
+              <RoleGuard allowedRole="admin">
+                <PaymentRegistry />
+              </RoleGuard>
+            </AuthGuard>
+          } />
           <Route path="/admin/institution/:institutionName" element={
+            <AuthGuard>
+              <RoleGuard allowedRole="admin">
+                <LevelManagement />
+              </RoleGuard>
+            </AuthGuard>
+          } />
+          <Route path="/admin/institution/:institutionName/level/:level" element={
             <AuthGuard>
               <RoleGuard allowedRole="admin">
                 <LevelManagement />
@@ -166,6 +183,13 @@ const App: React.FC = () => {
             <AuthGuard>
               <RoleGuard allowedRole="admin">
                 <StudentDirectory />
+              </RoleGuard>
+            </AuthGuard>
+          } />
+          <Route path="/admin/enrollment" element={
+            <AuthGuard>
+              <RoleGuard allowedRole="admin">
+                <StudentEnrollment />
               </RoleGuard>
             </AuthGuard>
           } />
@@ -215,6 +239,15 @@ const App: React.FC = () => {
               <RoleGuard allowedRole="student">
                 <MembershipGuard>
                   <Results />
+                </MembershipGuard>
+              </RoleGuard>
+            </AuthGuard>
+          } />
+          <Route path="/student/review/:submissionId" element={
+            <AuthGuard>
+              <RoleGuard allowedRole="student">
+                <MembershipGuard>
+                  <AnswerReview />
                 </MembershipGuard>
               </RoleGuard>
             </AuthGuard>

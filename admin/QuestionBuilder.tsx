@@ -238,17 +238,17 @@ const QuestionBuilder: React.FC = () => {
             >
               <i className="fas fa-arrow-left mr-2"></i> Back to Registry
             </button>
-            <h1 className="text-2xl lg:text-4xl font-black text-slate-900 tracking-tight mb-1">Curriculum Builder</h1>
+
             <p className="text-slate-500 font-medium text-sm lg:text-base">{quiz?.title}</p>
           </div>
-          <div className="grid grid-cols-2 lg:flex items-center gap-3 w-full lg:w-auto">
-            <div className="bg-white px-4 py-3 sm:px-6 sm:py-4 rounded-2xl border border-slate-200 shadow-sm text-center lg:min-w-[120px]">
-              <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Vault Registry</p>
-              <p className="text-lg sm:text-2xl font-black text-slate-900">{savedQuestions.length} <span className="text-xs font-bold text-slate-400">Items</span></p>
+          <div className="grid grid-cols-2 lg:flex items-center gap-2 w-full lg:w-auto">
+            <div className="bg-white px-3 py-2 sm:px-4 sm:py-3 rounded-xl border border-slate-200 shadow-sm text-center lg:min-w-[100px]">
+              <p className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Vault Registry</p>
+              <p className="text-base sm:text-xl font-black text-slate-900">{savedQuestions.length} <span className="text-[10px] font-bold text-slate-400">Items</span></p>
             </div>
-            <div className="bg-primary-50 px-4 py-3 sm:px-6 sm:py-4 rounded-2xl border border-primary-100 shadow-sm text-center lg:min-w-[120px]">
-              <p className="text-[9px] sm:text-[10px] font-black text-primary-400 uppercase tracking-widest mb-1">Format</p>
-              <p className="text-lg sm:text-2xl font-black text-primary-700">{quiz?.defaultOptionsCount || 4} <span className="text-xs font-bold text-primary-400">Opts</span></p>
+            <div className="bg-primary-50 px-3 py-2 sm:px-4 sm:py-3 rounded-xl border border-primary-100 shadow-sm text-center lg:min-w-[100px]">
+              <p className="text-[8px] sm:text-[9px] font-black text-primary-400 uppercase tracking-widest mb-0.5">Format</p>
+              <p className="text-base sm:text-xl font-black text-primary-700">{quiz?.defaultOptionsCount || 4} <span className="text-[10px] font-bold text-primary-400">Opts</span></p>
             </div>
           </div>
           {isSuperAdmin && savedQuestions.length > 0 && (
@@ -286,120 +286,8 @@ const QuestionBuilder: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr_1fr] gap-8 h-full">
-            {/* Panel 1: Composer */}
-            <div className={`h-full lg:overflow-y-auto lg:pr-2 scrollbar-hide hover:scrollbar-default ${activeTab !== 'compose' ? 'hidden lg:block' : 'block'}`}>
-              <div className="pb-24 lg:pb-8">
-                <Card className="p-5 sm:p-8 border-none shadow-xl shadow-slate-200/50">
-                  <div className="flex items-center justify-between mb-6 sm:mb-8">
-                    <h2 className="text-xl font-bold text-slate-900">
-                      {editingSavedId ? `Editing Vault Item` : editingIndex !== null ? `Editing Staged #${savedQuestions.length + editingIndex + 1}` : 'Composer'}
-                    </h2>
-                    {editingIndex === null && !editingSavedId ? (
-                      <span className="bg-primary-600 text-white text-[10px] sm:text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">
-                        Item #{nextQuestionNumber}
-                      </span>
-                    ) : (
-                      <span className="bg-amber-500 text-white text-[10px] sm:text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-tighter animate-pulse">
-                        Edit Mode
-                      </span>
-                    )}
-                  </div>
-
-                  <form onSubmit={addToStage} className="space-y-6">
-                    <div>
-                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Question Inquiry</label>
-                      <textarea
-                        value={text}
-                        onChange={e => setText(e.target.value)}
-                        className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition min-h-[140px] text-slate-700 font-medium text-sm sm:text-base"
-                        placeholder="e.g. Identify the primary advantage of utilizing a hash map for lookups."
-                        required
-                        style={{ minHeight: '120px' }}
-                      />
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Response Options</label>
-                        <span className="text-[10px] font-bold text-primary-500 uppercase">Select the correct answer</span>
-                      </div>
-                      {options.map((opt, i) => (
-                        <div key={i} className="flex items-center space-x-3 group w-full">
-                          <button
-                            type="button"
-                            onClick={() => setCorrect(i)}
-                            className={`w-11 h-11 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-black text-sm transition-all duration-200 flex-shrink-0 shadow-sm ${
-                              correct === i 
-                                ? 'bg-green-600 text-white ring-4 ring-green-100 scale-105' 
-                                : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
-                            }`}
-                            title={`Mark Option ${String.fromCharCode(65 + i)} as correct`}
-                          >
-                            {String.fromCharCode(65 + i)}
-                          </button>
-                          <div className="relative flex-1">
-                            <input
-                              type="text"
-                              value={opt}
-                              onChange={e => {
-                                const n = [...options];
-                                n[i] = e.target.value;
-                                setOptions(n);
-                              }}
-                              placeholder={`Option ${String.fromCharCode(65 + i)} details...`}
-                              className={`w-full p-3 sm:p-4 border-2 rounded-xl text-sm transition-all duration-200 min-h-[48px] ${
-                                correct === i 
-                                  ? 'border-green-500 bg-green-50/20 text-slate-900 font-bold' 
-                                  : 'border-slate-100 bg-white focus:border-primary-500'
-                              }`}
-                              required
-                            />
-                            {correct === i && (
-                              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1.5 bg-green-600 text-white px-2 py-1 rounded-md shadow-sm animate-in fade-in zoom-in duration-300">
-                                <i className="fas fa-check-circle text-[10px]"></i>
-                                <span className="text-[8px] font-black uppercase tracking-widest">Correct</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-100 lg:relative lg:p-0 lg:bg-transparent lg:border-none z-30">
-                      <div className="flex gap-3 max-w-7xl mx-auto lg:max-w-none">
-                        <button
-                          type="submit"
-                          className={`flex-1 py-4 rounded-xl font-bold transition shadow-xl shadow-slate-100 text-sm sm:text-base ${editingIndex !== null || editingSavedId
-                            ? 'bg-amber-500 text-white hover:bg-amber-600'
-                            : 'bg-slate-900 text-white hover:bg-primary-600'
-                            }`}
-                        >
-                          {editingSavedId ? (
-                            <><i className="fas fa-save mr-2"></i> Save Changes</>
-                          ) : editingIndex !== null ? (
-                            <><i className="fas fa-pen mr-2"></i> Update Staged Item</>
-                          ) : (
-                            <><i className="fas fa-plus mr-2"></i> Add to Sequence</>
-                          )}
-                        </button>
-                        {(editingIndex !== null || editingSavedId) && (
-                          <button
-                            type="button"
-                            onClick={resetForm}
-                            className="px-5 py-4 rounded-xl font-bold bg-slate-100 text-slate-500 hover:bg-slate-200 transition text-sm sm:text-base"
-                          >
-                            Cancel
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </form>
-                </Card>
-              </div>
-            </div>
-
             {/* Panel 2: Sequence Preview */}
-            <div className={`h-full lg:overflow-y-auto lg:px-4 custom-scrollbar ${activeTab !== 'sequence' ? 'hidden lg:block' : 'block'}`}>
+            <div className={`h-full lg:overflow-y-auto lg:pr-2 custom-scrollbar ${activeTab !== 'sequence' ? 'hidden lg:block' : 'block'}`}>
               <div className="pb-8">
                 {/* Staging Area Header */}
                 {stagedQuestions.length > 0 && (
@@ -521,6 +409,118 @@ const QuestionBuilder: React.FC = () => {
                     </div>
                   )}
                 </div>
+              </div>
+            </div>
+
+            {/* Panel 1: Composer */}
+            <div className={`h-full lg:overflow-y-auto lg:px-4 scrollbar-hide hover:scrollbar-default ${activeTab !== 'compose' ? 'hidden lg:block' : 'block'}`}>
+              <div className="pb-24 lg:pb-8">
+                <Card className="p-5 sm:p-8 border-none shadow-xl shadow-slate-200/50">
+                  <div className="flex items-center justify-between mb-6 sm:mb-8">
+                    <h2 className="text-xl font-bold text-slate-900">
+                      {editingSavedId ? `Editing Vault Item` : editingIndex !== null ? `Editing Staged #${savedQuestions.length + editingIndex + 1}` : 'Composer'}
+                    </h2>
+                    {editingIndex === null && !editingSavedId ? (
+                      <span className="bg-primary-600 text-white text-[10px] sm:text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">
+                        Item #{nextQuestionNumber}
+                      </span>
+                    ) : (
+                      <span className="bg-amber-500 text-white text-[10px] sm:text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-tighter animate-pulse">
+                        Edit Mode
+                      </span>
+                    )}
+                  </div>
+
+                  <form onSubmit={addToStage} className="space-y-6">
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Question Inquiry</label>
+                      <textarea
+                        value={text}
+                        onChange={e => setText(e.target.value)}
+                        className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition min-h-[140px] text-slate-700 font-medium text-sm sm:text-base"
+                        placeholder="e.g. Identify the primary advantage of utilizing a hash map for lookups."
+                        required
+                        style={{ minHeight: '120px' }}
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Response Options</label>
+                        <span className="text-[10px] font-bold text-primary-500 uppercase">Select the correct answer</span>
+                      </div>
+                      {options.map((opt, i) => (
+                        <div key={i} className="flex items-center space-x-3 group w-full">
+                          <button
+                            type="button"
+                            onClick={() => setCorrect(i)}
+                            className={`w-11 h-11 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-black text-sm transition-all duration-200 flex-shrink-0 shadow-sm ${
+                              correct === i 
+                                ? 'bg-green-600 text-white ring-4 ring-green-100 scale-105' 
+                                : 'bg-slate-100 text-slate-400 hover:bg-slate-200 hover:text-slate-600'
+                            }`}
+                            title={`Mark Option ${String.fromCharCode(65 + i)} as correct`}
+                          >
+                            {String.fromCharCode(65 + i)}
+                          </button>
+                          <div className="relative flex-1">
+                            <input
+                              type="text"
+                              value={opt}
+                              onChange={e => {
+                                const n = [...options];
+                                n[i] = e.target.value;
+                                setOptions(n);
+                              }}
+                              placeholder={`Option ${String.fromCharCode(65 + i)} details...`}
+                              className={`w-full p-3 sm:p-4 border-2 rounded-xl text-sm transition-all duration-200 min-h-[48px] ${
+                                correct === i 
+                                  ? 'border-green-500 bg-green-50/20 text-slate-900 font-bold' 
+                                  : 'border-slate-100 bg-white focus:border-primary-500'
+                              }`}
+                              required
+                            />
+                            {correct === i && (
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1.5 bg-green-600 text-white px-2 py-1 rounded-md shadow-sm animate-in fade-in zoom-in duration-300">
+                                <i className="fas fa-check-circle text-[10px]"></i>
+                                <span className="text-[8px] font-black uppercase tracking-widest">Correct</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-100 lg:relative lg:p-0 lg:bg-transparent lg:border-none z-30">
+                      <div className="flex gap-3 max-w-7xl mx-auto lg:max-w-none">
+                        <button
+                          type="submit"
+                          className={`flex-1 py-4 rounded-xl font-bold transition shadow-xl shadow-slate-100 text-sm sm:text-base ${editingIndex !== null || editingSavedId
+                            ? 'bg-amber-500 text-white hover:bg-amber-600'
+                            : 'bg-slate-900 text-white hover:bg-primary-600'
+                            }`}
+                        >
+                          {editingSavedId ? (
+                            <><i className="fas fa-save mr-2"></i> Save Changes</>
+                          ) : editingIndex !== null ? (
+                            <><i className="fas fa-pen mr-2"></i> Update Staged Item</>
+                          ) : (
+                            <><i className="fas fa-plus mr-2"></i> Add to Sequence</>
+                          )}
+                        </button>
+                        {(editingIndex !== null || editingSavedId) && (
+                          <button
+                            type="button"
+                            onClick={resetForm}
+                            className="px-5 py-4 rounded-xl font-bold bg-slate-100 text-slate-500 hover:bg-slate-200 transition text-sm sm:text-base"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </form>
+                </Card>
               </div>
             </div>
 

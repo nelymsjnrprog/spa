@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import { adminService } from '../services/adminService';
 import { institutionService, Institution } from '../services/institutionService';
-import ContactSlidePanel from '../components/ContactSlidePanel';
+
 import { APP_CONFIG } from '../core/config';
 import { supportService, SupportInquiry } from '../services/supportService';
 
@@ -14,7 +14,7 @@ export const Navbar: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
   const [institutions, setInstitutions] = React.useState<Institution[]>([]);
   const [inquiryCount, setInquiryCount] = React.useState(0);
-  const [contactOpen, setContactOpen] = React.useState(false);
+
 
   React.useEffect(() => {
     if (profile?.role === 'admin') {
@@ -64,15 +64,7 @@ export const Navbar: React.FC = () => {
             </Link>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4 shrink-0 min-w-0">
-            <Link to="/student/profile" className="text-right flex items-center space-x-2 sm:space-x-3 group min-w-0">
-              <div className="hidden sm:block min-w-0">
-                <p className="text-sm font-semibold text-slate-900 group-hover:text-primary-600 transition-colors truncate max-w-[120px]">{profile?.displayName}</p>
-                <p className="text-xs text-slate-500 uppercase tracking-widest">{profile?.role}</p>
-              </div>
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold text-sm flex-shrink-0 border-2 border-white shadow-sm group-hover:border-primary-200 transition-colors">
-                {profile?.displayName?.charAt(0)}
-              </div>
-            </Link>
+
             <button
               onClick={handleLogout}
               className="p-2.5 text-slate-500 hover:text-red-600 transition-colors active:scale-95"
@@ -94,7 +86,7 @@ export const Navbar: React.FC = () => {
       )}
 
       {/* Sidebar Content */}
-      <aside className={`fixed top-0 left-0 h-full w-72 bg-white z-[70] shadow-2xl transition-transform duration-300 ease-out flex flex-col ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed top-0 left-0 h-full w-72 bg-white z-[70] shadow-2xl transition-transform duration-300 ease-out flex flex-col safe-pt ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-sm font-black uppercase tracking-[0.2em] text-[#cbd5e1]">{APP_CONFIG.name}</span>
@@ -151,7 +143,7 @@ export const Navbar: React.FC = () => {
                   <div className="w-10 sm:w-8 flex justify-center text-xl sm:text-lg text-slate-300 group-hover:text-primary-500 transition-colors">
                     <i className="fas fa-headset"></i>
                   </div>
-                  <span className="text-base sm:text-sm">Support Center</span>
+                  <span className="text-base sm:text-sm">Support</span>
                 </div>
                 {inquiryCount > 0 && (
                   <span className="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse shadow-lg shadow-red-200">
@@ -159,6 +151,12 @@ export const Navbar: React.FC = () => {
                   </span>
                 )}
               </Link>
+              {isSuperAdmin && (
+                <>
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Financials</div>
+                  <SidebarLink to="/admin/payments" icon="fa-credit-card" label="Payment Registry" onClick={() => setSidebarOpen(false)} />
+                </>
+              )}
             </>
           )}
 
@@ -168,7 +166,7 @@ export const Navbar: React.FC = () => {
               <SidebarLink to="/student" icon="fa-th-large" label="Dashboard" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="/student/library" icon="fa-book-open" label="Library" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="#" icon="fa-comments" label="Chat" onClick={() => setSidebarOpen(false)} />
-              <SidebarLink to="/student/profile" icon="fa-user-cog" label="Account Settings" onClick={() => setSidebarOpen(false)} />
+              <SidebarLink to="/student/profile" icon="fa-user-cog" label="Settings" onClick={() => setSidebarOpen(false)} />
             </>
           )}
           
@@ -178,12 +176,7 @@ export const Navbar: React.FC = () => {
         <div className="p-4 border-t border-slate-50 bg-slate-50/50">
         </div>
       </aside>
-    <ContactSlidePanel 
-      isOpen={contactOpen} 
-      onClose={() => setContactOpen(false)} 
-      initialName={profile?.displayName || ''} 
-      initialEmail={profile?.email || ''} 
-    />
+
     </>
   );
 };

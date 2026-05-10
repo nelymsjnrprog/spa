@@ -1,5 +1,6 @@
 import { doc, getDoc, updateDoc, collection, getDocs, query, limit, deleteDoc, where, onSnapshot, writeBatch } from "firebase/firestore";
-import { db } from "../core/firebase";
+import { httpsCallable } from "firebase/functions";
+import { db, functions } from "../core/firebase";
 import { UserProfile } from "../core/types";
 
 /**
@@ -34,25 +35,37 @@ export const userService = {
   },
 
   /**
-   * Soft Delete a user by removing their profile and all exam submissions.
-   * Note: This does not delete their Firebase Auth account, but locking them out
-   * by removing their profile prevents login.
+   * Permanent Delete: Deletes the Firebase Auth account via Cloud Function.
+   * Also performs a manual purge of Firestore data (profile + submissions) 
+   * to ensure immediate removal even if extensions are not configured.
    */
   async deleteUserData(uid: string): Promise<void> {
-    // 1. Delete user profile
-    const userRef = doc(db, "users", uid);
-    await deleteDoc(userRef);
+    try {
+      // 1. Trigger Auth account deletion
+      const deleteAccount = httpsCallable(functions, 'deleteUserAccount');
+      await deleteAccount({ uid }).catch(err => {
+        console.warn("Auth deletion via Cloud Function failed, proceeding with manual data purge:", err);
+      });
 
-    // 2. Query and delete all submissions by this user
-    const q = query(
-      collection(db, 'submissions'),
-      where('studentId', '==', uid)
-    );
-    const snapshot = await getDocs(q);
+      // 2. Manual Data Purge (Immediate cleanup)
+      const batch = writeBatch(db);
+      
+      // Delete user profile
+      batch.delete(doc(db, "users", uid));
 
-    // Process deletions in bulk locally (or with batched writes, but looping deletes is fine for small limits)
-    const deletePromises = snapshot.docs.map(submissionDoc => deleteDoc(submissionDoc.ref));
-    await Promise.all(deletePromises);
+      // Fetch and delete all student submissions/results
+      const submissionsQuery = query(collection(db, "submissions"), where('studentId', '==', uid));
+      const submissionsSnap = await getDocs(submissionsQuery);
+      submissionsSnap.docs.forEach(sDoc => {
+        batch.delete(sDoc.ref);
+      });
+
+      // Execute batch deletion
+      await batch.commit();
+    } catch (err: any) {
+      console.error("Critical error during user data purge:", err);
+      throw new Error(`Deletion failed: ${err.message}`);
+    }
   },
 
   async promoteAllStudents(currentLevel: string): Promise<number> {
@@ -81,7 +94,11 @@ export const userService = {
       const effectiveLevel = data.level || '100';
       
       if (effectiveLevel === currentLevel) {
-        batch.update(userDoc.ref, { level: nextLevel });
+        batch.update(userDoc.ref, { 
+          level: nextLevel,
+          membershipStatus: 'pending',
+          paid: false
+        });
         count++;
       }
     });

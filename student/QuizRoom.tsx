@@ -69,6 +69,7 @@ const QuizRoom: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [showSubmitConfirmation, setShowSubmitConfirmation] = useState(false);
+  const [activeAnnouncement, setActiveAnnouncement] = useState<string | null>(null);
   const ITEMS_PER_PAGE = 500;
 
   const timerRef = useRef<any>(null);
@@ -369,17 +370,22 @@ const QuizRoom: React.FC = () => {
         }
         setQuiz(qz);
 
-        // Auto-submit if admin ends the quiz
-        if (qz.status === 'completed' && examStartedRef.current && !submittingRef.current) {
-          handleFinalSubmit(true, true);
+        // Auto-submit if admin ends the quiz while student is inside
+        if (qz.status === 'completed') {
+          if (examStartedRef.current && !submittingRef.current) {
+            console.log("Admin ended exam. Auto-submitting session...");
+            handleFinalSubmit(true, true);
+          }
         }
 
         // Show announcement if present
         if (qz.announcement && qz.announcement !== lastAnnouncementRef.current) {
           lastAnnouncementRef.current = qz.announcement;
           if (qz.announcement.trim()) {
-            alert(`📢 ADMIN ANNOUNCEMENT:\n\n${qz.announcement}`); // Simple alert for high visibility
+            setActiveAnnouncement(qz.announcement);
           }
+        } else if (!qz.announcement) {
+          setActiveAnnouncement(null);
         }
       });
 
@@ -389,6 +395,7 @@ const QuizRoom: React.FC = () => {
         setError("This examination module is not currently available for students.");
         return;
       }
+
 
       let qs = await questionService.getQuestionsByQuiz(quizId);
       let existingSub = await submissionService.getSubmission(quizId, userId);
@@ -834,6 +841,28 @@ const QuizRoom: React.FC = () => {
         </div>
       ) : (
         <div id="secure-exam-container" className={`h-screen h-[100dvh] bg-slate-50 flex flex-col lg:flex-row overflow-hidden relative selection:bg-primary-100 ${quiz?.disableTextSelection ? 'disable-selection' : ''} ${isContentBlurred ? 'exam-blur' : ''}`}>
+          
+          {/* 1. Admin Broadcast Banner */}
+          {activeAnnouncement && (
+            <div className="fixed top-0 left-0 right-0 bg-amber-500 text-white py-3 px-6 flex items-center justify-between shadow-lg animate-in slide-in-from-top duration-500 z-[110]">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center animate-pulse">
+                  <i className="fas fa-bullhorn text-sm"></i>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black uppercase tracking-widest opacity-80 leading-none mb-1">Important Announcement</span>
+                  <p className="text-sm font-bold leading-tight">{activeAnnouncement}</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setActiveAnnouncement(null)}
+                className="w-8 h-8 hover:bg-black/10 rounded-full flex items-center justify-center transition-colors"
+              >
+                <i className="fas fa-times text-sm"></i>
+              </button>
+            </div>
+          )}
+
 
       {/* Unified Security Overlays */}
       {/* EXAM PAUSED OVERLAY */}
@@ -939,28 +968,7 @@ const QuizRoom: React.FC = () => {
                 </Card>
               </div>
 
-              {/* Unanswered Section */}
-              {questions.length - numAnswered > 0 && (
-                <div className="mb-10">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-                      <i className="fas fa-exclamation-circle text-sm"></i>
-                    </div>
-                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Unanswered Questions ({questions.length - numAnswered})</h3>
-                  </div>
-                  <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
-                    {questions.map((q, i) => answers[q.id] === undefined ? (
-                      <button
-                        key={q.id}
-                        onClick={() => { setShowReview(false); navigateToQuestion(i); }}
-                        className="h-10 rounded-xl bg-white border-2 border-slate-100 text-slate-400 font-black text-xs hover:border-primary-500 hover:text-primary-600 transition-all shadow-sm flex items-center justify-center"
-                      >
-                        {i + 1}
-                      </button>
-                    ) : null)}
-                  </div>
-                </div>
-              )}
+
 
               {/* Flagged Section */}
               {flags.size > 0 && (
@@ -988,13 +996,13 @@ const QuizRoom: React.FC = () => {
               <div className="mt-auto pt-10 flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => setShowReview(false)}
-                  className="flex-1 p-5 rounded-2xl bg-white border-2 border-slate-100 text-slate-600 font-black uppercase tracking-widest hover:bg-slate-50 transition-all text-sm"
+                  className="flex-1 p-3.5 rounded-2xl bg-white border-2 border-slate-100 text-slate-600 font-black uppercase tracking-widest hover:bg-slate-50 transition-all text-sm"
                 >
                   Go Back & Review
                 </button>
                 <button
                   onClick={() => handleFinalSubmit(false)}
-                  className="flex-1 p-5 rounded-2xl bg-emerald-600 text-white font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200 text-sm"
+                  className="flex-1 p-3.5 rounded-2xl bg-emerald-600 text-white font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl shadow-emerald-200 text-sm"
                 >
                   SUBMIT
                 </button>
@@ -1082,11 +1090,11 @@ const QuizRoom: React.FC = () => {
               ))}
 
               {/* STICKY BOTTOM NAVIGATION */}
-              <div className="fixed bottom-0 left-0 lg:left-64 lg:right-72 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 p-4 lg:p-6 z-40 flex flex-row justify-between items-center gap-3">
+              <div className="fixed bottom-0 left-0 lg:left-64 lg:right-72 right-0 bg-white/80 backdrop-blur-md border-t border-slate-200 p-2.5 lg:p-3.5 z-40 flex flex-row justify-between items-center gap-3">
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 0}
-                  className="flex-1 lg:flex-none lg:w-48 px-4 lg:px-8 py-4 lg:py-5 rounded-xl lg:rounded-2xl bg-white border-2 border-slate-100 text-slate-900 font-black uppercase tracking-widest hover:bg-slate-50 disabled:opacity-20 transition-all flex items-center justify-center space-x-3 shadow-sm active:scale-95"
+                  className="flex-1 lg:flex-none lg:w-40 px-4 lg:px-6 py-2.5 lg:py-3.5 rounded-xl lg:rounded-2xl bg-white border-2 border-slate-100 text-slate-900 font-black uppercase tracking-widest hover:bg-slate-50 disabled:opacity-20 transition-all flex items-center justify-center space-x-3 shadow-sm active:scale-95"
                   title="Previous Page"
                 >
                   <i className="fas fa-chevron-left text-xs"></i>
@@ -1109,7 +1117,7 @@ const QuizRoom: React.FC = () => {
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }}
                     disabled={submitting}
-                    className="flex-1 lg:flex-none lg:w-48 px-4 lg:px-8 py-4 lg:py-5 rounded-xl lg:rounded-2xl bg-emerald-600 text-white font-black uppercase tracking-widest hover:bg-emerald-700 disabled:opacity-20 transition-all shadow-xl shadow-emerald-200 flex items-center justify-center space-x-3 active:scale-95"
+                    className="flex-1 lg:flex-none lg:w-40 px-4 lg:px-6 py-2.5 lg:py-3.5 rounded-xl lg:rounded-2xl bg-emerald-600 text-white font-black uppercase tracking-widest hover:bg-emerald-700 disabled:opacity-20 transition-all shadow-xl shadow-emerald-200 flex items-center justify-center space-x-3 active:scale-95"
                   >
                     <span className="text-xs lg:text-sm">Finish</span>
                     <i className="fas fa-check-circle text-xs"></i>
@@ -1117,7 +1125,7 @@ const QuizRoom: React.FC = () => {
                 ) : (
                   <button
                     onClick={handleNextPage}
-                    className="flex-1 lg:flex-none lg:w-48 px-4 lg:px-8 py-4 lg:py-5 rounded-xl lg:rounded-2xl bg-primary-600 text-white font-black uppercase tracking-widest hover:bg-primary-700 disabled:opacity-20 transition-all shadow-xl shadow-primary-200 flex items-center justify-center space-x-3 active:scale-95"
+                    className="flex-1 lg:flex-none lg:w-40 px-4 lg:px-6 py-2.5 lg:py-3.5 rounded-xl lg:rounded-2xl bg-primary-600 text-white font-black uppercase tracking-widest hover:bg-primary-700 disabled:opacity-20 transition-all shadow-xl shadow-primary-200 flex items-center justify-center space-x-3 active:scale-95"
                   >
                     <span className="text-xs lg:text-sm">Next</span>
                     <i className="fas fa-chevron-right text-xs"></i>
@@ -1199,19 +1207,7 @@ const QuizRoom: React.FC = () => {
         <i className="fas fa-bars text-sm group-hover:translate-x-0.5 transition-transform"></i>
       </button>
 
-      {/* MOBILE FLAG NAVIGATION ARROW */}
-      {flags.size > 0 && (
-        <button
-          onClick={navigateToNextFlag}
-          className="lg:hidden fixed left-0 top-1/2 -translate-y-1/2 z-[40] w-12 h-20 bg-white/90 backdrop-blur-md border border-l-0 border-slate-200 rounded-r-3xl flex items-center justify-center text-primary-600 shadow-xl active:scale-90 transition-all group"
-          title="Jump to next flagged question"
-        >
-          <div className="flex flex-col items-center">
-            <i className="fas fa-chevron-right text-xl group-hover:translate-x-1 transition-transform"></i>
-            <span className="text-[8px] font-black uppercase mt-1 opacity-60">Flags</span>
-          </div>
-        </button>
-      )}
+
 
       {/* BACKDROP FOR MOBILE MENU */}
       {isMobileMenuOpen && (
@@ -1297,14 +1293,14 @@ const QuizRoom: React.FC = () => {
               <button
                 onClick={() => handleFinalSubmit()}
                 disabled={submitting}
-                className="w-full bg-emerald-600 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50"
+                className="w-full bg-emerald-600 text-white py-3 rounded-xl font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50"
               >
                 {submitting ? 'Processing...' : 'Yes, Submit Now'}
               </button>
               <button
                 onClick={() => setShowSubmitConfirmation(false)}
                 disabled={submitting}
-                className="w-full bg-slate-100 text-slate-600 py-4 rounded-xl font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
+                className="w-full bg-slate-100 text-slate-600 py-3 rounded-xl font-black uppercase tracking-widest hover:bg-slate-200 transition-all"
               >
                 Cancel & Review
               </button>
@@ -1409,6 +1405,23 @@ const QuizRoom: React.FC = () => {
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* 4. Session Paused Overlay */}
+      {quiz?.status === 'paused' && (
+        <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[120] flex items-center justify-center p-6 text-center animate-in fade-in duration-500">
+          <div className="max-w-md w-full bg-white p-10 rounded-[3rem] shadow-2xl">
+            <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-amber-100 animate-pulse">
+              <i className="fas fa-pause text-3xl"></i>
+            </div>
+            <h2 className="text-3xl font-black text-slate-900 mb-2">Session Paused</h2>
+            <p className="text-slate-500 font-medium mb-8">The administrator has temporarily paused this examination session. Please wait for the session to be resumed.</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full text-slate-400 text-[10px] font-black uppercase tracking-widest">
+              <div className="w-2 h-2 bg-amber-500 rounded-full animate-ping"></div>
+              Waiting for Admin
+            </div>
+          </div>
         </div>
       )}
 

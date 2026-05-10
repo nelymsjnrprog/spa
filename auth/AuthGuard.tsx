@@ -14,11 +14,7 @@ export const AuthGuard: React.FC<{ children: React.ReactNode }> = ({ children })
   const location = useLocation();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
-    );
+    return null;
   }
 
   if (!user) {
@@ -37,11 +33,7 @@ export const RoleGuard: React.FC<{ children: React.ReactNode; allowedRole: UserR
   const { role, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-      </div>
-    );
+    return null;
   }
 
   // If role doesn't match, redirect to their own legitimate dashboard

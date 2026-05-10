@@ -1,6 +1,6 @@
 import { db } from "../core/firebase";
 import {
-  doc, getDoc, setDoc, onSnapshot, collection, addDoc, query, orderBy, limit, getDocs
+  doc, getDoc, setDoc, onSnapshot, collection, addDoc, query, orderBy, limit, getDocs, where
 } from "firebase/firestore";
 import { MembershipSettings, MembershipLevelSettings, PaymentRecord, UserProfile } from "../core/types";
 
@@ -122,15 +122,10 @@ export const membershipService = {
     if (!profile) return false;
     if (profile.role === 'admin') return true; // Admins always have access
     
-    const formKey = levelToFormKey(profile.level || '100');
-    const levelSettings = settings[formKey];
-    
-    // If payment is NOT required for this level, grant access
-    if (!levelSettings?.paymentRequired) return true;
-    
-    // If payment IS required, check student membership status correctly
-    // Combine both fields for maximum compatibility
-    return profile.membershipStatus === 'active' || profile.paid === true;
+    // Strictly require 'active' status or 'paid' flag for students.
+    // Level-specific 'paymentRequired' setting only controls the signup gate, 
+    // not the post-signup access.
+    return profile.membershipStatus === 'active' || (profile as any).paid === true;
   },
 
   /**
@@ -155,6 +150,26 @@ export const membershipService = {
       userId: userId,
       createdAt: Date.now(),
     });
+  },
+
+  /**
+   * Check if a user has a successful payment record for a specific level
+   */
+  async hasPaidForLevel(userId: string, level: string): Promise<boolean> {
+    try {
+      const q = query(
+        collection(db, "payments"),
+        where("userId", "==", userId),
+        where("formLevel", "==", level),
+        where("status", "==", "success"),
+        limit(1)
+      );
+      const snap = await getDocs(q);
+      return !snap.empty;
+    } catch (err) {
+      console.error("Error checking payment history:", err);
+      return false;
+    }
   },
 
   levelToFormKey,

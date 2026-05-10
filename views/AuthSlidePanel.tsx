@@ -29,7 +29,6 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
-  const [step, setStep] = useState(1);
   const [institutions, setInstitutions] = useState<Institution[]>([]);
   const [membershipSettings, setMembershipSettings] = useState<MembershipSettings | null>(null);
   const [paymentProcessing, setPaymentProcessing] = useState(false);
@@ -40,7 +39,6 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
 
   useEffect(() => {
     setMode(initialMode);
-    setStep(1);
     setError('');
     if (initialLevel) {
       setLevel(initialLevel);
@@ -62,7 +60,17 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
     ? membershipService.getFormLevelSettings(membershipSettings, level)
     : null;
 
-  const isPaymentRequired = currentLevelSettings?.paymentRequired === true && (currentLevelSettings?.price || 0) > 0;
+  const isPaymentRequired = currentLevelSettings?.paymentRequired === true;
+  const isEnrollmentClosed = level && currentLevelSettings ? !currentLevelSettings.paymentRequired : false;
+
+  const isFormComplete = 
+    displayName.trim().split(/\s+/).length >= 2 &&
+    phoneNumber.length >= 9 &&
+    institution !== '' &&
+    level !== '' &&
+    program !== '' &&
+    email.includes('@') &&
+    password.length >= 6;
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
@@ -82,6 +90,13 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
     setError('');
     const formattedPhone = '+233' + phoneNumber;
     const amountInPesewas = Math.round((currentLevelSettings?.price || 0) * 100);
+    
+    if (amountInPesewas <= 0) {
+      setPaymentProcessing(false);
+      setError('Invalid price configuration. Please contact the administrator.');
+      return;
+    }
+
     const reference = 'SP_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
 
     try {
@@ -137,7 +152,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
               return;
             }
 
-            navigate('/dispatch');
+            navigate('/student');
           } catch (err: any) {
             setError(err.message);
           } finally {
@@ -161,37 +176,34 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
     e.preventDefault();
     setError('');
 
-    if (mode === 'signup' && step < 3) {
-        if (step === 1) {
-            if (displayName.trim().split(/\s+/).length < 2) {
-                setError("Please provide your full name (First and Last name).");
-                return;
-            }
-            if (phoneNumber.length < 9) {
-                setError("Please enter a valid 9-digit phone number.");
-                return;
-            }
+    if (mode === 'signup') {
+        // Validation for all fields
+        if (displayName.trim().split(/\s+/).length < 2) {
+            setError("Please provide your full name (First and Last name).");
+            return;
         }
-        if (step === 2) {
-            if (!institution || !level || !program) {
-                setError("Please select your institution, level, and program.");
-                return;
-            }
+        if (phoneNumber.length < 9) {
+            setError("Please enter a valid 9-digit phone number.");
+            return;
         }
-        setStep(step + 1);
-        return;
-    }
-
-    if (mode === 'signup' && step === 3) {
+        if (!institution || !level || !program) {
+            setError("Please select your institution, level, and program.");
+            return;
+        }
+        if (isEnrollmentClosed) {
+            setError("Enrollment is currently closed for this level.");
+            return;
+        }
         if (password.length < 6) {
             setError("Password must be at least 6 characters long.");
             return;
         }
         const emailDomain = email.split('@')[1]?.toLowerCase();
         if (!ALLOWED_EMAIL_DOMAINS.includes(emailDomain)) {
-          setError("Please use a standard email provider.");
-          return;
+            setError("Please use a standard email provider.");
+            return;
         }
+
         if (isPaymentRequired) {
             initiatePaystackPayment();
             return;
@@ -211,93 +223,91 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
         setLoading(false);
         return;
       }
-      onClose();
+
+      // Lazy loading for 4 seconds after account detected
+      // This keeps the button spinning while background sync happens
+      await new Promise(resolve => setTimeout(resolve, 4000));
 
       // Check for smart redirect to quiz
       const pendingQuizId = sessionStorage.getItem('pendingQuizId');
       if (pendingQuizId) {
         sessionStorage.removeItem('pendingQuizId');
+        onClose(); // Close only if jumping to quiz
         navigate(`/student/quiz/${pendingQuizId}`);
         return;
       }
 
-      navigate('/dispatch');
+      navigate('/student');
     } catch (err: any) {
       setError(err.message);
+      setLoading(false); // Important: reset loading on error
     } finally {
-      setLoading(false);
+      // Don't setLoading(false) here because it will flicker before navigation
+      // Instead, we only reset it on error or if we don't navigate
     }
   };
 
   return (
     <>
       
-    <div className={`fixed inset-0 h-full w-full bg-white z-[101] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto`}>
-      <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
-        <div className="w-full max-w-xl">
-          <div className="flex justify-between items-center mb-16">
-            <button onClick={onClose} className="group flex items-center gap-2 text-slate-400 hover:text-slate-900 transition-all font-black uppercase text-[10px] tracking-widest">
-              <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-all">
-                <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-              </div>
-              <span>Back to Home</span>
-            </button>
-          </div>
+    <div className={`fixed inset-0 h-full w-full bg-white z-[101] transition-all duration-700 ease-in-out transform ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0 pointer-events-none'} flex flex-col overflow-y-auto safe-pt`}>
+      <div className="min-h-screen w-full flex flex-col items-center py-10 px-6 sm:py-16">
+        <div className="w-full max-w-md">
 
-          <div className="mb-12">
-            <div className="flex items-center gap-4 mb-4">
-               {mode === 'signup' && (
-                 <div className="flex gap-1.5">
-                   {[1, 2, 3].map(i => (
-                     <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${step >= i ? (step === i ? 'w-8 bg-primary-600' : 'w-4 bg-primary-200') : 'w-4 bg-slate-100'}`}></div>
-                   ))}
-                 </div>
-               )}
-            </div>
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-4 text-slate-900">
-                {mode === 'login' ? 'Welcome' : mode === 'signup' ? (step === 1 ? 'Start Journey' : step === 2 ? 'Academic Details' : 'Final Step') : 'Reset Password'}
-            </h2>
-            <p className="text-slate-500 font-medium text-lg">
-                {mode === 'login' ? 'Sign in to access your dashboard' : mode === 'signup' ? 'Join the premium student registry' : 'We will send a recovery link to your email'}
+
+
+          <div className="mb-10">
+              <div className="mb-8">
+                <span className="text-sm font-black uppercase tracking-[0.2em] text-[#cbd5e1]">{APP_CONFIG.name}</span>
+              </div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-6 h-[2px] bg-[#1a732a]"></div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a732a]">
+                  {mode === 'login' ? 'Student Access' : mode === 'signup' ? 'New Account' : 'Reset Password'}
+                </p>
+              </div>
+            <p className="text-slate-500 font-medium text-sm">
+                {mode === 'login' ? 'Sign in to continue to your dashboard' : mode === 'signup' ? 'Fill in to create your academic portal' : 'We will send a recovery link to your email'}
             </p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-lg animate-in fade-in slide-in-from-top-2">
-              <p className="text-red-700 text-xs font-bold uppercase tracking-wide">{error}</p>
+            <div className="bg-red-50 border border-red-100 p-3 mb-6 rounded-xl animate-in fade-in slide-in-from-top-2">
+              <p className="text-red-700 text-[10px] font-bold uppercase tracking-wide">{error}</p>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {mode === 'signup' && (
-              <>
-                {step === 1 && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Full Name</label>
-                        <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="John Doe" className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all font-medium" required />
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Phone Number</label>
-                        <div className="relative">
-                            <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">+233</span>
-                            <input type="tel" value={phoneNumber} onChange={handlePhoneNumberChange} placeholder="24 000 0000" className="w-full bg-slate-50 border-0 rounded-xl py-4 pl-16 pr-5 focus:ring-2 focus:ring-[#1a732a] transition-all font-medium" required />
-                        </div>
-                    </div>
+              <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
+                {/* Section 1: Personal Information */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Full Name</label>
+                      <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="John Doe" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
                   </div>
-                )}
-                {step === 2 && (
-                  <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+                  <div className="space-y-2">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Phone Number</label>
+                      <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-sm">+233</span>
+                          <input type="tel" value={phoneNumber} onChange={handlePhoneNumberChange} placeholder="24 000 0000" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 pl-14 pr-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
+                      </div>
+                  </div>
+                </div>
+
+                {/* Section 2: Academic Information */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Institution</label>
+                      <select value={institution} onChange={e => setInstitution(e.target.value)} className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium appearance-none outline-none" required>
+                          <option value="">Select School</option>
+                          {institutions.map(inst => <option key={inst.id} value={inst.name}>{inst.name}</option>)}
+                      </select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Institution</label>
-                        <select value={institution} onChange={e => setInstitution(e.target.value)} className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all font-medium appearance-none" required>
-                            <option value="">Select School</option>
-                            {institutions.map(inst => <option key={inst.id} value={inst.name}>{inst.name}</option>)}
-                        </select>
-                    </div>
-                    <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Academic Level</label>
-                        <select value={level} onChange={e => setLevel(e.target.value)} className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all font-medium appearance-none" required>
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Level</label>
+                        <select value={level} onChange={e => { setLevel(e.target.value); setError(''); }} className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium appearance-none outline-none" required>
                             <option value="">Select Level</option>
                             <option value="100">Level 100</option>
                             <option value="200">Level 200</option>
@@ -306,8 +316,8 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                         </select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Academic Program</label>
-                        <select value={program} onChange={e => setProgram(e.target.value)} className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all font-medium appearance-none" required>
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Program</label>
+                        <select value={program} onChange={e => setProgram(e.target.value)} className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium appearance-none outline-none" required>
                             <option value="">Select Program</option>
                             <option value="RCN">RCN</option>
                             <option value="RGN">RGN</option>
@@ -316,71 +326,72 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                         </select>
                     </div>
                   </div>
-                )}
-                {step === 3 && (
-                    <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email Address</label>
-                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all font-medium" required />
-                        </div>
-                        <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</label>
-                            <div className="relative">
-                                <input 
-                                    type={showPassword ? "text" : "password"} 
-                                    value={password} 
-                                    onChange={e => setPassword(e.target.value)} 
-                                    placeholder="••••••••" 
-                                    className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all tracking-widest" 
-                                    required 
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
-                                >
-                                    <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-                                </button>
-                            </div>
-                        </div>
-                        {isPaymentRequired && (
-                            <div className="bg-[#1a732a]/5 border border-[#1a732a]/10 rounded-2xl p-6 text-center">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-[#1a732a] mb-1">Payment Required</p>
-                                <p className="text-3xl font-black text-[#1a732a]">{currentLevelSettings?.price}<span className="text-xs ml-1">GHS</span></p>
-                            </div>
-                        )}
+                </div>
+
+                {/* Section 3: Account Security */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Email</label>
+                      <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
+                  </div>
+                  <div className="space-y-2">
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Password</label>
+                      <div className="relative">
+                          <input 
+                              type={showPassword ? "text" : "password"} 
+                              value={password} 
+                              onChange={e => setPassword(e.target.value)} 
+                              placeholder="••••••••" 
+                              className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm outline-none" 
+                              required 
+                          />
+                          <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                          >
+                              <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                          </button>
+                      </div>
+                  </div>
+                </div>
+
+                {isPaymentRequired && isFormComplete && (
+                    <div className="bg-[#1a732a]/5 border border-[#1a732a]/10 rounded-xl p-6 text-center animate-in zoom-in-95">
+                        <p className="text-[9px] font-black uppercase tracking-widest text-[#1a732a] mb-1">Registration Fee</p>
+                        <p className="text-3xl font-black text-[#1a732a]">{currentLevelSettings?.price}<span className="text-xs ml-1 font-bold">GHS</span></p>
                     </div>
                 )}
-              </>
+              </div>
             )}
 
             {mode === 'login' && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
                 <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email Address</label>
-                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all font-medium" required />
+                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Email Address</label>
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
                 </div>
                 <div className="space-y-2">
-                    <div className="flex justify-between items-center">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Password</label>
-                        <button type="button" onClick={() => setMode('forgot')} className="text-[10px] font-black uppercase tracking-widest text-[#1a732a]">Forgot?</button>
-                    </div>
+                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Password</label>
                     <div className="relative">
                         <input 
                             type={showPassword ? "text" : "password"} 
                             value={password} 
                             onChange={e => setPassword(e.target.value)} 
-                            placeholder="••••••••" 
-                            className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all tracking-widest" 
+                            placeholder="Enter your password" 
+                            className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm outline-none" 
                             required 
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition"
                         >
-                            <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                         </button>
+                    </div>
+                    <div className="flex justify-end pt-0.5">
+                        <button type="button" onClick={() => setMode('forgot')} className="text-xs font-bold text-[#1a732a] hover:underline">Forgot password?</button>
                     </div>
                 </div>
               </div>
@@ -389,56 +400,53 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
             {mode === 'forgot' && (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
                     {resetSent ? (
-                        <div className="bg-green-50 border border-green-100 p-6 rounded-2xl text-center">
-                            <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white mx-auto mb-4">
+                        <div className="bg-green-50 border border-green-100 p-8 rounded-xl text-center">
+                            <div className="w-12 h-12 bg-[#1a732a] rounded-full flex items-center justify-center text-white mx-auto mb-4">
                                 <svg viewBox="0 0 24 24" className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
                             </div>
-                            <p className="text-green-800 font-bold">Email Sent!</p>
-                            <p className="text-green-700 text-sm mt-1">Check your inbox for the reset link.</p>
-                            <button type="button" onClick={() => setMode('login')} className="mt-6 text-sm font-black uppercase tracking-widest text-green-800 underline">Back to Login</button>
+                            <h3 className="text-lg font-black text-slate-900">Email Sent!</h3>
+                            <p className="text-slate-500 text-xs font-medium mt-1">Check your inbox for the reset link.</p>
+                            <button type="button" onClick={() => setMode('login')} className="mt-6 text-[10px] font-black uppercase tracking-widest text-[#1a732a] underline">Back to Login</button>
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Email Address</label>
-                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" className="w-full bg-slate-50 border-0 rounded-xl py-4 px-5 focus:ring-2 focus:ring-[#1a732a] transition-all font-medium" required />
+                            <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">Email Address</label>
+                            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
                         </div>
                     )}
                 </div>
             )}
 
-            <div className="flex gap-4 pt-6">
-                {mode === 'signup' && step > 1 && (
-                    <button type="button" onClick={() => setStep(step - 1)} className="flex-1 py-4 rounded-xl font-bold text-slate-400 bg-slate-50 hover:bg-slate-100 transition-all">Back</button>
-                )}
+            <div className="flex gap-4 pt-4">
                 <button 
                     type="submit" 
-                    disabled={loading || paymentProcessing}
-                    className="flex-[2] bg-[#1a1a1a] text-white py-4 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                    disabled={loading || paymentProcessing || (mode === 'signup' && isEnrollmentClosed)}
+                    className="flex-1 bg-[#1a732a] text-white py-3.5 rounded-lg font-bold text-sm hover:bg-[#145920] transition-all shadow-lg active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                     {loading || paymentProcessing ? (
-                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                     ) : (
                         <>
-                            <span>{mode === 'login' ? 'Sign In' : mode === 'signup' ? (step === 3 ? (isPaymentRequired ? 'Pay & Join' : 'Complete') : 'Continue') : 'Reset'}</span>
-                            {mode !== 'forgot' && <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>}
+                            <span>{mode === 'login' ? 'Sign In' : mode === 'signup' ? (isEnrollmentClosed ? 'Enrollment Closed' : (isPaymentRequired ? 'Pay & Join Now' : 'Join Us')) : 'Reset Password'}</span>
+                            <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="3"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                         </>
                     )}
                 </button>
             </div>
           </form>
 
-          <div className="mt-12 pt-12 border-t border-slate-100 text-center">
-            <p className="text-[11px] font-black uppercase tracking-widest text-slate-300">
-                {mode === 'login' ? "Don't have an account?" : "Already member?"}
+          <div className="mt-8 pt-4 text-center">
+            <p className="text-xs font-medium text-slate-400 tracking-tight">
+                {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
                 <button 
                     onClick={() => {
                         if (mode === 'login' || mode === 'forgot') setMode('signup');
                         else setMode('login');
                         setError('');
                     }} 
-                    className="ml-3 text-[#1a732a] underline"
+                    className="ml-1.5 text-[#1a732a] font-bold hover:underline"
                 >
-                    {mode === 'login' || mode === 'forgot' ? 'Create Account' : 'Login Here'}
+                    {mode === 'login' || mode === 'forgot' ? 'Create one →' : 'Sign in →'}
                 </button>
             </p>
           </div>
