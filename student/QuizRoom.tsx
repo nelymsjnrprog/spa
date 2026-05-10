@@ -766,8 +766,8 @@ const QuizRoom: React.FC = () => {
         <div className="w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6">
           <i className="fas fa-shield-virus text-3xl"></i>
         </div>
-        <h2 className="text-2xl font-bold text-black mb-2">Access Denied</h2>
-        <p className="text-black mb-8 leading-relaxed">{error}</p>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h2>
+        <p className="text-slate-600 mb-8 leading-relaxed">{error}</p>
         <Link to="/student" className="block w-full bg-slate-900 text-white py-4 rounded-xl font-bold hover:bg-primary-600 transition">Return to Dashboard</Link>
       </Card>
     </div>
@@ -787,8 +787,8 @@ const QuizRoom: React.FC = () => {
                 <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-amber-100">
                   <i className="fas fa-lock text-3xl"></i>
                 </div>
-                <h1 className="text-3xl font-bold mb-2">Examination Locked</h1>
-                <p className="text-black mb-8">This module is protected. Please enter the authorization code.</p>
+                <h1 className="text-3xl font-bold text-slate-900 mb-2">Examination Locked</h1>
+                <p className="text-slate-600 mb-8">This module is protected. Please enter the authorization code.</p>
                 <div className="mb-8">
                   <input
                     type="text"
@@ -813,23 +813,23 @@ const QuizRoom: React.FC = () => {
                 >
                   Verify Access
                 </button>
-                <Link to="/student" className="block mt-6 text-black font-bold text-sm">Cancel</Link>
+                <Link to="/student" className="block mt-6 text-slate-500 hover:text-slate-900 font-bold text-sm">Cancel</Link>
               </div>
             ) : (
               <>
                 {quiz?.subjectTitle && (
                   <p className="text-xs font-black text-primary-600 uppercase tracking-[0.2em] mb-3">{quiz.subjectTitle}</p>
                 )}
-                <h1 className="text-3xl font-bold mb-4">{quiz?.title}</h1>
-                <p className="text-black mb-8 leading-relaxed text-sm lg:text-base">{quiz?.description}</p>
+                <h1 className="text-3xl font-bold text-slate-900 mb-4">{quiz?.title}</h1>
+                <p className="text-slate-600 mb-8 leading-relaxed text-sm lg:text-base">{quiz?.description}</p>
                 <div className="bg-slate-50 p-6 rounded-2xl mb-8 grid grid-cols-2 gap-4">
-                  <div className="text-center border-r border-slate-200">
-                    <p className="text-xs font-bold text-black uppercase tracking-widest mb-1">Time Limit</p>
-                    <p className="text-2xl font-black">{quiz?.timeLimit} Min</p>
+                   <div className="text-center border-r border-slate-200">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Time Limit</p>
+                    <p className="text-2xl font-black text-slate-900">{quiz?.timeLimit} Min</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-xs font-bold text-black uppercase tracking-widest mb-1">Questions</p>
-                    <p className="text-2xl font-black">{questions.length}</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Questions</p>
+                    <p className="text-2xl font-black text-slate-900">{questions.length}</p>
                   </div>
                 </div>
                 <button onClick={startExam} disabled={starting} className="w-full bg-primary-600 text-white py-4 rounded-xl font-bold text-xl hover:bg-primary-700 transition shadow-xl disabled:opacity-50">
@@ -892,7 +892,7 @@ const QuizRoom: React.FC = () => {
 
           <div className="flex items-center space-x-2">
             <div className="text-right hidden sm:block">
-              <p className="text-[8px] font-black text-black uppercase tracking-widest leading-none">Progress</p>
+              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">Progress</p>
               <p className="text-[10px] font-bold text-primary-600">{numAnswered}/{questions.length}</p>
             </div>
           </div>
@@ -914,8 +914,8 @@ const QuizRoom: React.FC = () => {
         <div className="p-6 border-b border-slate-100">
           <span className="text-primary-600 font-black text-2xl tracking-tighter uppercase">{quiz?.subjectTitle || 'Examination'}</span>
           <div className="mt-4">
-            <h2 className="font-bold text-black leading-tight truncate">{quiz?.title}</h2>
-            <p className="text-[10px] text-black uppercase font-black tracking-widest mt-1">Active Session</p>
+            <h2 className="font-bold text-slate-900 leading-tight truncate">{quiz?.title}</h2>
+            <p className="text-[10px] text-slate-400 uppercase font-black tracking-widest mt-1">Active Session</p>
           </div>
         </div>
 
@@ -929,7 +929,7 @@ const QuizRoom: React.FC = () => {
           {/* Progress Section */}
           <div className="mb-8">
             <div className="flex justify-between items-end mb-2">
-              <p className="text-[10px] font-black text-black uppercase tracking-widest">Progress</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress</p>
               <p className="text-xs font-bold text-primary-600">{numAnswered}/{questions.length}</p>
             </div>
             <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden border border-slate-200">
@@ -951,20 +951,20 @@ const QuizRoom: React.FC = () => {
           {showReview ? (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex-1 flex flex-col">
               <div className="mb-10 text-center">
-                <h2 className="text-3xl font-black text-black mb-2">Review Summary</h2>
-                <p className="text-black font-bold uppercase tracking-widest text-[10px]">Verify your responses before final submission</p>
+                <h2 className="text-3xl font-black text-slate-900 mb-2">Review Summary</h2>
+                <p className="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Verify your responses before final submission</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
                 <Card className="p-6 text-center border-none shadow-xl shadow-slate-200">
-                  <p className="text-[10px] font-black text-black uppercase tracking-widest mb-2">Completion Status</p>
-                  <p className="text-4xl font-black text-black">{numAnswered} / {questions.length}</p>
-                  <p className="text-xs font-bold text-black mt-2">Questions Answered</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Completion Status</p>
+                  <p className="text-4xl font-black text-slate-900">{numAnswered} / {questions.length}</p>
+                  <p className="text-xs font-bold text-slate-500 mt-2">Questions Answered</p>
                 </Card>
                 <Card className={`p-6 text-center border-none shadow-xl shadow-slate-200 border-2 ${timeLeft < 300 ? 'border-red-100' : 'border-transparent'}`}>
-                  <p className="text-[10px] font-black text-black uppercase tracking-widest mb-2">Time Remaining</p>
-                  <p className={`text-4xl font-black font-mono ${timeLeft < 300 ? 'text-red-600' : 'text-black'}`}>{formatTime(timeLeft)}</p>
-                  <p className="text-xs font-bold text-black mt-2">Before Auto-Submit</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Time Remaining</p>
+                  <p className={`text-4xl font-black font-mono ${timeLeft < 300 ? 'text-red-600' : 'text-slate-900'}`}>{formatTime(timeLeft)}</p>
+                  <p className="text-xs font-bold text-slate-500 mt-2">Before Auto-Submit</p>
                 </Card>
               </div>
 
@@ -977,7 +977,7 @@ const QuizRoom: React.FC = () => {
                     <div className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
                       <i className="fas fa-flag text-sm"></i>
                     </div>
-                    <h3 className="text-lg font-black text-black uppercase tracking-tight">Flagged for Review ({flags.size})</h3>
+                    <h3 className="text-lg font-black text-slate-900 uppercase tracking-tight">Flagged for Review ({flags.size})</h3>
                   </div>
                   <div className="grid grid-cols-5 sm:grid-cols-8 gap-2">
                     {questions.map((q, i) => flags.has(q.id) ? (
@@ -996,7 +996,7 @@ const QuizRoom: React.FC = () => {
               <div className="mt-auto pt-10 flex flex-col sm:flex-row gap-4">
                 <button
                   onClick={() => setShowReview(false)}
-                  className="flex-1 p-3.5 rounded-2xl bg-white border-2 border-slate-100 text-black font-black uppercase tracking-widest hover:bg-slate-50 transition-all text-sm"
+                  className="flex-1 p-3.5 rounded-2xl bg-white border-2 border-slate-100 text-slate-600 font-black uppercase tracking-widest hover:bg-slate-50 transition-all text-sm"
                 >
                   Go Back & Review
                 </button>
@@ -1024,7 +1024,7 @@ const QuizRoom: React.FC = () => {
 
                   <div className="mb-6 lg:mb-10 mt-2 lg:mt-0">
                     <span className="text-primary-600 font-black text-[11px] uppercase tracking-widest mb-1 lg:mb-2 block">Question {startIdx + pIdx + 1}</span>
-                    <h3 className="text-base lg:text-xl font-bold text-black leading-snug break-words">
+                    <h3 className="text-base lg:text-xl font-bold text-slate-900 leading-snug break-words">
                       {q.text}
                     </h3>
 
@@ -1048,26 +1048,25 @@ const QuizRoom: React.FC = () => {
                             onClick={() => handleSelect(q.id, originalIdx)}
                             className={`w-full p-3 lg:p-3.5 text-left rounded-xl lg:rounded-2xl border-2 transition-all flex items-center gap-3 group relative overflow-hidden ${
                               isSelected 
-                                ? 'bg-primary-600 border-primary-600 text-white shadow-2xl shadow-primary-200 -translate-y-0.5' 
-                                : 'bg-white border-slate-100 hover:border-primary-200 text-black hover:shadow-lg'
+                                ? 'bg-white border-primary-600 text-primary-700 shadow-xl shadow-primary-100 -translate-y-0.5' 
+                                : 'bg-white border-slate-100 hover:border-primary-200 text-slate-600 hover:shadow-lg'
                             }`}
                             title={`Select option ${label}: ${opt}`}
                           >
                             <div className={`w-7 h-7 lg:w-8 lg:h-8 rounded-lg lg:rounded-xl flex items-center justify-center shrink-0 font-black text-[13px] border-2 transition-colors ${
-                              isSelected ? 'bg-white/20 border-white text-white' : 'bg-slate-50 border-slate-100 text-black group-hover:text-primary-600 group-hover:bg-primary-50'
+                              isSelected ? 'bg-primary-50 border-primary-600 text-primary-600' : 'bg-slate-50 border-slate-100 text-slate-400 group-hover:text-primary-600 group-hover:bg-primary-50'
                             }`}>
                               {label}
                             </div>
                             
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm lg:text-[15px] font-medium leading-snug">{opt || `Option ${label}`}</p>
-
+                                <p className={`text-sm lg:text-[15px] leading-snug ${isSelected ? 'font-bold' : 'font-medium'}`}>{opt || `Option ${label}`}</p>
                             </div>
 
                             <div className={`w-4 h-4 lg:w-5 lg:h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
-                              isSelected ? 'border-white bg-white' : 'border-slate-200 group-hover:border-primary-300'
+                              isSelected ? 'border-primary-600 bg-primary-600 shadow-sm' : 'border-slate-200 group-hover:border-primary-300'
                             }`}>
-                              {isSelected && <i className="fas fa-check text-[8px] text-primary-600"></i>}
+                              {isSelected && <i className="fas fa-check text-[8px] text-white"></i>}
                             </div>
                           </button>
                         );
@@ -1077,13 +1076,13 @@ const QuizRoom: React.FC = () => {
 
                   {answers[q.id] !== undefined && (
                     <div className="flex justify-start">
-                      <button 
-                        onClick={() => handleClearChoice(q.id)}
-                        className="mt-4 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-black hover:text-red-500 hover:bg-red-50 rounded-lg transition-all flex items-center group"
-                      >
-                        <i className="fas fa-eraser mr-2 opacity-50 group-hover:opacity-100"></i>
-                        Clear my choice
-                      </button>
+                        <button 
+                          onClick={() => handleClearChoice(q.id)}
+                          className="mt-4 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all flex items-center group"
+                        >
+                          <i className="fas fa-eraser mr-2 opacity-50 group-hover:opacity-100"></i>
+                          Clear my choice
+                        </button>
                     </div>
                   )}
                 </Card>
@@ -1094,7 +1093,7 @@ const QuizRoom: React.FC = () => {
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 0}
-                  className="flex-1 lg:flex-none lg:w-40 px-4 lg:px-6 py-2.5 lg:py-3.5 rounded-xl lg:rounded-2xl bg-white border-2 border-slate-100 text-black font-black uppercase tracking-widest hover:bg-slate-50 disabled:opacity-20 transition-all flex items-center justify-center space-x-3 shadow-sm active:scale-95"
+                  className="flex-1 lg:flex-none lg:w-40 px-4 lg:px-6 py-2.5 lg:py-3.5 rounded-xl lg:rounded-2xl bg-white border-2 border-slate-100 text-slate-600 font-black uppercase tracking-widest hover:bg-slate-50 disabled:opacity-20 transition-all flex items-center justify-center space-x-3 shadow-sm active:scale-95"
                   title="Previous Page"
                 >
                   <i className="fas fa-chevron-left text-xs"></i>
@@ -1102,11 +1101,11 @@ const QuizRoom: React.FC = () => {
                 </button>
 
                 <div className="hidden lg:flex flex-col items-center">
-                  <span className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Page</span>
-                  <span className="text-sm font-black text-black">{currentPage + 1} / {totalPages}</span>
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Page</span>
+                  <span className="text-sm font-black text-slate-900">{currentPage + 1} / {totalPages}</span>
                 </div>
 
-                <div className="lg:hidden text-[10px] font-black text-black uppercase tracking-widest">
+                <div className="lg:hidden text-[10px] font-black text-slate-400 uppercase tracking-widest">
                   {currentPage + 1} / {totalPages}
                 </div>
 
@@ -1142,8 +1141,8 @@ const QuizRoom: React.FC = () => {
       {/* RIGHT PANEL (Desktop) */}
       <aside className="hidden lg:flex w-72 flex-shrink-0 bg-white border-l border-slate-200 flex-col z-20">
         <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-          <h3 className="font-black text-black text-xs uppercase tracking-widest">Exam Grid</h3>
-          <span className="text-[10px] text-black font-bold">Page {gridPage + 1} of {Math.ceil(questions.length / ITEMS_PER_PAGE)}</span>
+          <h3 className="font-black text-slate-400 text-xs uppercase tracking-widest">Exam Grid</h3>
+          <span className="text-[10px] text-slate-500 font-bold">Page {gridPage + 1} of {Math.ceil(questions.length / ITEMS_PER_PAGE)}</span>
         </div>
 
         <div className="flex-1 p-4 grid grid-cols-5 gap-2 content-start overflow-y-auto">
@@ -1160,7 +1159,7 @@ const QuizRoom: React.FC = () => {
                 className={`
                      relative h-10 rounded-lg text-xs font-black transition-all flex items-center justify-center border-2
                      ${isCurrent ? 'border-primary-600 scale-110 z-10 shadow-md ring-4 ring-primary-50' : 'border-transparent'}
-                     ${!isAnswered && !isCurrent ? 'bg-slate-50 text-black border-slate-100' : ''}
+                     ${!isAnswered && !isCurrent ? 'bg-slate-50 text-slate-400 border-slate-100' : ''}
                      ${isAnswered ? 'bg-green-600 text-white shadow-inner border-green-700' : ''}
                    `}
               >
@@ -1217,8 +1216,8 @@ const QuizRoom: React.FC = () => {
       {/* MOBILE MENU / GRID OVERLAY (Side Drawer) */}
       <div className={`lg:hidden fixed inset-y-0 left-0 z-[60] w-[85%] max-w-sm bg-white shadow-2xl flex flex-col transition-transform duration-300 transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-4 pt-[calc(1rem+env(safe-area-inset-top))] border-b border-slate-100 flex items-center justify-between">
-          <h3 className="font-black text-black text-xs uppercase tracking-widest">Question Grid</h3>
-          <button onClick={() => setIsMobileMenuOpen(false)} className="w-10 h-10 flex items-center justify-center text-black hover:text-black" title="Close navigator">
+          <h3 className="font-black text-slate-400 text-xs uppercase tracking-widest">Question Grid</h3>
+          <button onClick={() => setIsMobileMenuOpen(false)} className="w-10 h-10 flex items-center justify-center text-slate-400 hover:text-slate-900" title="Close navigator">
             <i className="fas fa-chevron-left text-sm"></i>
           </button>
         </div>
@@ -1261,9 +1260,9 @@ const QuizRoom: React.FC = () => {
           >
             <i className="fas fa-chevron-left"></i>
           </button>
-          <span className="text-[10px] text-black font-bold uppercase tracking-widest flex flex-col items-center">
+          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex flex-col items-center">
             <span>Page</span>
-            <span className="text-black">{gridPage + 1} / {Math.ceil(questions.length / ITEMS_PER_PAGE)}</span>
+            <span className="text-slate-900">{gridPage + 1} / {Math.ceil(questions.length / ITEMS_PER_PAGE)}</span>
           </span>
           <button
             onClick={() => setGridPage(p => Math.min(Math.ceil(questions.length / ITEMS_PER_PAGE) - 1, p + 1))}
@@ -1284,8 +1283,8 @@ const QuizRoom: React.FC = () => {
             <div className="w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-emerald-100">
               <i className="fas fa-check-double text-3xl"></i>
             </div>
-            <h2 className="text-2xl font-black text-black mb-4">Confirm Submission</h2>
-            <p className="text-black mb-8 leading-relaxed font-medium">
+            <h2 className="text-2xl font-black text-slate-900 mb-4">Confirm Submission</h2>
+            <p className="text-slate-600 mb-8 leading-relaxed font-medium">
               Are you sure you want to finalize your submission? <br/>
               <span className="text-red-500 font-bold">You cannot change your answers after this action.</span>
             </p>
@@ -1320,7 +1319,7 @@ const QuizRoom: React.FC = () => {
                   <i className="fas fa-expand-wide text-3xl lg:text-4xl"></i>
                 </div>
                 <h2 className="text-3xl lg:text-4xl font-black mb-4 lg:mb-6 tracking-tight">Security Focus Required</h2>
-                <p className="text-black text-base lg:text-lg mb-8 lg:mb-10 leading-relaxed font-medium">
+                <p className="text-slate-300 text-base lg:text-lg mb-8 lg:mb-10 leading-relaxed font-medium">
                   Examination protocols require a secure, fullscreen environment to protect integrity.
                   {isMobile && <span className="block mt-4 text-primary-400 font-bold">Tapping below will hide the browser address bar.</span>}
                 </p>
@@ -1389,7 +1388,7 @@ const QuizRoom: React.FC = () => {
         <div className="fixed inset-0 z-[40] pointer-events-none overflow-hidden select-none opacity-[0.03]">
           {quiz?.movingWatermark ? (
             <div
-              className="absolute flex flex-col items-center text-center text-3xl font-black text-black tracking-tighter uppercase italic transition-all duration-1000"
+              className="absolute flex flex-col items-center text-center text-3xl font-black text-slate-900 tracking-tighter uppercase italic transition-all duration-1000"
               style={{ transform: `translate(${watermarkPos.left}, ${watermarkPos.top})` }}
             >
               <div className="leading-none mb-1">{profile?.displayName}</div>
@@ -1398,7 +1397,7 @@ const QuizRoom: React.FC = () => {
           ) : (
             <div className="absolute inset-0 grid grid-cols-3 grid-rows-5 gap-y-32 gap-x-20 transform -rotate-45 scale-150">
               {Array.from({ length: 15 }).map((_, i) => (
-                <div key={i} className="flex flex-col items-start text-2xl font-black text-black tracking-tighter uppercase italic">
+                <div key={i} className="flex flex-col items-start text-2xl font-black text-slate-900 tracking-tighter uppercase italic">
                   <div className="leading-none text-center w-full">{profile?.displayName}</div>
                   <div className="text-sm leading-none opacity-70 mt-1 text-center w-full">{profile?.email}</div>
                 </div>
@@ -1415,9 +1414,9 @@ const QuizRoom: React.FC = () => {
             <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-amber-100 animate-pulse">
               <i className="fas fa-pause text-3xl"></i>
             </div>
-            <h2 className="text-3xl font-black text-black mb-2">Session Paused</h2>
-            <p className="text-black font-medium mb-8">The administrator has temporarily paused this examination session. Please wait for the session to be resumed.</p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full text-black text-[10px] font-black uppercase tracking-widest">
+            <h2 className="text-3xl font-black text-slate-900 mb-2">Session Paused</h2>
+            <p className="text-slate-600 font-medium mb-8">The administrator has temporarily paused this examination session. Please wait for the session to be resumed.</p>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 rounded-full text-slate-500 text-[10px] font-black uppercase tracking-widest">
               <div className="w-2 h-2 bg-amber-500 rounded-full animate-ping"></div>
               Waiting for Admin
             </div>
@@ -1432,8 +1431,8 @@ const QuizRoom: React.FC = () => {
             <div className="w-24 h-24 bg-red-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl animate-bounce">
               <i className="fas fa-hourglass-end text-4xl"></i>
             </div>
-            <h2 className="text-4xl font-black mb-4 tracking-tight">Time Participant</h2>
-            <p className="text-black text-lg mb-8 leading-relaxed">Your examination session has concluded. We are securely synchronizing your final responses...</p>
+            <h2 className="text-4xl font-black mb-4 tracking-tight">Time's Up</h2>
+            <p className="text-slate-300 text-lg mb-8 leading-relaxed">Your examination session has concluded. We are securely synchronizing your final responses...</p>
             <div className="flex items-center justify-center space-x-2">
               <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
               <div className="w-2 h-2 bg-primary-500 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
