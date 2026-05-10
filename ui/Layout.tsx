@@ -162,7 +162,7 @@ export const Navbar: React.FC = () => {
 
           {profile?.role === 'student' && (
             <>
-              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-2">Student Services</div>
+
               <SidebarLink to="/student" icon="fa-th-large" label="Dashboard" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="/student/library" icon="fa-book-open" label="Library" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="#" icon="fa-comments" label="Chat" onClick={() => setSidebarOpen(false)} />
