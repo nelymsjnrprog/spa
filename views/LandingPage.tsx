@@ -202,12 +202,12 @@ const LandingPage: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-white font-['Inter'] text-[#1a1a1a]">
+    <div className="min-h-screen bg-white font-['Inter'] text-slate-900">
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-white border-b border-slate-100 px-5 py-3.5 md:px-6 flex items-center justify-between safe-pt">
         {/* Left: Logo */}
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-          <span className="text-lg font-bold tracking-tight text-black leading-tight">SMARTPREPACA</span>
+          <span className="text-lg font-bold tracking-tight text-slate-900 leading-tight">SMARTPREPACA</span>
         </div>
 
         {/* Center: Empty (for balance) */}
@@ -217,7 +217,7 @@ const LandingPage: React.FC = () => {
         <div className="flex items-center gap-3 md:gap-4">
           <button 
             onClick={() => openAuth('login')}
-            className="text-[14px] md:text-[15px] font-medium text-black hover:text-black transition-colors px-2"
+            className="text-[14px] md:text-[15px] font-medium text-slate-900 hover:text-primary-600 transition-colors px-2"
           >
             Log In
           </button>
@@ -265,10 +265,10 @@ const LandingPage: React.FC = () => {
       <section className="pt-24 pb-20 px-6 bg-[#f4f1ea]">
         <div className="max-w-4xl mx-auto text-center">
           <div className="space-y-10">
-            <h1 className="text-[42px] lg:text-[72px] font-[850] leading-[1.1] tracking-tight text-[#1a1a1a]">
+            <h1 className="text-[42px] lg:text-[72px] font-[850] leading-[1.1] tracking-tight text-slate-900">
               Make your preparation <br className="hidden lg:block" /> truly <span className="text-[#1a732a]">interactive</span>.
             </h1>
-            <p className="text-lg lg:text-xl text-[#545454] max-w-2xl mx-auto leading-relaxed font-medium">
+            <p className="text-lg lg:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium">
               The easiest way to prepare for exams, engage with content, and track your progress through smart, adaptive technology.
             </p>
           </div>
@@ -282,8 +282,8 @@ const LandingPage: React.FC = () => {
       {/* Product Demo Section */}
       <section className="py-24 px-6 bg-[#F8F9FA]">
         <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
-          <h2 className="text-3xl lg:text-5xl font-extrabold text-[#1a1a1a]">See How It Works</h2>
-          <p className="text-lg text-[#545454] font-medium">From quiz creation to student results — in seconds</p>
+          <h2 className="text-3xl lg:text-5xl font-extrabold text-slate-900">See How It Works</h2>
+          <p className="text-lg text-slate-600 font-medium">From quiz creation to student results — in seconds</p>
         </div>
 
         <div className="max-w-3xl mx-auto">
@@ -641,7 +641,7 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
       <div className="min-h-screen w-full flex flex-col items-center py-12 px-6 sm:py-20">
         <div className="w-full max-w-7xl">
           <div className="flex justify-between items-center mb-16">
-            <button onClick={onClose} className="group flex items-center gap-2 text-black hover:text-black transition-all font-black uppercase text-[10px] tracking-widest">
+            <button onClick={onClose} className="group flex items-center gap-2 text-slate-900 hover:text-primary-600 transition-all font-black uppercase text-[10px] tracking-widest">
               <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-slate-100 transition-all">
                 <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
               </div>
@@ -650,8 +650,8 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
           </div>
 
           <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-6 text-black">Pricing Plans</h2>
-            <p className="text-black font-medium text-xl max-w-2xl mx-auto">
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight mb-6 text-slate-900">Pricing Plans</h2>
+            <p className="text-slate-600 font-medium text-xl max-w-2xl mx-auto">
               Real-time subscription plans based on your academic level.
             </p>
           </div>
@@ -666,14 +666,14 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
                   <div className="mb-8">
                     <h3 className="text-sm font-black uppercase tracking-widest text-primary-600 mb-2">{lvl.name}</h3>
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-black text-black">GHS {lvlSettings.price}</span>
-                      <span className="text-black font-bold">/term</span>
+                      <span className="text-4xl font-black text-slate-900">GHS {lvlSettings.price}</span>
+                      <span className="text-slate-500 font-bold">/term</span>
                     </div>
                     {isFree && <span className="inline-block mt-2 px-3 py-1 bg-red-50 text-red-600 text-[10px] font-black uppercase rounded-full">Enrollment Closed</span>}
                   </div>
                   <ul className="space-y-3 mb-8 flex-1">
                     {lvl.features.map((feat, i) => (
-                      <li key={i} className="flex items-center gap-3 text-black text-sm font-medium">
+                      <li key={i} className="flex items-center gap-3 text-slate-600 text-sm font-medium">
                         <svg viewBox="0 0 24 24" className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
                         {feat}
                       </li>
@@ -693,7 +693,7 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
 
 
           <div className="max-w-3xl mx-auto space-y-12">
-            <h3 className="text-3xl font-black text-black text-center">Frequently Asked Questions</h3>
+            <h3 className="text-3xl font-black text-slate-900 text-center">Frequently Asked Questions</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               {[
                 { q: "Can I cancel anytime?", a: "Yes, you can cancel your subscription at any time from your account settings. You will maintain access until the end of your billing cycle." },
@@ -702,8 +702,8 @@ const PricingSlidePanel: React.FC<{ isOpen: boolean; onClose: () => void; settin
                 { q: "Can I upgrade or downgrade?", a: "Yes, you can change your plan at any time. Changes are applied immediately with pro-rated billing." }
               ].map((faq, i) => (
                 <div key={i} className="space-y-3">
-                  <h4 className="font-black text-black">{faq.q}</h4>
-                  <p className="text-black font-medium leading-relaxed">{faq.a}</p>
+                  <h4 className="font-black text-slate-900">{faq.q}</h4>
+                  <p className="text-slate-600 font-medium leading-relaxed">{faq.a}</p>
                 </div>
               ))}
             </div>

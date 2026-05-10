@@ -60,7 +60,7 @@ export const Navbar: React.FC = () => {
             )}
             <Link to="/dispatch" className="flex items-center min-w-0">
 
-              <span className="text-sm font-black uppercase tracking-[0.2em] text-black">{APP_CONFIG.name}</span>
+              <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-900">{APP_CONFIG.name}</span>
             </Link>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4 shrink-0 min-w-0">
@@ -89,7 +89,7 @@ export const Navbar: React.FC = () => {
       <aside className={`fixed top-0 left-0 h-full w-72 bg-white z-[70] shadow-2xl transition-transform duration-300 ease-out flex flex-col safe-pt ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-black uppercase tracking-[0.2em] text-black">{APP_CONFIG.name}</span>
+            <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-900">{APP_CONFIG.name}</span>
             <span className={`text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ${
               isSuperAdmin ? 'text-amber-600 border-amber-200 bg-amber-50' : 'text-black border-slate-200'
             }`}>
@@ -187,7 +187,7 @@ const SidebarLink: React.FC<{ to: string, icon: string, label: string, onClick: 
     onClick={onClick}
     className="flex items-center space-x-3 px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-black font-bold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
   >
-    <div className="w-10 sm:w-8 flex justify-center text-xl sm:text-lg text-slate-300 group-hover:text-primary-500 transition-colors">
+    <div className="w-10 sm:w-8 flex justify-center text-xl sm:text-lg text-slate-400 group-hover:text-primary-500 transition-colors">
       <i className={`fas ${icon}`}></i>
     </div>
     <span className="text-base sm:text-sm">{label}</span>

@@ -258,7 +258,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
 
           <div className="mb-10">
               <div className="mb-8">
-                <span className="text-sm font-black uppercase tracking-[0.2em] text-black">{APP_CONFIG.name}</span>
+                <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-900">{APP_CONFIG.name}</span>
               </div>
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-6 h-[2px] bg-[#1a732a]"></div>
@@ -283,11 +283,11 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                 {/* Section 1: Personal Information */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                      <label className="text-[9px] font-bold uppercase tracking-widest text-black">Full Name</label>
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Full Name</label>
                       <input type="text" value={displayName} onChange={e => setDisplayName(e.target.value)} placeholder="John Doe" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
                   </div>
                   <div className="space-y-2">
-                      <label className="text-[9px] font-bold uppercase tracking-widest text-black">Phone Number</label>
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Phone Number</label>
                       <div className="relative">
                           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-black font-bold text-sm">+233</span>
                           <input type="tel" value={phoneNumber} onChange={handlePhoneNumberChange} placeholder="24 000 0000" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 pl-14 pr-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
@@ -298,7 +298,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                 {/* Section 2: Academic Information */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                      <label className="text-[9px] font-bold uppercase tracking-widest text-black">Institution</label>
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Institution</label>
                       <select value={institution} onChange={e => setInstitution(e.target.value)} className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium appearance-none outline-none" required>
                           <option value="">Select School</option>
                           {institutions.map(inst => <option key={inst.id} value={inst.name}>{inst.name}</option>)}
@@ -306,7 +306,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                        <label className="text-[9px] font-bold uppercase tracking-widest text-black">Level</label>
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Level</label>
                         <select value={level} onChange={e => { setLevel(e.target.value); setError(''); }} className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium appearance-none outline-none" required>
                             <option value="">Select Level</option>
                             <option value="100">Level 100</option>
@@ -316,7 +316,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                         </select>
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[9px] font-bold uppercase tracking-widest text-black">Program</label>
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Program</label>
                         <select value={program} onChange={e => setProgram(e.target.value)} className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium appearance-none outline-none" required>
                             <option value="">Select Program</option>
                             <option value="RCN">RCN</option>
@@ -331,11 +331,11 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                 {/* Section 3: Account Security */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                      <label className="text-[9px] font-bold uppercase tracking-widest text-black">Email</label>
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Email</label>
                       <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
                   </div>
                   <div className="space-y-2">
-                      <label className="text-[9px] font-bold uppercase tracking-widest text-black">Password</label>
+                      <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Password</label>
                       <div className="relative">
                           <input 
                               type={showPassword ? "text" : "password"} 
@@ -368,11 +368,11 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
             {mode === 'login' && (
               <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
                 <div className="space-y-2">
-                    <label className="text-[9px] font-bold uppercase tracking-widest text-black">Email Address</label>
+                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Email Address</label>
                     <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
                 </div>
                 <div className="space-y-2">
-                    <label className="text-[9px] font-bold uppercase tracking-widest text-black">Password</label>
+                    <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Password</label>
                     <div className="relative">
                         <input 
                             type={showPassword ? "text" : "password"} 
@@ -410,7 +410,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
                         </div>
                     ) : (
                         <div className="space-y-2">
-                            <label className="text-[9px] font-bold uppercase tracking-widest text-black">Email Address</label>
+                            <label className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Email Address</label>
                             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="user@example.com" className="w-full bg-white border border-slate-200 rounded-lg py-2.5 px-4 focus:border-[#1a732a] focus:ring-0 transition-all text-sm font-medium outline-none" required />
                         </div>
                     )}

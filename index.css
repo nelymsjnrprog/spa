@@ -8,9 +8,10 @@ html, body {
   --slido-green-dark: #145920;
   --slido-beige: #f4f1ea;
   --slido-white: #ffffff;
-  --slido-grey-dark: #1a1a1a;
-  --slido-grey-medium: #545454;
-  --slido-grey-light: #f8f9fa;
+  --slido-grey-dark: #0f172a; /* Slate-900: Professional deep navy/grey */
+  --slido-grey-medium: #475569; /* Slate-600: Smooth body text */
+  --slido-grey-light: #f8fafc; /* Slate-50: Clean background */
+  --slido-grey-muted: #94a3b8; /* Slate-400: Subtle hints */
 }
 
 body {
