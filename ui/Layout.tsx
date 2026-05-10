@@ -104,14 +104,14 @@ export const Navbar: React.FC = () => {
         <nav className="flex-1 overflow-y-auto p-4 space-y-2">
           {profile?.role === 'admin' && (
             <>
-              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mb-2">Primary Systems</div>
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-2">Primary Systems</div>
               <SidebarLink to="/admin" icon="fa-th-large" label="Dashboard" onClick={() => setSidebarOpen(false)} />
               {isSuperAdmin || (profile?.assignedInstitutions && profile.assignedInstitutions.length >= 2) ? (
                 <SidebarLink to="/admin/quizzes" icon="fa-layer-group" label="Module Management" onClick={() => setSidebarOpen(false)} />
               ) : null}
 
               
-              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Institution Management</div>
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Institution Management</div>
               {filteredInstitutions.map(inst => (
                 <SidebarLink
                   key={inst.id}
@@ -122,25 +122,25 @@ export const Navbar: React.FC = () => {
                 />
               ))}
               {filteredInstitutions.length === 0 && (
-                <p className="px-4 text-[10px] text-black italic">No institutions configured.</p>
+                <p className="px-4 text-[10px] text-slate-400 italic">No institutions configured.</p>
               )}
 
-              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Resources</div>
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Resources</div>
               <SidebarLink to="/admin/library" icon="fa-book" label="Library Management" onClick={() => setSidebarOpen(false)} />
 
-              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Directives</div>
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Directives</div>
 
               <SidebarLink to="/admin/security" icon="fa-shield-halved" label="Security Ops" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="/admin/settings" icon="fa-sliders" label="System Settings" onClick={() => setSidebarOpen(false)} />
 
-              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Customer Service</div>
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Customer Service</div>
               <Link 
                 to="/admin/support" 
                 onClick={() => setSidebarOpen(false)}
-                className="flex items-center justify-between px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-black font-bold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
+                className="flex items-center justify-between px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 sm:w-8 flex justify-center text-xl sm:text-lg text-slate-300 group-hover:text-primary-500 transition-colors">
+                  <div className="w-10 sm:w-8 flex justify-center text-xl sm:text-lg text-slate-400 group-hover:text-primary-500 transition-colors">
                     <i className="fas fa-headset"></i>
                   </div>
                   <span className="text-base sm:text-sm">Support</span>
@@ -153,7 +153,7 @@ export const Navbar: React.FC = () => {
               </Link>
               {isSuperAdmin && (
                 <>
-                  <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mt-8 mb-2">Financials</div>
+                  <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Financials</div>
                   <SidebarLink to="/admin/payments" icon="fa-credit-card" label="Payment Registry" onClick={() => setSidebarOpen(false)} />
                 </>
               )}
@@ -162,7 +162,7 @@ export const Navbar: React.FC = () => {
 
           {profile?.role === 'student' && (
             <>
-              <div className="text-[10px] font-black text-black uppercase tracking-widest px-4 mb-2">Student Services</div>
+              <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mb-2">Student Services</div>
               <SidebarLink to="/student" icon="fa-th-large" label="Dashboard" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="/student/library" icon="fa-book-open" label="Library" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="#" icon="fa-comments" label="Chat" onClick={() => setSidebarOpen(false)} />
