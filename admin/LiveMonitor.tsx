@@ -98,7 +98,7 @@ const LiveMonitor: React.FC = () => {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-black">Loading monitor...</div>;
+    if (loading) return <div className="p-8 text-center text-slate-500">Loading monitor...</div>;
     if (!quiz) return <div className="p-8 text-center text-red-500">Module not found.</div>;
 
     const now = Date.now();
@@ -120,8 +120,8 @@ const LiveMonitor: React.FC = () => {
                         >
                              <i className="fas fa-arrow-left mr-2"></i> Back to Level Management
                         </Link>
-                        <h1 className="text-3xl font-bold text-black tracking-tight">Live Monitor</h1>
-                        <p className="text-black font-medium">Session: {quiz.title}</p>
+                        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Live Monitor</h1>
+                        <p className="text-slate-600 font-medium">Session: {quiz.title}</p>
                     </div>
                     <div className="flex flex-wrap gap-3">
                         {quiz.status === 'active' && (
@@ -147,23 +147,23 @@ const LiveMonitor: React.FC = () => {
                         <div className="absolute top-0 right-0 p-4 opacity-10 text-emerald-600">
                             
                         </div>
-                        <h4 className="text-black font-bold uppercase tracking-widest text-xs mb-2">Active Students</h4>
-                        <div className="text-4xl sm:text-5xl font-black text-black">{activeSubmissions.length}</div>
+                        <h4 className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2">Active Students</h4>
+                        <div className="text-4xl sm:text-5xl font-black text-slate-900">{activeSubmissions.length}</div>
                     </Card>
 
                     <Card className="p-6 border-none shadow-xl shadow-slate-100/50 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-10 text-primary-600">
                             
                         </div>
-                        <h4 className="text-black font-bold uppercase tracking-widest text-xs mb-2">Submitted</h4>
-                        <div className="text-4xl sm:text-5xl font-black text-black">{completedSubmissions.length}</div>
+                        <h4 className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2">Submitted</h4>
+                        <div className="text-4xl sm:text-5xl font-black text-slate-900">{completedSubmissions.length}</div>
                     </Card>
 
                     <Card className="p-6 border-none shadow-xl shadow-slate-100/50 relative overflow-hidden sm:col-span-2 lg:col-span-1">
                         <div className="absolute top-0 right-0 p-4 opacity-10 text-amber-600">
                             
                         </div>
-                        <h4 className="text-black font-bold uppercase tracking-widest text-xs mb-2">Live Announcement</h4>
+                        <h4 className="text-slate-400 font-bold uppercase tracking-widest text-xs mb-2">Live Announcement</h4>
                         <div className="flex flex-col gap-2 mt-2 relative z-10">
                             <input
                                 type="text"
@@ -176,7 +176,7 @@ const LiveMonitor: React.FC = () => {
                                 <button onClick={handleBroadcast} className="flex-1 bg-amber-500 text-white text-xs font-black py-3 rounded text-center hover:bg-amber-600 uppercase tracking-widest">
                                     Broadcast
                                 </button>
-                                <button onClick={clearAnnouncement} className="flex-1 bg-slate-200 text-black text-xs font-black py-3 rounded text-center hover:bg-slate-300 uppercase tracking-widest">
+                                <button onClick={clearAnnouncement} className="flex-1 bg-slate-200 text-slate-900 text-xs font-black py-3 rounded text-center hover:bg-slate-300 uppercase tracking-widest">
                                     Clear
                                 </button>
                             </div>
@@ -186,7 +186,7 @@ const LiveMonitor: React.FC = () => {
 
                 {stoppedSubmissions.length > 0 && (
                     <Card className="p-8 border-none shadow-xl shadow-slate-100/50 mb-6">
-                        <h2 className="text-xl font-black text-black mb-6 border-b pb-4 flex items-center gap-3">
+                        <h2 className="text-xl font-black text-slate-900 mb-6 border-b pb-4 flex items-center gap-3">
                             <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-bold bg-red-50 text-red-600 border border-red-100">
                                  Distribution Stopped
                             </span>
@@ -195,7 +195,7 @@ const LiveMonitor: React.FC = () => {
                         <div className="hidden md:block overflow-x-auto">
                             <table className="w-full text-left border-collapse">
                                 <thead>
-                                    <tr className="bg-slate-50 text-black text-xs uppercase tracking-widest font-black">
+                                    <tr className="bg-slate-50 text-slate-400 text-xs uppercase tracking-widest font-black">
                                         <th className="p-4 rounded-tl-xl">Student</th>
                                         <th className="p-4">Progress at Stop</th>
                                         <th className="p-4">Score</th>
@@ -206,11 +206,11 @@ const LiveMonitor: React.FC = () => {
                                     {stoppedSubmissions.map(sub => (
                                         <tr key={sub.id} className="hover:bg-slate-50 transition-colors">
                                             <td className="p-4 border-b">
-                                                <div className="font-bold text-black">{sub.studentName}</div>
+                                                <div className="font-bold text-slate-900">{sub.studentName}</div>
                                             </td>
                                             <td className="p-4 border-b">
                                                 <div className="flex items-center">
-                                                    <span className="text-sm font-bold text-black mr-2">
+                                                    <span className="text-sm font-bold text-slate-900 mr-2">
                                                         {sub.currentQuestionIndex !== undefined ? sub.currentQuestionIndex + 1 : '-'}/{quiz.totalQuestions}
                                                     </span>
                                                     <div className="h-2 w-24 bg-slate-100 rounded-full overflow-hidden">
@@ -222,10 +222,10 @@ const LiveMonitor: React.FC = () => {
                                                 </div>
                                             </td>
                                             <td className="p-4 border-b">
-                                                <span className="text-sm font-bold text-black">{sub.score ?? '-'} / {sub.totalPossible ?? '-'}</span>
+                                                <span className="text-sm font-bold text-slate-900">{sub.score ?? '-'} / {sub.totalPossible ?? '-'}</span>
                                             </td>
                                             <td className="p-4 border-b">
-                                                <span className="text-xs text-black">{sub.completedAt ? new Date(sub.completedAt).toLocaleTimeString() : '-'}</span>
+                                                <span className="text-xs text-slate-500">{sub.completedAt ? new Date(sub.completedAt).toLocaleTimeString() : '-'}</span>
                                             </td>
                                         </tr>
                                     ))}
@@ -236,8 +236,8 @@ const LiveMonitor: React.FC = () => {
                             {stoppedSubmissions.map(sub => (
                                 <div key={sub.id} className="p-4 bg-red-50 rounded-2xl border border-red-100 flex justify-between items-center">
                                     <div>
-                                        <div className="font-bold text-black">{sub.studentName}</div>
-                                        <div className="text-xs text-black mt-1">Q {sub.currentQuestionIndex !== undefined ? sub.currentQuestionIndex + 1 : '-'}/{quiz.totalQuestions} · Score: {sub.score ?? '-'}</div>
+                                        <div className="font-bold text-slate-900">{sub.studentName}</div>
+                                        <div className="text-xs text-slate-500 mt-1">Q {sub.currentQuestionIndex !== undefined ? sub.currentQuestionIndex + 1 : '-'}/{quiz.totalQuestions} · Score: {sub.score ?? '-'}</div>
                                     </div>
                                     <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-black uppercase bg-red-100 text-red-600 border border-red-200">
                                          Stopped
@@ -250,10 +250,10 @@ const LiveMonitor: React.FC = () => {
 
                 {quiz.status !== 'completed' && (
                 <Card className="p-8 border-none shadow-xl shadow-slate-100/50">
-                    <h2 className="text-xl font-black text-black mb-6 border-b pb-4">Real-Time Presence</h2>
+                    <h2 className="text-xl font-black text-slate-900 mb-6 border-b pb-4">Real-Time Presence</h2>
 
                     {activeSubmissions.length === 0 ? (
-                        <div className="text-center py-12 text-black font-bold uppercase tracking-widest">
+                        <div className="text-center py-12 text-slate-400 font-bold uppercase tracking-widest">
                             No students currently active.
                         </div>
                     ) : (
@@ -262,7 +262,7 @@ const LiveMonitor: React.FC = () => {
                             <div className="hidden md:block overflow-x-auto">
                                 <table className="w-full text-left border-collapse">
                                     <thead>
-                                        <tr className="bg-slate-50 text-black text-xs uppercase tracking-widest font-black">
+                                        <tr className="bg-slate-50 text-slate-400 text-xs uppercase tracking-widest font-black">
                                             <th className="p-4 rounded-tl-xl">Student</th>
                                             <th className="p-4">Status</th>
                                             <th className="p-4">Progress (Qs)</th>
@@ -277,7 +277,7 @@ const LiveMonitor: React.FC = () => {
                                             return (
                                                 <tr key={sub.id} className="hover:bg-slate-50 transition-colors">
                                                     <td className="p-4 border-b">
-                                                        <div className="font-bold text-black">{sub.studentName}</div>
+                                                        <div className="font-bold text-slate-900">{sub.studentName}</div>
                                                     </td>
                                                     <td className="p-4 border-b">
                                                         {isIdle ? (
@@ -292,7 +292,7 @@ const LiveMonitor: React.FC = () => {
                                                     </td>
                                                     <td className="p-4 border-b">
                                                         <div className="flex items-center">
-                                                            <span className="text-sm font-bold text-black mr-2">
+                                                            <span className="text-sm font-bold text-slate-900 mr-2">
                                                                 {sub.currentQuestionIndex !== undefined ? sub.currentQuestionIndex + 1 : '-'}/{quiz.totalQuestions}
                                                             </span>
                                                             <div className="h-2 w-24 bg-slate-100 rounded-full overflow-hidden">
@@ -316,7 +316,7 @@ const LiveMonitor: React.FC = () => {
                                                     <td className="p-4 border-b">
                                                         <button
                                                             onClick={() => handleExtendTime(sub)}
-                                                            className="bg-slate-100 text-black hover:bg-primary-50 hover:text-primary-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
+                                                            className="bg-slate-100 text-slate-600 hover:bg-primary-50 hover:text-primary-600 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors"
                                                             title="Add Extra Time"
                                                         >
                                                              +Time
@@ -338,7 +338,7 @@ const LiveMonitor: React.FC = () => {
                                         <div key={sub.id} className="p-5 bg-slate-50 rounded-2xl border border-slate-100">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
-                                                    <div className="font-bold text-black">{sub.studentName}</div>
+                                                    <div className="font-bold text-slate-900">{sub.studentName}</div>
                                                 </div>
                                                 {isIdle ? (
                                                     <span className="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-black uppercase bg-amber-50 text-amber-600 border border-amber-100">
@@ -354,8 +354,8 @@ const LiveMonitor: React.FC = () => {
                                             <div className="space-y-4">
                                                 <div>
                                                     <div className="flex justify-between items-end mb-1">
-                                                        <span className="text-[10px] font-black text-black uppercase tracking-widest">Progress</span>
-                                                        <span className="text-xs font-bold text-black">{sub.currentQuestionIndex !== undefined ? sub.currentQuestionIndex + 1 : '-'}/{quiz.totalQuestions}</span>
+                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Progress</span>
+                                                        <span className="text-xs font-bold text-slate-900">{sub.currentQuestionIndex !== undefined ? sub.currentQuestionIndex + 1 : '-'}/{quiz.totalQuestions}</span>
                                                     </div>
                                                     <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
                                                         <div className="h-full bg-primary-500 rounded-full" style={{ width: `${progress}%` }} />
@@ -364,13 +364,13 @@ const LiveMonitor: React.FC = () => {
 
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div className="bg-white p-3 rounded-xl border border-slate-100">
-                                                        <p className="text-[8px] font-black text-black uppercase tracking-widest mb-1">Violations</p>
+                                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Violations</p>
                                                         <p className={`font-bold ${sub.violations ? 'text-red-500' : 'text-slate-300'}`}>
                                                             {sub.violations ? <> {sub.violations}</> : '0'}
                                                         </p>
                                                     </div>
                                                     <div className="bg-white p-3 rounded-xl border border-slate-100 text-right">
-                                                        <p className="text-[8px] font-black text-black uppercase tracking-widest mb-1">Time Ext.</p>
+                                                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Time Ext.</p>
                                                         <p className={`font-bold ${sub.timeExtension ? 'text-primary-600' : 'text-slate-300'}`}>
                                                             {sub.timeExtension ? `+${sub.timeExtension}m` : 'None'}
                                                         </p>
@@ -379,7 +379,7 @@ const LiveMonitor: React.FC = () => {
 
                                                 <button
                                                     onClick={() => handleExtendTime(sub)}
-                                                    className="w-full bg-white border border-slate-200 text-black py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-50"
+                                                    className="w-full bg-white border border-slate-200 text-slate-600 py-3 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-50"
                                                 >
                                                      Extend Time
                                                 </button>

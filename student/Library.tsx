@@ -49,22 +49,22 @@ const StudentLibrary: React.FC = () => {
       <Navbar />
       <Container>
         <div className="mb-10">
-          <h1 className="text-3xl font-black text-black tracking-tight">Library</h1>
-          <p className="text-black font-medium mt-1">Access your handouts, books, and study materials.</p>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Library</h1>
+          <p className="text-slate-600 font-medium mt-1">Access your handouts, books, and study materials.</p>
         </div>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-10 h-10 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-black font-bold uppercase tracking-widest text-[10px]">Opening Library...</p>
+            <p className="text-slate-900 font-bold uppercase tracking-widest text-[10px]">Opening Library...</p>
           </div>
         ) : resources.length === 0 ? (
           <div className="bg-white border border-slate-200 rounded-[2rem] p-20 text-center shadow-xl shadow-slate-200/30">
             <div className="w-20 h-20 bg-slate-50 text-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
               <i className="fas fa-book-open text-3xl"></i>
             </div>
-            <h3 className="text-xl font-bold text-black mb-2">Empty</h3>
-            <p className="text-black max-w-sm mx-auto">Check back soon!</p>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Empty</h3>
+            <p className="text-slate-600 max-w-sm mx-auto">Check back soon!</p>
           </div>
         ) : (
           <div className="grid grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-8">
@@ -91,14 +91,14 @@ const StudentLibrary: React.FC = () => {
                 <div className="p-3 sm:p-8 flex-1 flex flex-col">
                   <div className="flex items-center gap-2 mb-3">
                     {resource.fileSize && (
-                      <span className="text-[7px] sm:text-[10px] font-black uppercase tracking-widest text-black">
+                      <span className="text-[7px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400">
                         {(resource.fileSize / 1024 / 1024).toFixed(1)}MB
                       </span>
                     )}
                   </div>
                   
-                  <h3 className="text-xs sm:text-xl font-black text-black mb-1 sm:mb-3 leading-tight group-hover:text-primary-600 transition-colors line-clamp-1">{resource.title}</h3>
-                  <p className="text-black text-[10px] sm:text-sm font-medium line-clamp-2 sm:line-clamp-3 mb-4 sm:mb-8 flex-1">
+                  <h3 className="text-xs sm:text-xl font-black text-slate-900 mb-1 sm:mb-3 leading-tight group-hover:text-primary-600 transition-colors line-clamp-1">{resource.title}</h3>
+                  <p className="text-slate-600 text-[10px] sm:text-sm font-medium line-clamp-2 sm:line-clamp-3 mb-4 sm:mb-8 flex-1">
                     {resource.description || 'Access this study material.'}
                   </p>
 

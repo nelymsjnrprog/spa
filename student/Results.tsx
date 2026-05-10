@@ -157,12 +157,12 @@ const Results: React.FC = () => {
     <div className="h-screen flex items-center justify-center bg-slate-50">
       <div className="flex flex-col items-center">
         <div className="w-12 h-12 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-black font-bold uppercase tracking-widest text-xs">Authenticating Results...</p>
+        <p className="text-slate-900 font-bold uppercase tracking-widest text-xs">Authenticating Results...</p>
       </div>
     </div>
   );
 
-  if (!submission) return <div className="p-12 text-center text-black italic">Official results not found.</div>;
+  if (!submission) return <div className="p-12 text-center text-slate-500 italic">Official results not found.</div>;
 
   const displayCorrectCount = submission.correctCount !== undefined ? submission.correctCount : questions.filter(q => submission.answers[q.id] === q.correctOptionIndex).length;
   const displayTotalQuestions = submission.totalQuestions || questions.length;
@@ -180,8 +180,8 @@ const Results: React.FC = () => {
           </Link>
 
           <header className="mb-6 sm:mb-12">
-            <h1 className="text-2xl sm:text-4xl font-black text-black mb-2 tracking-tight">Performance</h1>
-            <p className="text-black font-medium">Verified result record for {quiz?.title}</p>
+            <h1 className="text-2xl sm:text-4xl font-black text-slate-900 mb-2 tracking-tight">Performance</h1>
+            <p className="text-slate-600 font-medium">Verified result record for {quiz?.title}</p>
           </header>
 
           {quiz?.showResults !== false && (
@@ -189,14 +189,14 @@ const Results: React.FC = () => {
               <Card className="sm:col-span-2 p-5 sm:p-8 border-none shadow-xl shadow-slate-200/50 relative overflow-hidden flex flex-col sm:flex-row items-center justify-between">
                 <div className="absolute top-0 left-0 w-2 h-full bg-primary-600"></div>
                 <div className="flex-1 text-center sm:text-left">
-                  <p className="text-[10px] font-black text-black uppercase tracking-[0.2em] mb-4">Exam Score & Status</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Exam Score & Status</p>
                   <div className="flex items-baseline justify-center sm:justify-start space-x-3">
-                    <span className="text-3xl sm:text-6xl font-black text-black">{correctCount}/{totalQuestions}</span>
-                    <span className="text-base sm:text-xl font-bold text-black">({percentage}%)</span>
+                    <span className="text-3xl sm:text-6xl font-black text-slate-900">{correctCount}/{totalQuestions}</span>
+                    <span className="text-base sm:text-xl font-bold text-slate-500">({percentage}%)</span>
                   </div>
                   <div className="mt-4 flex items-center justify-center sm:justify-start space-x-4">
                     {submission.score !== correctCount && (
-                      <p className="text-[10px] text-black font-bold uppercase tracking-tight">Weighted: {submission.score}/{submission.totalPossible}</p>
+                      <p className="text-[10px] text-slate-500 font-bold uppercase tracking-tight">Weighted: {submission.score}/{submission.totalPossible}</p>
                     )}
                   </div>
                 </div>
@@ -211,11 +211,11 @@ const Results: React.FC = () => {
               </Card>
 
               <Card className="p-5 sm:p-8 border-none shadow-xl shadow-slate-200/50 flex flex-col justify-center text-center sm:text-left">
-                <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Student Identity</p>
-                <p className="text-black font-black truncate text-lg uppercase tracking-tight">{submission.studentName}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Student Identity</p>
+                <p className="text-slate-900 font-black truncate text-lg uppercase tracking-tight">{submission.studentName}</p>
                 <div className="mt-4 pt-4 border-t border-slate-100">
-                  <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Session ID</p>
-                  <p className="text-[10px] text-black font-mono truncate">{submission.id}</p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Session ID</p>
+                  <p className="text-[10px] text-slate-500 font-mono truncate">{submission.id}</p>
                 </div>
               </Card>
             </section>
@@ -225,10 +225,10 @@ const Results: React.FC = () => {
               <div className="w-16 h-16 bg-primary-50 text-primary-600 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i className="fas fa-paper-plane text-2xl"></i>
               </div>
-              <h3 className="text-xl font-black text-black mb-2">Submission Confirmed</h3>
-              <p className="text-black text-sm mb-6">
+              <h3 className="text-xl font-black text-slate-900 mb-2">Submission Confirmed</h3>
+              <p className="text-slate-600 text-sm mb-6">
                 Your examination has been securely recorded on <br/>
-                <span className="font-bold text-black">{new Date(submission.completedAt || Date.now()).toLocaleString()}</span>
+                <span className="font-bold text-slate-900">{new Date(submission.completedAt || Date.now()).toLocaleString()}</span>
               </p>
               {quiz?.showResults === false && (
                 <div className="bg-amber-50 border border-amber-100 p-4 rounded-xl">
@@ -245,14 +245,14 @@ const Results: React.FC = () => {
       {/* Screenshot Prevention Watermark */}
       <div className="fixed inset-0 z-50 pointer-events-none overflow-hidden select-none opacity-[0.04]">
         <div
-          className="absolute text-2xl font-black whitespace-nowrap text-black tracking-tighter uppercase italic transition-all duration-1000"
+          className="absolute text-2xl font-black whitespace-nowrap text-slate-900 tracking-tighter uppercase italic transition-all duration-1000"
           style={{ transform: `translate(${watermarkPos.left}, ${watermarkPos.top})` }}
         >
           {profile?.displayName} • {profile?.email} • {new Date().toLocaleDateString()}
         </div>
         <div className="absolute inset-0 grid grid-cols-4 grid-rows-6 gap-20 transform -rotate-45 scale-150">
           {Array.from({ length: 24 }).map((_, i) => (
-            <div key={i} className="text-2xl font-black whitespace-nowrap text-black tracking-tighter uppercase italic opacity-20">
+            <div key={i} className="text-2xl font-black whitespace-nowrap text-slate-900 tracking-tighter uppercase italic opacity-20">
               {profile?.displayName} • {profile?.email} • OFFICIAL RECORD
             </div>
           ))}
@@ -269,10 +269,10 @@ const Results: React.FC = () => {
             <h2 className="text-xl font-bold mb-2">
               {showScreenshotOverlay ? "Capture Blocked" : "Results Protected"}
             </h2>
-            <p className="text-black text-[10px] leading-relaxed uppercase tracking-widest font-black">
+            <p className="text-slate-400 text-[10px] leading-relaxed uppercase tracking-widest font-black">
               {showScreenshotOverlay ? "Screen capturing is prohibited" : "Confidential Result Data"}
             </p>
-            <p className="mt-4 text-[10px] text-black font-bold italic">
+            <p className="mt-4 text-[10px] text-slate-400 font-bold italic">
               Please focus on the result window. Navigation or screen capturing is restricted.
             </p>
           </div>
