@@ -52,7 +52,7 @@ export const Navbar: React.FC = () => {
             {(profile?.role === 'admin' || profile?.role === 'student') && (
               <button 
                 onClick={() => setSidebarOpen(true)}
-                className="p-2 -ml-2 text-black hover:text-primary-600 transition-colors"
+                className="p-2 -ml-2 text-slate-600 hover:text-primary-600 transition-colors"
                 title="Open Navigation"
               >
                 <i className="fas fa-bars-staggered text-xl"></i>
@@ -67,7 +67,7 @@ export const Navbar: React.FC = () => {
 
             <button
               onClick={handleLogout}
-              className="p-2.5 text-black hover:text-red-600 transition-colors active:scale-95"
+              className="p-2.5 text-slate-600 hover:text-red-600 transition-colors active:scale-95"
               title="Logout"
             >
               <i className="fas fa-sign-out-alt text-lg sm:text-xl"></i>
@@ -91,12 +91,12 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center space-x-2">
             <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-900">{APP_CONFIG.name}</span>
             <span className={`text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ${
-              isSuperAdmin ? 'text-amber-600 border-amber-200 bg-amber-50' : 'text-black border-slate-200'
+              isSuperAdmin ? 'text-amber-600 border-amber-200 bg-amber-50' : 'text-slate-500 border-slate-200'
             }`}>
               {effectivePerm === 'super_admin' ? 'Super' : effectivePerm === 'institution_admin' ? 'Institution' : 'View'}
             </span>
           </div>
-          <button onClick={() => setSidebarOpen(false)} className="text-black hover:text-black transition-colors" title="Close sidebar">
+          <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors" title="Close sidebar">
             <i className="fas fa-times text-xl"></i>
           </button>
         </div>
@@ -185,7 +185,7 @@ const SidebarLink: React.FC<{ to: string, icon: string, label: string, onClick: 
   <Link 
     to={to} 
     onClick={onClick}
-    className="flex items-center space-x-3 px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-black font-bold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
+    className="flex items-center space-x-3 px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-primary-600 transition-all group active:bg-primary-50"
   >
     <div className="w-10 sm:w-8 flex justify-center text-xl sm:text-lg text-slate-400 group-hover:text-primary-500 transition-colors">
       <i className={`fas ${icon}`}></i>
