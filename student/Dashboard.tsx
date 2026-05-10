@@ -235,7 +235,7 @@ const StudentDashboard: React.FC = () => {
           {/* Main Examinations Section */}
           <section className="bento-item-large space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black text-slate-900 flex items-center uppercase tracking-widest text-[10px]">
+              <h2 className="font-black text-slate-400 flex items-center uppercase tracking-widest text-[10px]">
                 Available Modules
               </h2>
               {quizzesLoaded && (
