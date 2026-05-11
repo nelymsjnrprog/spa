@@ -36,6 +36,7 @@ import Library from './student/Library';
 import AnswerReview from './student/AnswerReview';
 import PaymentRequiredView from './student/PaymentRequiredView';
 import MembershipGuard from './components/MembershipGuard';
+import ScrollToTop from './components/ScrollToTop';
 
 const App: React.FC = () => {
   const navigate = useNavigate();
@@ -61,6 +62,7 @@ const App: React.FC = () => {
 
   return (
     <AuthProvider>
+      <ScrollToTop />
       <Routes>
         {/* Public Routes */}
           <Route path="/" element={<LandingPage />} />

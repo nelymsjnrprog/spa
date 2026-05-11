@@ -86,6 +86,9 @@ export const authService = {
         ? "admin"
         : selectedRole;
 
+      const sessionId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
+      localStorage.setItem('smartprep_sid', sessionId);
+
       const userProfile: UserProfile = {
         uid: user.uid,
         displayName: name,
@@ -97,6 +100,7 @@ export const authService = {
         role: finalRole,
         isBlocked: false,
         membershipStatus: paymentReference ? 'active' : 'pending',
+        currentSessionId: sessionId,
         createdAt: Date.now(),
       };
 
@@ -117,10 +121,6 @@ export const authService = {
           console.error("Payment record failed:", payErr);
         }
       }
-
-      const sessionId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
-      localStorage.setItem('smartprep_sid', sessionId);
-      await setDoc(doc(db, "users", user.uid), { currentSessionId: sessionId }, { merge: true });
 
       return user;
     } catch (error: any) {

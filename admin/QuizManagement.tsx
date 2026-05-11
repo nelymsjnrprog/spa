@@ -445,103 +445,104 @@ const QuizManagement: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             {filteredQuizzes.map(quiz => (
-              <Card key={quiz.id} className="relative p-5 sm:p-8 border-none shadow-xl shadow-slate-100/50 flex flex-col hover:scale-[1.01] transition-all group overflow-visible">
-                <button
-                  onClick={() => setDeleteModalQuiz(quiz)}
-                  className="absolute top-4 right-4 sm:top-6 sm:right-6 text-slate-300 hover:text-red-500 p-2 transition-colors z-10"
-                  title="Permanently Delete Module & Results"
-                >
-                  <i className="fas fa-trash-alt text-sm"></i>
-                </button>
-
-                <div className="p-3 sm:p-4 bg-primary-50 text-primary-600 rounded-2xl mb-4 sm:mb-6 w-fit shadow-inner flex items-center">
-                  <i className="fas fa-scroll text-xl sm:text-2xl mr-2 sm:mr-3"></i>
-                  {quiz.lockCode && (
-                    <div className="bg-amber-100 text-amber-700 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter flex items-center border border-amber-200">
-                      <i className="fas fa-lock mr-1 text-[8px]"></i> Locked
+              <Card key={quiz.id} className="p-5 border-none shadow-lg shadow-slate-200/40 hover:translate-y-[-2px] transition-all group bg-white rounded-xl max-w-sm mx-auto w-full flex flex-col">
+                {/* Top Row: Actions */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
+                      <i className="fas fa-scroll text-sm"></i>
                     </div>
-                  )}
-                  <button
-                    onClick={() => handleOpenEdit(quiz)}
-                    className="ml-3 sm:ml-4 text-black hover:text-primary-600 transition-colors"
-                    title="Edit Module Details"
-                  >
-                    <i className="fas fa-edit text-sm"></i>
-                  </button>
-                  {isSuperAdmin && (
-                    <>
-                      <button
-                        onClick={() => openDuplicateModal(quiz)}
-                        className="ml-3 sm:ml-4 text-black hover:text-indigo-600 transition-colors"
-                        title="Duplicate to another Institution"
-                      >
-                        <i className="fas fa-clone text-sm"></i>
-                      </button>
-                      <button
-                        onClick={() => openMergeModal(quiz)}
-                        className="ml-3 sm:ml-4 text-black hover:text-amber-600 transition-colors"
-                        title="Merge Questions into another Module"
-                      >
-                        <i className="fas fa-object-group text-sm"></i>
-                      </button>
-                    </>
-                  )}
+                    {quiz.lockCode && (
+                      <div className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-tighter flex items-center border border-amber-200">
+                        <i className="fas fa-lock mr-1 text-[7px]"></i> Locked
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <button onClick={() => handleOpenEdit(quiz)} className="p-1.5 text-slate-400 hover:text-primary-600 transition-colors">
+                      <i className="fas fa-edit text-xs"></i>
+                    </button>
+                    {isSuperAdmin && (
+                      <>
+                        <button onClick={() => openDuplicateModal(quiz)} className="p-1.5 text-slate-400 hover:text-indigo-600 transition-colors">
+                          <i className="fas fa-clone text-xs"></i>
+                        </button>
+                        <button onClick={() => openMergeModal(quiz)} className="p-1.5 text-slate-400 hover:text-amber-600 transition-colors">
+                          <i className="fas fa-object-group text-xs"></i>
+                        </button>
+                      </>
+                    )}
+                    <button 
+                      onClick={() => setDeleteModalQuiz(quiz)} 
+                      className="p-1.5 text-slate-300 hover:text-red-500 transition-colors"
+                      title="Delete"
+                    >
+                      <i className="fas fa-trash-alt text-xs"></i>
+                    </button>
+                  </div>
                 </div>
 
-                {quiz.subjectTitle && (
-                  <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mb-1.5 leading-none">{quiz.subjectTitle}</p>
-                )}
-                <h3 className="text-lg sm:text-2xl font-black text-black mb-1 leading-tight pr-6">{quiz.title}</h3>
-                <p className="text-xs sm:text-sm text-black line-clamp-2 mb-4 sm:mb-6 font-medium">{quiz.description}</p>
+                {/* Title Block */}
+                <div className="mb-4">
+                  <h3 className="text-lg font-black text-black leading-tight mb-0.5">{quiz.title}</h3>
+                  <p className="text-[9px] font-black text-primary-600 uppercase tracking-widest leading-none">
+                    {quiz.subjectTitle || "ANSWER ALL QUESTIONS"}
+                  </p>
+                </div>
 
-                <div className="flex flex-wrap gap-x-4 gap-y-2 mb-4 sm:mb-6 text-[10px] sm:text-[11px] font-black text-black uppercase tracking-widest border-t border-slate-50 pt-4">
-                  <span className="flex items-center" title="Time Limit"><i className="far fa-clock mr-1.5 text-primary-400"></i> {quiz.timeLimit}M</span>
-                  <span className="flex items-center" title="Total Questions"><i className="fas fa-list-ul mr-1.5 text-primary-400"></i> {quiz.totalQuestions} QS</span>
-                  <span className="flex items-center" title="Options Format"><i className="fas fa-th-list mr-1.5 text-primary-400"></i> {quiz.defaultOptionsCount || 4} OP</span>
-                  {quiz.shuffleQuestions && (
-                    <span className="flex items-center text-amber-600" title="Shuffled Order">
-                      <i className="fas fa-random mr-1.5"></i> Q-Shuffle
-                    </span>
-                  )}
-                  {quiz.shuffleOptions && (
-                    <span className="flex items-center text-indigo-600" title="Options Shuffled">
-                      <i className="fas fa-layer-group mr-1.5"></i> O-Shuffle
-                    </span>
-                  )}
-                  <span className={`flex items-center ${quiz.published ? 'text-green-600' : 'text-black'}`}>
-                    <i className="fas fa-circle mr-1.5 text-[6px]"></i> {quiz.published ? 'Live' : 'Draft'}
+                {/* Meta Info Row */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="flex items-center text-[9px] font-black bg-slate-50 px-2 py-1 rounded-md text-black">
+                    <i className="far fa-clock mr-1 text-primary-500"></i> {quiz.timeLimit}M
                   </span>
+                  <span className="flex items-center text-[9px] font-black bg-slate-50 px-2 py-1 rounded-md text-black">
+                    <i className="fas fa-list-ul mr-1 text-primary-500"></i> {quiz.totalQuestions} QS
+                  </span>
+                  <span className="flex items-center text-[9px] font-black bg-slate-50 px-2 py-1 rounded-md text-black">
+                    <i className="fas fa-th-list mr-1 text-primary-500"></i> {quiz.defaultOptionsCount || 4} OP
+                  </span>
+                  {(quiz.shuffleQuestions || quiz.shuffleOptions) && (
+                    <span className="flex items-center text-[9px] font-black bg-amber-50 px-2 py-1 rounded-md text-amber-700">
+                      <i className="fas fa-random mr-1"></i> SHUFFLE
+                    </span>
+                  )}
+                  <span className={`text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider ${quiz.published ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-black'}`}>
+                    {quiz.published ? 'Live' : 'Draft'}
+                  </span>
+                </div>
+
+                {/* Tags/Labels */}
+                <div className="flex flex-wrap gap-2 mb-6">
                   {quiz.institution && (
-                    <span className="flex items-center text-primary-600 bg-primary-50 px-2 py-0.5 rounded w-fit" title="Assigned Institution">
-                      <i className="fas fa-university mr-1.5"></i> {institutions.find(i => i.name === quiz.institution)?.name || quiz.institution}
+                    <span className="text-[8px] font-black text-primary-600 bg-primary-50/50 px-2 py-0.5 rounded-md uppercase border border-primary-100">
+                      {institutions.find(i => i.name === quiz.institution)?.name || quiz.institution}
                     </span>
                   )}
                   {quiz.level && (
-                    <span className="flex items-center text-primary-600 bg-primary-50 px-2 py-0.5 rounded w-fit" title="Target Level">
-                      <i className="fas fa-layer-group mr-1.5"></i> Level {quiz.level}
+                    <span className="text-[8px] font-black text-indigo-600 bg-indigo-50/50 px-2 py-0.5 rounded-md uppercase border border-indigo-100">
+                      Level {quiz.level}
                     </span>
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 sm:gap-4 mt-auto mb-3 sm:mb-4">
-                  <Link to={`/admin/questions/${quiz.id}`} className="flex items-center justify-center p-3 sm:p-4 bg-slate-900 text-white rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-primary-600 transition-colors shadow-lg shadow-slate-200">
+                {/* Action Buttons Grid */}
+                <div className="mt-auto grid grid-cols-2 gap-2">
+                  <Link to={`/admin/questions/${quiz.id}`} className="py-2.5 bg-slate-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest text-center hover:bg-primary-600 transition-all">
                     Questions
                   </Link>
-                  <Link to={`/admin/reports?quizId=${quiz.id}`} className="flex items-center justify-center p-3 sm:p-4 bg-slate-50 text-black rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-colors">
+                  <Link to={`/admin/reports?quizId=${quiz.id}`} className="py-2.5 bg-slate-100 text-black rounded-lg text-[9px] font-black uppercase tracking-widest text-center hover:bg-slate-200 transition-all">
                     Results
                   </Link>
+                  <Link to={`/admin/live-monitor/${quiz.id}`} className="py-2.5 bg-emerald-50 text-emerald-700 rounded-lg text-[9px] font-black uppercase tracking-widest text-center hover:bg-emerald-600 hover:text-white transition-all">
+                    Monitor
+                  </Link>
+                  <button 
+                    onClick={() => togglePublish(quiz)}
+                    className={`py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center transition-all ${quiz.published ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-primary-600 text-white'}`}
+                  >
+                    {quiz.published ? 'Stop' : 'Publish'}
+                  </button>
                 </div>
-
-                <div className="w-full flex items-center justify-center p-3 sm:p-4 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest hover:bg-emerald-100 transition-colors mb-3 sm:mb-4">
-                  <i className="fas fa-satellite-dish mr-2 animate-pulse"></i> Live Monitor
-                </div>
-
-                <button
-                  onClick={() => togglePublish(quiz)}
-                  className={`w-full py-3 sm:py-4 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all ${quiz.published ? 'text-red-500 bg-red-50 hover:bg-red-100 border border-red-100' : 'text-primary-600 bg-primary-50 hover:bg-primary-100 border border-primary-100'}`}
-                >
-                  {quiz.published ? 'Stop Distribution' : 'Publish to Students'}
-                </button>
               </Card>
             ))}
 

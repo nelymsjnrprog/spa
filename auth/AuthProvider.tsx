@@ -89,15 +89,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               setLoading(false);
             } else {
               // Soft Delete Check:
-              // If the user's Auth account still exists but their profile document
-              // was deleted by an admin, immediately log them out and reject access.
-              setProfile(null);
-              setRole(null);
-              // Store specific error for Login screen to pick up
-              localStorage.setItem('smartprep_login_error', "Denial Access? (Contact Support)");
-              auth.signOut();
-              localStorage.removeItem('smartprep_sid');
-              setLoading(false);
+              // Only sign out if the account is NOT brand new.
+              // Brand new accounts are likely in the middle of the signup process.
+              const creationTime = firebaseUser.metadata.creationTime;
+              const accountAgeMs = creationTime ? Date.now() - new Date(creationTime).getTime() : 0;
+              const isNewSignup = accountAgeMs < 60000; // 1 minute grace period
+
+              if (!isNewSignup) {
+                setProfile(null);
+                setRole(null);
+                // Store specific error for Login screen to pick up
+                localStorage.setItem('smartprep_login_error', "Denial Access? (Contact Support)");
+                auth.signOut();
+                localStorage.removeItem('smartprep_sid');
+                setLoading(false);
+              } else {
+                // Wait for the signup process to create the document.
+                // We stay in the 'loading' state so the UI doesn't flicker or redirect.
+                console.log("New account detected, waiting for profile document...");
+              }
             }
           }, (error) => {
             console.error("Profile sync error:", error);

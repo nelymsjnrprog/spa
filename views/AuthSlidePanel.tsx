@@ -142,6 +142,9 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
               currentLevelSettings?.price
             );
             
+            // Allow 2 seconds for background sync to complete
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
             onClose();
 
             // Check for smart redirect to quiz

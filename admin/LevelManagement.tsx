@@ -75,10 +75,11 @@ const LevelManagement: React.FC = () => {
 
 
    useEffect(() => {
-      if (levelParam && levelParam !== selectedLevel) {
-         setSelectedLevel(levelParam);
+      // Sync selectedLevel with levelParam, including resetting to '' if levelParam is missing
+      if (levelParam !== selectedLevel) {
+         setSelectedLevel(levelParam || '');
       }
-   }, [levelParam]);
+   }, [levelParam, selectedLevel]);
 
    useEffect(() => {
       if (!level && !institutionName) return;
@@ -594,9 +595,10 @@ const LevelManagement: React.FC = () => {
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
                         {['100', '200', '300', 'Candidate'].map((lvl) => {
                             const levelCount = students.filter(s => {
-                                const uLevel = s.level || '100';
-                                if (lvl === 'Candidate') return uLevel === 'Candidate' || uLevel === '400';
-                                return uLevel === lvl;
+                                const uLevel = (s.level || '100').toLowerCase();
+                                const currentLvl = lvl.toLowerCase();
+                                if (currentLvl === 'candidate') return uLevel === 'candidate' || uLevel === '400';
+                                return uLevel === currentLvl || uLevel.includes(currentLvl);
                             }).length;
 
                             return (
@@ -710,58 +712,79 @@ const LevelManagement: React.FC = () => {
                            </button>
                         )}
                      </div>
-                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {loading ? (
                            <div className="col-span-full p-20 text-center text-black animate-pulse font-bold uppercase tracking-widest text-xs">Accessing encrypted modules...</div>
                         ) : levelQuizzes.length === 0 ? (
                            <div className="col-span-full p-20 text-center text-black text-sm font-bold uppercase tracking-widest border-2 border-dashed border-slate-100 rounded-[2rem]">No active modules for Level {level}.</div>
                         ) : (
                            levelQuizzes.map(quiz => (
-                              <Card key={quiz.id} className="p-8 border-none shadow-2xl shadow-slate-200/40 hover:translate-y-[-4px] transition-all group relative bg-white rounded-[2rem]">
-                                 <div className="absolute top-6 right-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
-                                    <button onClick={() => handleOpenEdit(quiz)} className="p-2 text-black hover:text-primary-600 font-bold text-[10px] uppercase">Edit</button>
-                                    <button 
-                                       onClick={() => handleDeleteQuiz(quiz.id, quiz.title)} 
-                                       className="p-3 text-slate-300 hover:text-red-500 transition-colors"
-                                       title="Permanently Delete Module"
-                                    >
-                                       <i className="fas fa-trash-alt text-sm"></i>
-                                    </button>
-                                 </div>
-                                 
-                                 <div className="mb-6">
-                                    <h3 className="font-black text-black text-xl leading-tight mb-1">{quiz.title}</h3>
-                                    <p className="text-[10px] font-black text-primary-600 uppercase tracking-widest mb-3">{quiz.subjectTitle}</p>
-                                    <p className="text-sm text-black font-medium line-clamp-2">{quiz.description}</p>
-                                 </div>
-
-                                 <div className="flex flex-wrap gap-3 mb-8">
-                                    <span className={`text-[9px] font-black px-2.5 py-1.5 rounded-lg uppercase tracking-wider ${quiz.published ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-100 text-black'}`}>
-                                       {quiz.published ? 'Live' : 'Draft'}
-                                    </span>
-                                    <span className="text-[9px] font-black text-black uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg">
-                                       {quiz.timeLimit}m
-                                    </span>
-                                    <span className="text-[9px] font-black text-black uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-lg">
-                                       {quiz.totalQuestions} Qs
-                                    </span>
+                              <Card key={quiz.id} className="p-5 border-none shadow-lg shadow-slate-200/40 hover:translate-y-[-2px] transition-all group bg-white rounded-xl max-w-sm mx-auto w-full flex flex-col">
+                                 {/* Top Row: Actions */}
+                                 <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center gap-2">
+                                       <div className="w-8 h-8 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
+                                          <i className="fas fa-scroll text-sm"></i>
+                                       </div>
+                                       {quiz.published ? (
+                                          <div className="bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest">Live</div>
+                                       ) : (
+                                          <div className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest">Draft</div>
+                                       )}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                       <button onClick={() => handleOpenEdit(quiz)} className="p-1.5 text-slate-400 hover:text-primary-600 transition-colors">
+                                          <i className="fas fa-edit text-xs"></i>
+                                       </button>
+                                       <button 
+                                          onClick={() => handleDeleteQuiz(quiz.id, quiz.title)} 
+                                          className="p-1.5 text-slate-300 hover:text-red-500 transition-colors"
+                                          title="Delete"
+                                       >
+                                          <i className="fas fa-trash-alt text-xs"></i>
+                                       </button>
+                                    </div>
                                  </div>
 
-                                 <div className="grid grid-cols-2 gap-3">
-                                    <Link to={`/admin/questions/${quiz.id}`} className="py-3.5 bg-slate-50 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-primary-50 hover:text-primary-600 transition-all">
+                                 {/* Title Block */}
+                                 <div className="mb-4">
+                                    <h3 className="text-lg font-black text-black leading-tight mb-0.5">{quiz.title}</h3>
+                                    <p className="text-[9px] font-black text-primary-600 uppercase tracking-widest leading-none">
+                                       {quiz.subjectTitle || "ANSWER ALL QUESTIONS"}
+                                    </p>
+                                 </div>
+
+                                 {/* Meta Info Row */}
+                                 <div className="flex flex-wrap gap-2 mb-4">
+                                    <span className="flex items-center text-[9px] font-black bg-slate-50 px-2 py-1 rounded-md text-black">
+                                       <i className="far fa-clock mr-1 text-primary-500"></i> {quiz.timeLimit}M
+                                    </span>
+                                    <span className="flex items-center text-[9px] font-black bg-slate-50 px-2 py-1 rounded-md text-black">
+                                       <i className="fas fa-list-ul mr-1 text-primary-500"></i> {quiz.totalQuestions} QS
+                                    </span>
+                                    {(quiz.shuffleQuestions || quiz.shuffleOptions) && (
+                                       <span className="flex items-center text-[9px] font-black bg-amber-50 px-2 py-1 rounded-md text-amber-700">
+                                          <i className="fas fa-random mr-1"></i> SHUFFLE
+                                       </span>
+                                    )}
+                                 </div>
+
+                                 {/* Action Buttons Grid */}
+                                 <div className="mt-auto grid grid-cols-2 gap-2">
+                                    <Link to={`/admin/questions/${quiz.id}`} className="py-2.5 bg-slate-900 text-white rounded-lg text-[9px] font-black uppercase tracking-widest text-center hover:bg-primary-600 transition-all">
                                        Questions
                                     </Link>
-                                    <Link to={`/admin/reports?quizId=${quiz.id}`} className="py-3.5 bg-slate-50 text-black rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-primary-50 hover:text-primary-600 transition-all">
+                                    <Link to={`/admin/reports?quizId=${quiz.id}`} className="py-2.5 bg-slate-100 text-black rounded-lg text-[9px] font-black uppercase tracking-widest text-center hover:bg-slate-200 transition-all">
                                        Analysis
                                     </Link>
-                                    <Link to={`/admin/live-monitor/${quiz.id}`} className="py-4 bg-emerald-50 text-emerald-700 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center hover:bg-emerald-600 hover:text-white transition-all col-span-2">
-                                       Live Monitor
+                                    <Link to={`/admin/live-monitor/${quiz.id}`} className="py-2.5 bg-emerald-50 text-emerald-700 rounded-lg text-[9px] font-black uppercase tracking-widest text-center hover:bg-emerald-600 hover:text-white transition-all">
+                                       Monitor
                                     </Link>
                                     <button 
                                        onClick={() => togglePublish(quiz)}
-                                       className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-center transition-all col-span-2 mt-1 ${quiz.published ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-primary-600 text-white shadow-xl shadow-primary-200'}`}
+                                       className={`py-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest text-center transition-all ${quiz.published ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-primary-600 text-white'}`}
                                     >
-                                       {quiz.published ? 'Stop Distribution' : 'Publish'}
+                                       {quiz.published ? 'Stop' : 'Publish'}
                                     </button>
                                  </div>
                               </Card>

@@ -91,6 +91,34 @@ const LandingPage: React.FC = () => {
   const [isTermsOpen, setIsTermsOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [membershipSettings, setMembershipSettings] = useState<MembershipSettings | null>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstallPWA = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        }
+        setDeferredPrompt(null);
+      });
+    } else {
+      alert("To install SmartPrep on Android:\n1. Open Chrome menu (⋮)\n2. Tap 'Install app' or 'Add to home screen'.");
+    }
+  };
+
+  const handleIOSInstall = () => {
+    alert("To install SmartPrep on iOS:\n1. Open this site in Safari\n2. Tap the 'Share' icon (square with arrow)\n3. Scroll down and tap 'Add to Home Screen'.");
+  };
 
   // Body Scroll Lock
   useEffect(() => {
@@ -238,7 +266,7 @@ const LandingPage: React.FC = () => {
             <p className="text-slate-300 text-sm font-medium">Access your session instantly</p>
           </div>
           <form onSubmit={handleBannerJoin} className="w-full max-w-sm flex items-center bg-white p-1 rounded-lg border-4 border-[#ffffff20]">
-            <span className="pl-4 text-black font-mono text-xl">#</span>
+            <span className="pl-4 text-[#1a732a] font-mono text-xl">#</span>
             <input 
               type="text" 
               placeholder="Enter 6-digit code"
@@ -416,13 +444,33 @@ const LandingPage: React.FC = () => {
               </ul>
             </div>
 
-            {/* Column 4: Community */}
+            {/* Column 4: DOWNLOAD APP */}
             <div className="space-y-5">
-              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">Community</h4>
-              <a href="#" className="inline-flex items-center gap-2.5 text-[14px] font-bold text-white bg-white/10 px-5 py-3 rounded-2xl hover:bg-white/20 transition-all border border-white/5">
-                <i className="fab fa-whatsapp text-lg"></i>
-                Join our WhatsApp
-              </a>
+              <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">DOWNLOAD APP</h4>
+              <ul className="space-y-3">
+                <li>
+                  <button onClick={handleIOSInstall} className="flex items-center gap-2.5 text-[14px] font-bold text-white/75 hover:text-white transition-all group">
+                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
+                      <i className="fab fa-apple"></i>
+                    </div>
+                    <span>iOS App (Safari)</span>
+                  </button>
+                </li>
+                <li>
+                  <button onClick={handleInstallPWA} className="flex items-center gap-2.5 text-[14px] font-bold text-white/75 hover:text-white transition-all group">
+                    <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
+                      <i className="fab fa-android"></i>
+                    </div>
+                    <span>Android PWA</span>
+                  </button>
+                </li>
+                <li className="pt-2">
+                  <a href="#" className="inline-flex items-center gap-2.5 text-[12px] font-bold text-white bg-white/10 px-5 py-3 rounded-2xl hover:bg-white/20 transition-all border border-white/5">
+                    <i className="fab fa-whatsapp text-lg text-emerald-400"></i>
+                    Join Community
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
 

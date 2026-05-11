@@ -18,6 +18,22 @@ const StudentDashboard: React.FC = () => {
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const { profile } = useAuth();
 
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
+  };
+
+  const completedCount = quizzesLoaded && historyLoaded ? quizzes.filter(q => history.some(h => h.quizId === q.id && h.status === 'completed')).length : 0;
+  const totalCount = quizzesLoaded ? quizzes.length : 0;
+  const notAttemptedCount = totalCount - completedCount;
+  const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     if (!profile?.uid) return;
     const now = Date.now();
@@ -185,13 +201,42 @@ const StudentDashboard: React.FC = () => {
     <div className="min-h-screen bg-slate-50">
       <Navbar />
       <Container>
-        {/* Welcome Card */}
-        <div className="mb-6 welcome-card-enter" style={{ maxWidth: 'fit-content' }}>
-          <div className="px-5 py-3.5 bg-white rounded-2xl shadow-sm border border-slate-200/80 flex items-center gap-2.5">
-            <span className="text-base leading-none" role="img" aria-label="wave">👋</span>
-            <p className="text-sm font-medium text-slate-600">
-              Hey, <span className="font-semibold text-slate-900">{profile?.displayName?.split(' ')[0] || 'Student'}</span>
-            </p>
+        {/* Hero Card */}
+        <div className="mb-6 w-full bg-gradient-to-br from-[#062218] to-[#0f172a] rounded-xl p-4 md:p-8 shadow-xl shadow-emerald-950/20 relative overflow-hidden border border-emerald-500/10 welcome-card-enter">
+          {/* Decorative background elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/4"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/5 blur-[60px] rounded-full translate-y-1/2 -translate-x-1/4"></div>
+
+          <div className="relative z-10 flex justify-between items-start gap-4 mb-6">
+            <div className="space-y-1">
+              <p className="text-emerald-500/70 font-medium text-sm md:text-lg">{getGreeting()},</p>
+              <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight flex items-center gap-3">
+                {profile?.displayName?.split(' ')[0] || 'Student'} <span className="inline-block">👋</span>
+              </h1>
+            </div>
+            
+            <div className="bg-emerald-500/5 border border-emerald-500/30 px-4 py-3 rounded-xl flex flex-col items-center justify-center min-w-[90px] md:min-w-[110px]">
+              <span className="text-2xl md:text-4xl font-black text-emerald-400 leading-none">
+                {notAttemptedCount}
+              </span>
+              <span className="text-[9px] md:text-[10px] font-black text-emerald-500/60 uppercase tracking-[0.2em] mt-2 whitespace-nowrap">
+                Modules Left
+              </span>
+            </div>
+          </div>
+
+          <div className="relative z-10 flex items-center gap-4 md:gap-5">
+            <div className="flex-1 h-2 bg-white/5 rounded-lg overflow-hidden border border-white/5 p-0.5 backdrop-blur-sm">
+              <div 
+                className="h-full bg-gradient-to-r from-emerald-600 to-emerald-400 rounded-lg transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(16,185,129,0.2)] relative"
+                style={{ width: `${progressPercent}%` }}
+              >
+                <div className="absolute top-0 right-0 w-12 h-full bg-white/10 animate-[shimmer_2s_infinite]"></div>
+              </div>
+            </div>
+            <span className="text-[10px] md:text-xs font-black text-emerald-500/70 uppercase tracking-widest whitespace-nowrap">
+              {progressPercent}% overall complete
+            </span>
           </div>
         </div>
 
@@ -328,8 +373,13 @@ const StudentDashboard: React.FC = () => {
              {/* Additional sidebar components can be added here in the future */}
           </div>
         </div>
-
       </Container>
+      <style>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%) skewX(-45deg); }
+          100% { transform: translateX(200%) skewX(-45deg); }
+        }
+      `}</style>
     </div>
   );
 };

@@ -62,15 +62,31 @@ const AdminDashboard: React.FC = () => {
 
   // Institution breakdown stats
   const institutionStats = useMemo(() => {
-    const map: Record<string, number> = {};
-    students.forEach(s => {
-      const inst = s.institution || 'Unassigned';
-      map[inst] = (map[inst] || 0) + 1;
+    // 1. Get the base list of institutions for this admin
+    const baseList = isSuperAdmin 
+      ? institutions 
+      : institutions.filter(inst => 
+          assignedInstitutions.some(ai => ai.trim().toLowerCase() === inst.name.trim().toLowerCase())
+        );
+
+    // 2. Map them to stats
+    const stats = baseList.map(inst => {
+      const count = students.filter(s => (s.institution || '').trim().toLowerCase() === inst.name.trim().toLowerCase()).length;
+      return { name: inst.name, count };
     });
-    return Object.entries(map)
-      .map(([name, count]) => ({ name, count }))
-      .sort((a, b) => b.count - a.count);
-  }, [students]);
+
+    // 3. Add Unassigned if there are students without an institution (only for super admins usually, or if assigned?)
+    // Actually, level admins probably don't care about unassigned students unless they are in their "assigned" list?
+    // But students without institution are not in assigned list. So only Super Admin sees Unassigned.
+    if (isSuperAdmin) {
+      const unassignedCount = students.filter(s => !s.institution || s.institution === 'Unassigned').length;
+      if (unassignedCount > 0) {
+        stats.push({ name: 'Unassigned', count: unassignedCount });
+      }
+    }
+
+    return stats.sort((a, b) => b.count - a.count);
+  }, [institutions, students, isSuperAdmin, assignedInstitutions]);
 
   const chartData = useMemo(() => {
     const dailyMap: Record<string, number> = {};
@@ -92,19 +108,6 @@ const AdminDashboard: React.FC = () => {
     return Object.entries(dailyMap).map(([date, count]) => ({ date, count }));
   }, [students]);
 
-  const levelStats = useMemo(() => {
-    const levels = ['100', '200', '300', 'Candidate'];
-    return levels.map(lvl => ({
-      level: lvl,
-      count: students.filter(s => {
-        const userLevel = s.level || '100';
-        if (lvl.toLowerCase() === 'candidate') {
-          return userLevel.toLowerCase() === 'candidate' || userLevel === '400';
-        }
-        return userLevel.toLowerCase() === lvl.toLowerCase();
-      }).length
-    }));
-  }, [students]);
 
   if (loading) {
     return (
@@ -130,23 +133,9 @@ const AdminDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* Level Stats Summary */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {levelStats.map((stat) => (
-            <Card key={stat.level} className="p-8 border-none shadow-xl shadow-slate-200/50 bg-white group hover:bg-slate-900 transition-all duration-500 rounded-[2rem]">
-              <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 group-hover:text-primary-400 transition-colors">{stat.level === 'Candidate' ? stat.level : `Level ${stat.level}`} Students</p>
-              <div className="flex items-end justify-between">
-                <h3 className="text-4xl font-black text-slate-900 group-hover:text-white transition-colors">{stat.count}</h3>
-                <div className="w-10 h-10 rounded-xl bg-slate-50 group-hover:bg-slate-800 flex items-center justify-center transition-colors">
-                  <span className="text-primary-600 font-black text-xs">{stat.level === 'Candidate' ? 'CAN' : `L${stat.level.charAt(0)}`}</span>
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
 
         {/* Institution Breakdown */}
-        {isSuperAdmin && institutionStats.length > 0 && (
+        {(isSuperAdmin || assignedInstitutions.length > 0) && institutionStats.length > 0 && (
           <div className="mb-12">
             <h2 className="text-lg font-black text-slate-900 tracking-tight mb-4 flex items-center">
               <span className="w-1.5 h-5 bg-primary-600 rounded-full mr-3"></span>

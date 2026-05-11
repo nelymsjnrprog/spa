@@ -90,11 +90,6 @@ export const Navbar: React.FC = () => {
         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-900">{APP_CONFIG.name}</span>
-            <span className={`text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded border ${
-              isSuperAdmin ? 'text-amber-600 border-amber-200 bg-amber-50' : 'text-slate-500 border-slate-200'
-            }`}>
-              {effectivePerm === 'super_admin' ? 'Super' : effectivePerm === 'institution_admin' ? 'Institution' : 'View'}
-            </span>
           </div>
           <button onClick={() => setSidebarOpen(false)} className="text-slate-400 hover:text-slate-900 transition-colors" title="Close sidebar">
             <i className="fas fa-times text-xl"></i>
@@ -132,6 +127,7 @@ export const Navbar: React.FC = () => {
 
               <SidebarLink to="/admin/security" icon="fa-shield-halved" label="Security Ops" onClick={() => setSidebarOpen(false)} />
               <SidebarLink to="/admin/settings" icon="fa-sliders" label="System Settings" onClick={() => setSidebarOpen(false)} />
+              <SidebarLink to="/admin/logs" icon="fa-clipboard-list" label="Admin Logs" onClick={() => setSidebarOpen(false)} />
 
               <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Customer Service</div>
               <Link 
@@ -163,10 +159,18 @@ export const Navbar: React.FC = () => {
           {profile?.role === 'student' && (
             <>
 
-              <SidebarLink to="/student" icon="fa-th-large" label="Dashboard" onClick={() => setSidebarOpen(false)} />
-              <SidebarLink to="/student/library" icon="fa-book-open" label="Library" onClick={() => setSidebarOpen(false)} />
-              <SidebarLink to="#" icon="fa-comments" label="Chat" onClick={() => setSidebarOpen(false)} />
-              <SidebarLink to="/student/profile" icon="fa-user-cog" label="Settings" onClick={() => setSidebarOpen(false)} />
+              <Link to="/student" onClick={() => setSidebarOpen(false)} className="flex items-center px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-primary-600 transition-all active:bg-primary-50">
+                <span className="text-base sm:text-sm">Dashboard</span>
+              </Link>
+              <Link to="/student/library" onClick={() => setSidebarOpen(false)} className="flex items-center px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-primary-600 transition-all active:bg-primary-50">
+                <span className="text-base sm:text-sm">Library</span>
+              </Link>
+              <Link to="#" onClick={() => setSidebarOpen(false)} className="flex items-center px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-primary-600 transition-all active:bg-primary-50">
+                <span className="text-base sm:text-sm">Chat</span>
+              </Link>
+              <Link to="/student/profile" onClick={() => setSidebarOpen(false)} className="flex items-center px-4 py-4 sm:py-3 rounded-2xl sm:rounded-xl text-slate-600 font-semibold hover:bg-slate-50 hover:text-primary-600 transition-all active:bg-primary-50">
+                <span className="text-base sm:text-sm">Settings</span>
+              </Link>
             </>
           )}
           

@@ -27,34 +27,12 @@ const QuestionBuilder: React.FC = () => {
   const [editingSavedId, setEditingSavedId] = useState<string | null>(null); // vault question id
   const [activeTab, setActiveTab] = useState<'compose' | 'sequence' | 'vault'>('compose');
   const [isCacheLoaded, setIsCacheLoaded] = useState(false);
+  const [leftCollapsed, setLeftCollapsed] = useState(false);
+  const [rightCollapsed, setRightCollapsed] = useState(false);
 
   useEffect(() => {
     if (quizId) {
       loadData(quizId);
-
-      // Load staged questions from localStorage
-      const savedStaged = localStorage.getItem(`vsefa_staged_${quizId}`);
-      if (savedStaged) {
-        try {
-          setStagedQuestions(JSON.parse(savedStaged));
-        } catch (e) {
-          console.error("Failed to parse saved staged questions", e);
-        }
-      }
-
-      // Load form draft from localStorage
-      const savedDraft = localStorage.getItem(`vsefa_draft_${quizId}`);
-      if (savedDraft) {
-        try {
-          const draft = JSON.parse(savedDraft);
-          setText(draft.text || '');
-          setOptions(draft.options || ['', '', '', '']);
-          setCorrect(draft.correct || 0);
-        } catch (e) {
-          console.error("Failed to parse saved draft", e);
-        }
-      }
-      setIsCacheLoaded(true);
     }
   }, [quizId]);
 
@@ -102,13 +80,39 @@ const QuestionBuilder: React.FC = () => {
       setQuiz(qz);
       setSavedQuestions(qs);
 
-      // Update options count based on quiz settings
-      if (qz) {
-        const count = qz.defaultOptionsCount || 4;
-        setOptions(new Array(count).fill(''));
+      const targetCount = qz?.defaultOptionsCount || 4;
+
+      // 1. Load staged questions
+      const savedStaged = localStorage.getItem(`vsefa_staged_${id}`);
+      if (savedStaged) {
+        try {
+          setStagedQuestions(JSON.parse(savedStaged));
+        } catch (e) {}
+      }
+
+      // 2. Load form draft
+      const savedDraft = localStorage.getItem(`vsefa_draft_${id}`);
+      if (savedDraft) {
+        try {
+          const draft = JSON.parse(savedDraft);
+          setText(draft.text || '');
+          setCorrect(draft.correct || 0);
+          
+          // Only restore options if the count matches the current quiz settings
+          if (draft.options && Array.isArray(draft.options) && draft.options.length === targetCount) {
+            setOptions(draft.options);
+          } else {
+            setOptions(new Array(targetCount).fill(''));
+          }
+        } catch (e) {
+          setOptions(new Array(targetCount).fill(''));
+        }
+      } else {
+        setOptions(new Array(targetCount).fill(''));
       }
     } finally {
       setLoading(false);
+      setIsCacheLoaded(true);
     }
   };
 
@@ -230,39 +234,39 @@ const QuestionBuilder: React.FC = () => {
     <div className="min-h-screen bg-slate-50">
       <Navbar />
       <Container>
-        <div className="mb-8 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+        <div className="mb-4 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div className="flex-1">
             <button 
               onClick={() => navigate(-1)}
-              className="text-primary-600 text-sm font-bold flex items-center mb-4 lg:mb-2 hover:translate-x-[-4px] transition-transform w-fit"
+              className="text-primary-600 text-[11px] font-black uppercase tracking-widest flex items-center mb-2 hover:translate-x-[-4px] transition-transform w-fit"
             >
-              <i className="fas fa-arrow-left mr-2"></i> Back to Registry
+              <i className="fas fa-arrow-left mr-2"></i> Registry
             </button>
 
-            <p className="text-black font-medium text-sm lg:text-base">{quiz?.title}</p>
+            <p className="text-black font-bold text-sm lg:text-base leading-tight">{quiz?.title}</p>
           </div>
           <div className="grid grid-cols-2 lg:flex items-center gap-2 w-full lg:w-auto">
-            <div className="bg-white px-3 py-2 sm:px-4 sm:py-3 rounded-xl border border-slate-200 shadow-sm text-center lg:min-w-[100px]">
-              <p className="text-[8px] sm:text-[9px] font-black text-black uppercase tracking-widest mb-0.5">Vault Registry</p>
-              <p className="text-base sm:text-xl font-black text-black">{savedQuestions.length} <span className="text-[10px] font-bold text-black">Items</span></p>
+            <div className="bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-sm text-center lg:min-w-[90px]">
+              <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Vault Items</p>
+              <p className="text-sm sm:text-base font-black text-black">{savedQuestions.length}</p>
             </div>
-            <div className="bg-primary-50 px-3 py-2 sm:px-4 sm:py-3 rounded-xl border border-primary-100 shadow-sm text-center lg:min-w-[100px]">
-              <p className="text-[8px] sm:text-[9px] font-black text-primary-400 uppercase tracking-widest mb-0.5">Format</p>
-              <p className="text-base sm:text-xl font-black text-primary-700">{quiz?.defaultOptionsCount || 4} <span className="text-[10px] font-bold text-primary-400">Opts</span></p>
+            <div className="bg-primary-50 px-3 py-2 rounded-xl border border-primary-100 shadow-sm text-center lg:min-w-[90px]">
+              <p className="text-[8px] font-black text-primary-400 uppercase tracking-widest mb-0.5">Options</p>
+              <p className="text-sm sm:text-base font-black text-primary-700">{quiz?.defaultOptionsCount || 4}</p>
             </div>
           </div>
           {isSuperAdmin && savedQuestions.length > 0 && (
             <button
                onClick={handlePrint}
-               className="bg-slate-900 text-white px-6 py-4 sm:py-3 rounded-xl font-black text-xs sm:text-sm hover:shadow-xl transition flex items-center justify-center print:hidden active:scale-95"
+               className="bg-slate-900 text-white px-4 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest hover:shadow-xl transition flex items-center justify-center print:hidden active:scale-95"
             >
                <i className="fas fa-file-pdf mr-2 text-primary-400"></i>
-               Export to PDF
+               PDF Export
             </button>
           )}
         </div>
 
-        <div className="lg:h-[calc(100vh-220px)] lg:overflow-hidden">
+        <div className="lg:h-[calc(100vh-160px)] lg:overflow-hidden print:h-auto print:overflow-visible">
           {/* Mobile Tab Switcher */}
           <div className="flex lg:hidden border-b border-slate-200 mb-6 sticky top-0 bg-slate-50 z-20">
             <button 
@@ -285,181 +289,172 @@ const QuestionBuilder: React.FC = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.4fr_1fr] gap-8 h-full">
+          <div className={`grid grid-cols-1 ${
+            leftCollapsed && rightCollapsed ? 'lg:grid-cols-[60px_1fr_60px]' :
+            leftCollapsed ? 'lg:grid-cols-[60px_1fr_300px]' :
+            rightCollapsed ? 'lg:grid-cols-[300px_1fr_60px]' :
+            'lg:grid-cols-[300px_1fr_300px]'
+          } gap-6 h-full transition-all duration-300`}>
+            
             {/* Panel 2: Sequence Preview */}
-            <div className={`h-full lg:overflow-y-auto lg:pr-2 custom-scrollbar ${activeTab !== 'sequence' ? 'hidden lg:block' : 'block'}`}>
-              <div className="pb-8">
-                {/* Staging Area Header */}
-                {stagedQuestions.length > 0 && (
-                  <div className="bg-amber-600 rounded-2xl p-5 sm:p-6 text-white shadow-2xl shadow-amber-200/50 flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-                    <div className="text-center sm:text-left">
-                      <h3 className="font-extrabold text-lg mb-1">Staged for Deployment</h3>
-                      <p className="text-amber-100 text-[10px] font-medium">Click deploy to sync with vault.</p>
-                    </div>
-                    <button
-                      onClick={handleBatchDeploy}
-                      disabled={isDeploying}
-                      className="w-full sm:w-auto bg-white text-amber-700 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition disabled:opacity-50 shadow-lg active:scale-95"
-                    >
-                      {isDeploying ? 'Deploying...' : 'Deploy to Vault'}
+            <div className={`h-full flex flex-col bg-slate-50/50 rounded-2xl border border-slate-200/60 transition-all duration-300 overflow-hidden ${activeTab !== 'sequence' ? 'hidden lg:flex' : 'flex'}`}>
+              <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+                {!leftCollapsed ? (
+                  <>
+                    <h2 className="text-[10px] font-black text-black uppercase tracking-widest flex items-center">
+                      <span className="w-1.5 h-4 bg-primary-600 rounded-full mr-2"></span>
+                      Sequence Preview
+                    </h2>
+                    <button onClick={() => setLeftCollapsed(true)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+                      <i className="fas fa-chevron-left text-xs"></i>
                     </button>
-                  </div>
+                  </>
+                ) : (
+                  <button onClick={() => setLeftCollapsed(false)} className="w-full py-2 flex flex-col items-center gap-4 text-primary-600" title="Expand Sequence">
+                    <i className="fas fa-list-ol text-sm"></i>
+                    <span className="text-[9px] font-black">{stagedQuestions.length + savedQuestions.length}</span>
+                    <i className="fas fa-chevron-right text-[10px] opacity-40 mt-auto"></i>
+                  </button>
                 )}
+              </div>
 
-                <h2 className="text-xl font-bold text-black flex items-center px-2 print:hidden mb-4">
-                  <span className="w-2 h-8 bg-primary-600 rounded-full mr-3"></span>
-                  Sequence Preview
-                </h2>
-
-                {/* Print Header */}
-                <div className="hidden print:block mb-8 border-b-2 border-slate-900 pb-4">
-                  <div className="flex justify-between items-center">
-                      <div>
-                        <h1 className="text-2xl font-black uppercase tracking-tighter">SmartPrep Examination Registry</h1>
-                        <p className="text-sm font-bold text-black uppercase tracking-widest">{quiz?.title}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[10px] font-black text-black uppercase tracking-widest">Target Level</p>
-                        <p className="text-sm font-bold">Level {quiz?.level}</p>
-                      </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4 print:space-y-8">
-                  {/* Staged Items */}
-                  {stagedQuestions.map((q, idx) => (
-                    <Card key={`staged-${idx}`} className={`p-5 shadow-sm relative group overflow-hidden transition-all print:hidden ${editingIndex === idx
-                      ? 'border-primary-400 bg-primary-50/40 ring-2 ring-primary-200'
-                      : 'border-amber-200 bg-amber-50/30'
-                      }`}>
-                      <div className="absolute top-0 right-0 p-2">
-                        <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase ${editingIndex === idx
-                          ? 'bg-primary-100 text-primary-700'
-                          : 'bg-amber-100 text-amber-700'
-                          }`}>{editingIndex === idx ? 'Editing' : 'Unsaved'}</span>
-                      </div>
-                      <div className="flex justify-between items-start mb-3">
-                        <span className="text-amber-600 font-black text-sm">#{savedQuestions.length + idx + 1}</span>
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => startEditStaged(idx)}
-                            className="text-amber-300 hover:text-primary-500 transition lg:opacity-0 group-hover:opacity-100"
-                            title="Edit staged question"
-                          >
-                            <i className="fas fa-pen text-xs"></i>
-                          </button>
-                          <button
-                            onClick={() => removeFromStage(idx)}
-                            className="text-amber-300 hover:text-red-500 transition lg:opacity-0 group-hover:opacity-100"
-                            title="Remove from staging"
-                          >
-                            <i className="fas fa-times-circle"></i>
-                          </button>
-                        </div>
-                      </div>
-                      <p className="font-bold text-black mb-4 text-base leading-snug">{q.text}</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {q.options.map((opt, i) => (
-                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center justify-between ${i === q.correctOptionIndex ? 'bg-green-100 border-green-200 text-green-700 font-bold' : 'bg-white border-slate-100 text-black'}`}>
-                            <div className="flex items-center">
-                              <span className="w-5 h-5 flex items-center justify-center rounded bg-white/50 mr-2 text-[10px]">{String.fromCharCode(65 + i)}</span>
-                              {opt}
-                            </div>
-                            {i === q.correctOptionIndex && <i className="fas fa-check-circle text-green-600"></i>}
-                          </div>
-                        ))}
-                      </div>
-                    </Card>
-                  ))}
-
-                  {/* Saved Items in Sequence */}
-                  {savedQuestions.map((q, idx) => (
-                    <Card key={q.id} className={`p-5 hover:shadow-md transition-all print:shadow-none print:border-slate-100 print:p-0 ${editingSavedId === q.id
-                      ? 'border-primary-400 bg-primary-50/40 ring-2 ring-primary-200'
-                      : 'border-slate-100'
-                      }`}>
-                      <div className="flex justify-between items-start mb-3">
-                        <span className="text-primary-600 font-black text-sm print:text-black print:text-xs">QUESTION #{idx + 1}</span>
-                        <div className="flex items-center space-x-2 print:hidden">
-                           <span className={`text-[8px] font-black px-2 py-0.5 rounded-full uppercase ${editingSavedId === q.id
-                              ? 'bg-primary-100 text-primary-700'
-                              : 'bg-slate-50 text-black'
-                              }`}>{editingSavedId === q.id ? 'Editing' : 'In Vault'}</span>
-                        </div>
-                      </div>
-                      <p className="font-bold text-black mb-4 text-base leading-snug print:text-sm">{q.text}</p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 print:gap-4">
-                        {q.options.map((opt, i) => (
-                          <div key={i} className={`p-3 rounded-xl border text-xs flex items-center justify-between print:border-slate-200 print:p-2 ${i === q.correctOptionIndex ? 'bg-primary-50 border-primary-100 text-primary-700 font-bold print:bg-slate-50 print:text-black' : 'bg-slate-50 border-slate-50 text-black print:bg-white'}`}>
-                            <div className="flex items-center">
-                              <span className="w-5 h-5 flex items-center justify-center rounded bg-white/50 mr-2 text-[10px] font-black print:border print:border-slate-300">{String.fromCharCode(65 + i)}</span>
-                              {opt}
-                            </div>
-                            {i === q.correctOptionIndex && <i className="fas fa-check-circle text-primary-600 print:hidden"></i>}
-                          </div>
-                        ))}
-                      </div>
-                    </Card>
-                  ))}
-                  
-                  {savedQuestions.length === 0 && stagedQuestions.length === 0 && (
-                    <div className="p-12 text-center border-4 border-dashed rounded-3xl text-slate-300 border-slate-100 print:hidden">
-                      <i className="fas fa-layer-group text-4xl mb-4 opacity-10"></i>
-                      <p className="text-base font-bold">Sequence Empty</p>
+              {!leftCollapsed && (
+                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-4">
+                  {/* Staging Area Header */}
+                  {stagedQuestions.length > 0 && (
+                    <div className="bg-amber-600 rounded-xl p-4 text-white shadow-lg shadow-amber-200/20 mb-4">
+                      <p className="text-[9px] font-black uppercase tracking-widest mb-2 text-amber-100">Pending Deployment</p>
+                      <button
+                        onClick={handleBatchDeploy}
+                        disabled={isDeploying}
+                        className="w-full bg-white text-amber-700 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest hover:bg-slate-50 transition disabled:opacity-50"
+                      >
+                        {isDeploying ? 'Syncing...' : 'Deploy to Vault'}
+                      </button>
                     </div>
                   )}
-                </div>
-              </div>
-            </div>
 
-            {/* Panel 1: Composer */}
-            <div className={`h-full lg:overflow-y-auto lg:px-4 scrollbar-hide hover:scrollbar-default ${activeTab !== 'compose' ? 'hidden lg:block' : 'block'}`}>
-              <div className="pb-24 lg:pb-8">
-                <Card className="p-5 sm:p-8 border-none shadow-xl shadow-slate-200/50">
-                  <div className="flex items-center justify-between mb-6 sm:mb-8">
-                    <h2 className="text-xl font-bold text-black">
-                      {editingSavedId ? `Editing Vault Item` : editingIndex !== null ? `Editing Staged #${savedQuestions.length + editingIndex + 1}` : 'Composer'}
-                    </h2>
-                    {editingIndex === null && !editingSavedId ? (
-                      <span className="bg-primary-600 text-white text-[10px] sm:text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">
-                        Item #{nextQuestionNumber}
-                      </span>
-                    ) : (
-                      <span className="bg-amber-500 text-white text-[10px] sm:text-[11px] font-black px-3 py-1 rounded-full uppercase tracking-tighter animate-pulse">
-                        Edit Mode
-                      </span>
+                  <div className="space-y-3">
+                    {/* Staged Items */}
+                    {stagedQuestions.map((q, idx) => (
+                      <div key={`staged-${idx}`} className={`p-3 rounded-xl border-2 transition-all relative group ${editingIndex === idx
+                        ? 'border-primary-400 bg-white ring-2 ring-primary-100'
+                        : 'border-amber-200/50 bg-amber-50/20'
+                        }`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="text-amber-600 font-black text-[10px]">#{savedQuestions.length + idx + 1}</span>
+                          <div className="flex items-center gap-1.5">
+                            <button onClick={() => startEditStaged(idx)} className="text-slate-400 hover:text-primary-600 p-1"><i className="fas fa-pen text-[10px]"></i></button>
+                            <button onClick={() => removeFromStage(idx)} className="text-slate-400 hover:text-red-500 p-1"><i className="fas fa-times-circle text-[10px]"></i></button>
+                          </div>
+                        </div>
+                        <p className="font-bold text-black text-xs line-clamp-2 leading-tight">{q.text}</p>
+                      </div>
+                    ))}
+
+                    {/* Saved Items */}
+                    {savedQuestions.map((q, idx) => (
+                      <div key={q.id} className={`p-3 rounded-xl border transition-all ${editingSavedId === q.id
+                        ? 'border-primary-400 bg-white ring-2 ring-primary-100'
+                        : 'border-slate-100 bg-white hover:border-slate-200'
+                        }`}>
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="text-slate-400 font-black text-[10px]">#{idx + 1}</span>
+                          <span className="text-[8px] font-black text-slate-300 uppercase">Vault</span>
+                        </div>
+                        <p className="font-bold text-black text-xs line-clamp-2 leading-tight">{q.text}</p>
+                      </div>
+                    ))}
+                    
+                    {savedQuestions.length === 0 && stagedQuestions.length === 0 && (
+                      <div className="py-12 text-center opacity-40">
+                        <i className="fas fa-layer-group text-2xl mb-2"></i>
+                        <p className="text-[10px] font-black uppercase tracking-widest">Sequence Empty</p>
+                      </div>
                     )}
                   </div>
+                </div>
+              )}
+            </div>
 
-                  <form onSubmit={addToStage} className="space-y-6">
-                    <div>
-                      <label className="block text-[10px] font-black text-black uppercase tracking-widest mb-2">Question Inquiry</label>
-                      <textarea
-                        value={text}
-                        onChange={e => setText(e.target.value)}
-                        className="w-full p-4 border rounded-xl focus:ring-2 focus:ring-primary-500 outline-none transition min-h-[140px] text-black font-medium text-sm sm:text-base"
-                        placeholder="e.g. Identify the primary advantage of utilizing a hash map for lookups."
-                        required
-                        style={{ minHeight: '120px' }}
-                      />
+            {/* Panel 1: Composer (Centered & Dominant) */}
+            <div className={`h-full flex flex-col transition-all duration-500 ${activeTab !== 'compose' ? 'hidden lg:flex' : 'flex'}`}>
+              <div className="flex-1 flex flex-col p-5 sm:p-6 shadow-2xl shadow-slate-200/60 bg-white rounded-2xl border border-slate-100">
+                <div className="flex items-center justify-between mb-4 shrink-0">
+                  <div>
+                    <h2 className="text-lg font-black text-black leading-none mb-1">
+                      {editingSavedId ? `Vault Edit` : editingIndex !== null ? `Stage Edit` : 'Composer'}
+                    </h2>
+                    <p className="text-[10px] font-black text-primary-600 uppercase tracking-[0.2em]">
+                      Item Registry #{nextQuestionNumber}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {(editingIndex !== null || editingSavedId) && (
+                      <button
+                        type="button"
+                        onClick={resetForm}
+                        className="px-3 py-2 rounded-lg font-black text-[9px] uppercase tracking-widest bg-slate-100 text-slate-500 hover:bg-slate-200 transition"
+                      >
+                        Cancel
+                      </button>
+                    )}
+                    <button
+                      type="submit"
+                      form="question-builder-form"
+                      className={`px-4 py-2 rounded-lg font-black text-[9px] uppercase tracking-widest transition shadow-md flex items-center gap-1.5 ${editingIndex !== null || editingSavedId
+                        ? 'bg-amber-500 text-white hover:bg-amber-600 shadow-amber-200/50'
+                        : 'bg-slate-900 text-white hover:bg-primary-600 shadow-slate-300/50'
+                        }`}
+                    >
+                      {editingSavedId ? (
+                        <><i className="fas fa-save text-[8px]"></i> Save to Vault</>
+                      ) : editingIndex !== null ? (
+                        <><i className="fas fa-check text-[8px]"></i> Update</>
+                      ) : (
+                        <><i className="fas fa-plus text-[8px]"></i> Add to Sequence</>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                <form 
+                  id="question-builder-form"
+                  onSubmit={addToStage} 
+                  className="flex-1 flex flex-col gap-4 overflow-y-auto pr-1 custom-scrollbar"
+                >
+                  <div className="shrink-0">
+                    <label className="block text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1.5 flex items-center">
+                      <i className="fas fa-quote-left mr-2 text-primary-500"></i> Question Inquiry
+                    </label>
+                    <textarea
+                      value={text}
+                      onChange={e => setText(e.target.value)}
+                      className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:bg-white outline-none transition min-h-[80px] text-black font-bold text-sm leading-relaxed shadow-inner"
+                      placeholder="Enter the examination question text..."
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between mb-0.5">
+                      <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest flex items-center">
+                        <i className="fas fa-list-ul mr-2 text-primary-500"></i> Response Options
+                      </label>
+                      <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest">Select Correct</span>
                     </div>
-
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between mb-1">
-                        <label className="text-[10px] font-black text-black uppercase tracking-widest">Response Options</label>
-                        <span className="text-[10px] font-bold text-primary-500 uppercase">Select the correct answer</span>
-                      </div>
+                    
+                    <div className="grid grid-cols-1 gap-2">
                       {options.map((opt, i) => (
-                        <div key={i} className="flex items-center space-x-3 group w-full">
+                        <div key={i} className="flex items-center gap-2.5 group">
                           <button
                             type="button"
                             onClick={() => setCorrect(i)}
-                            className={`w-11 h-11 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center font-black text-sm transition-all duration-200 flex-shrink-0 shadow-sm ${
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center font-black text-[10px] transition-all flex-shrink-0 shadow-sm ${
                               correct === i 
-                                ? 'bg-green-600 text-white ring-4 ring-green-100 scale-105' 
-                                : 'bg-slate-100 text-black hover:bg-slate-200 hover:text-black'
+                                ? 'bg-emerald-600 text-white ring-4 ring-emerald-100' 
+                                : 'bg-slate-100 text-slate-400 hover:bg-slate-200'
                             }`}
-                            title={`Mark Option ${String.fromCharCode(65 + i)} as correct`}
                           >
                             {String.fromCharCode(65 + i)}
                           </button>
@@ -472,108 +467,89 @@ const QuestionBuilder: React.FC = () => {
                                 n[i] = e.target.value;
                                 setOptions(n);
                               }}
-                              placeholder={`Option ${String.fromCharCode(65 + i)} details...`}
-                              className={`w-full p-3 sm:p-4 border-2 rounded-xl text-sm transition-all duration-200 min-h-[48px] ${
+                              placeholder={`Response option ${String.fromCharCode(65 + i)}`}
+                              className={`w-full px-3.5 py-2.5 border rounded-xl text-xs font-bold transition-all ${
                                 correct === i 
-                                  ? 'border-green-500 bg-green-50/20 text-black font-bold' 
+                                  ? 'border-emerald-500 bg-emerald-50/30 text-black shadow-inner' 
                                   : 'border-slate-100 bg-white focus:border-primary-500'
                               }`}
                               required
                             />
                             {correct === i && (
-                              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1.5 bg-green-600 text-white px-2 py-1 rounded-md shadow-sm animate-in fade-in zoom-in duration-300">
+                              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600">
                                 <i className="fas fa-check-circle text-[10px]"></i>
-                                <span className="text-[8px] font-black uppercase tracking-widest">Correct</span>
                               </div>
                             )}
                           </div>
                         </div>
                       ))}
                     </div>
-
-                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-100 lg:relative lg:p-0 lg:bg-transparent lg:border-none z-30">
-                      <div className="flex gap-3 max-w-7xl mx-auto lg:max-w-none">
-                        <button
-                          type="submit"
-                          className={`flex-1 py-4 rounded-xl font-bold transition shadow-xl shadow-slate-100 text-sm sm:text-base ${editingIndex !== null || editingSavedId
-                            ? 'bg-amber-500 text-white hover:bg-amber-600'
-                            : 'bg-slate-900 text-white hover:bg-primary-600'
-                            }`}
-                        >
-                          {editingSavedId ? (
-                            <><i className="fas fa-save mr-2"></i> Save Changes</>
-                          ) : editingIndex !== null ? (
-                            <><i className="fas fa-pen mr-2"></i> Update Staged Item</>
-                          ) : (
-                            <><i className="fas fa-plus mr-2"></i> Add to Sequence</>
-                          )}
-                        </button>
-                        {(editingIndex !== null || editingSavedId) && (
-                          <button
-                            type="button"
-                            onClick={resetForm}
-                            className="px-5 py-4 rounded-xl font-bold bg-slate-100 text-black hover:bg-slate-200 transition text-sm sm:text-base"
-                          >
-                            Cancel
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </form>
-                </Card>
+                  </div>
+                </form>
               </div>
+
             </div>
 
-            {/* Panel 3: Vault */}
-            <div className={`h-full lg:overflow-y-auto lg:pl-4 custom-scrollbar ${activeTab !== 'vault' ? 'hidden lg:block' : 'block'}`}>
-              <div className="pb-8">
-                <h2 className="text-xl font-bold text-black flex items-center px-2 mb-4">
-                  <span className="w-2 h-8 bg-slate-900 rounded-full mr-3"></span>
-                  Examination Vault
-                </h2>
-                
-                <div className="space-y-3">
+            {/* Panel 3: Vault Registry */}
+            <div className={`h-full flex flex-col bg-slate-50/50 rounded-2xl border border-slate-200/60 transition-all duration-300 overflow-hidden ${activeTab !== 'vault' ? 'hidden lg:flex' : 'flex'}`}>
+              <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
+                {!rightCollapsed ? (
+                  <>
+                    <h2 className="text-[10px] font-black text-black uppercase tracking-widest flex items-center">
+                      <span className="w-1.5 h-4 bg-slate-900 rounded-full mr-2"></span>
+                      Examination Vault
+                    </h2>
+                    <button onClick={() => setRightCollapsed(true)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+                      <i className="fas fa-chevron-right text-xs"></i>
+                    </button>
+                  </>
+                ) : (
+                  <button onClick={() => setRightCollapsed(false)} className="w-full py-2 flex flex-col items-center gap-4 text-slate-600" title="Expand Vault">
+                    <i className="fas fa-vault text-sm"></i>
+                    <span className="text-[9px] font-black">{savedQuestions.length}</span>
+                    <i className="fas fa-chevron-left text-[10px] opacity-40 mt-auto"></i>
+                  </button>
+                )}
+              </div>
+              
+              {!rightCollapsed && (
+                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar space-y-3">
                   {savedQuestions.length === 0 ? (
-                    <div className="p-8 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                      <p className="text-black font-bold text-xs uppercase tracking-widest">No vault items yet</p>
+                    <div className="py-20 text-center opacity-40">
+                      <i className="fas fa-lock text-2xl mb-2"></i>
+                      <p className="text-[10px] font-black uppercase tracking-widest">Vault Empty</p>
                     </div>
                   ) : (
                     savedQuestions.map((q) => (
-                      <Card key={`vault-${q.id}`} className="p-4 bg-white border-slate-100 hover:border-primary-200 transition-colors group">
-                        <div className="flex justify-between items-start gap-3">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="bg-slate-100 text-black text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-tighter">IN VAULT</span>
-                            </div>
-                            <p className="text-sm font-bold text-black line-clamp-3">{q.text}</p>
-                          </div>
-                          <div className="flex flex-col gap-2">
-                            <button
-                              onClick={() => startEditSaved(q)}
-                              className="w-10 h-10 rounded-xl bg-slate-50 text-black hover:bg-primary-50 hover:text-primary-600 transition flex items-center justify-center"
-                              title="Pull back to composer for editing"
-                            >
-                              <i className="fas fa-pen-to-square text-sm"></i>
-                            </button>
-                            <button
-                              onClick={async () => {
-                                if (confirm("Permanently remove this item from the module vault?")) {
-                                  await questionService.deleteQuestion(q.id, quizId!);
-                                  loadData(quizId!);
-                                }
-                              }}
-                              className="w-10 h-10 rounded-xl bg-slate-50 text-black hover:bg-red-50 hover:text-red-500 transition flex items-center justify-center"
-                              title="Delete from vault"
-                            >
-                              <i className="fas fa-trash-can text-sm"></i>
-                            </button>
-                          </div>
+                      <div key={`vault-${q.id}`} className="p-3 bg-white border border-slate-100 rounded-xl hover:border-primary-200 transition-all group shadow-sm">
+                        <div className="flex justify-between items-start gap-2 mb-2">
+                           <span className="bg-slate-50 text-[8px] font-black px-1.5 py-0.5 rounded text-slate-400 uppercase">Registry Item</span>
+                           <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => startEditSaved(q)}
+                                className="w-6 h-6 rounded bg-slate-50 text-slate-400 hover:text-primary-600 flex items-center justify-center transition-colors"
+                              >
+                                <i className="fas fa-edit text-[10px]"></i>
+                              </button>
+                              <button
+                                onClick={async () => {
+                                  if (confirm("Permanently remove this item from the module vault?")) {
+                                    await questionService.deleteQuestion(q.id, quizId!);
+                                    loadData(quizId!);
+                                  }
+                                }}
+                                className="w-6 h-6 rounded bg-slate-50 text-slate-400 hover:text-red-500 flex items-center justify-center transition-colors"
+                              >
+                                <i className="fas fa-trash text-[10px]"></i>
+                              </button>
+                           </div>
                         </div>
-                      </Card>
+                        <p className="text-xs font-bold text-black line-clamp-2 leading-tight">{q.text}</p>
+                      </div>
                     ))
                   )}
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
