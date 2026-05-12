@@ -1016,13 +1016,13 @@ const QuizRoom: React.FC = () => {
 
                   <button
                     onClick={() => toggleFlag(q.id)}
-                    className={`absolute top-4 right-4 lg:top-8 lg:right-8 w-10 h-10 rounded-xl flex items-center justify-center transition-all ${flags.has(q.id) ? 'bg-red-500 text-white shadow-lg shadow-red-200' : 'bg-slate-50 text-slate-300 hover:text-red-400'}`}
+                    className={`absolute top-3 right-3 lg:top-4 lg:right-4 w-9 h-9 lg:w-10 lg:h-10 rounded-xl flex items-center justify-center transition-all ${flags.has(q.id) ? 'bg-red-500 text-white shadow-lg shadow-red-200' : 'bg-slate-50 text-slate-300 hover:text-red-400'}`}
                     title="Flag for review"
                   >
                     <i className={`fas fa-flag ${flags.has(q.id) ? 'animate-pulse text-sm lg:text-base' : 'text-sm lg:text-base'}`}></i>
                   </button>
 
-                  <div className="mb-6 lg:mb-10 mt-2 lg:mt-0">
+                  <div className="mb-6 lg:mb-10 mt-2 lg:mt-0 pr-12 lg:pr-16">
                     <span className="text-primary-600 font-black text-[11px] uppercase tracking-widest mb-1 lg:mb-2 block">Question {startIdx + pIdx + 1}</span>
                     <h3 className="text-base lg:text-xl font-bold text-slate-900 leading-snug break-words">
                       {q.text}
