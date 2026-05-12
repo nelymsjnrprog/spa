@@ -79,7 +79,22 @@ service cloud.firestore {
       allow get: if isSelf(userId) || isAdmin();
       allow list: if isAdmin();
       allow create: if isAdmin() || (isSelf(userId) && request.resource.data.role == 'student');
-      allow update: if isAdmin() || (isSelf(userId) && isNotBlocked() && request.resource.data.role == resource.data.role);
+      allow update: if isAdmin() || (
+        isSelf(userId) && 
+        isNotBlocked() && 
+        request.resource.data.role == resource.data.role &&
+        request.resource.data.email == resource.data.email &&
+        (
+          !('level' in resource.data) || 
+          resource.data.level == 'Pending' || 
+          request.resource.data.level == resource.data.level
+        ) &&
+        (
+          !('membershipStatus' in resource.data) ||
+          request.resource.data.get('membershipStatus', 'pending') == resource.data.get('membershipStatus', 'pending') ||
+          (resource.data.get('membershipStatus', 'pending') == 'pending' && request.resource.data.membershipStatus == 'active')
+        )
+      );
       allow delete: if isAdmin();
     }
 
@@ -147,7 +162,7 @@ service cloud.firestore {
     // Payment Records
     match /payments/{paymentId} {
       allow read: if isAdmin();
-      allow create: if isSignedIn();
+      allow create: if isSignedIn() && (request.resource.data.userId == request.auth.uid || !('userId' in request.resource.data));
     }
 
     // Admin Logs

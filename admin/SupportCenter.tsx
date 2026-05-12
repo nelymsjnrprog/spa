@@ -34,72 +34,75 @@ const SupportCenter: React.FC = () => {
     <div className="min-h-screen bg-slate-50">
       <Navbar />
       <Container>
-        <div className="mb-10">
-          <h1 className="text-3xl font-black text-black tracking-tight">Support</h1>
-          <p className="text-black font-medium mt-1">Manage and respond to student inquiries.</p>
-        </div>
 
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <div className="w-10 h-10 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="text-black font-bold uppercase tracking-widest text-[10px]">Loading Inquiries...</p>
-          </div>
-        ) : inquiries.length === 0 ? (
-          <div className="bg-white border border-slate-200 rounded-[2rem] p-20 text-center">
-            <div className="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-6">
-              <i className="fas fa-check-circle text-3xl"></i>
+
+        <div className="max-w-2xl mx-auto pt-10">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Loading Inquiries...</p>
             </div>
-            <h3 className="text-xl font-bold text-black mb-2">All Clear!</h3>
-            <p className="text-black">There are no pending inquiries at the moment.</p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6">
-            {inquiries.map((inquiry) => (
-              <Card key={inquiry.id} className="p-0 border-none shadow-xl shadow-slate-200/50 bg-white rounded-[2rem] overflow-hidden">
-                <div className="p-8 sm:p-10">
-                  <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-8">
-                    <div>
-                      <h3 className="text-xl font-black text-black mb-1">{inquiry.subject}</h3>
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-primary-600 bg-primary-50 px-2.5 py-1 rounded-lg">
-                          {inquiry.name}
-                        </span>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-black bg-slate-50 px-2.5 py-1 rounded-lg">
-                          {inquiry.email}
-                        </span>
+          ) : inquiries.length === 0 ? (
+            <div className="bg-white border border-slate-200 rounded-[2rem] p-20 text-center">
+              <div className="w-20 h-20 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i className="fas fa-check-circle text-3xl"></i>
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">All Clear!</h3>
+              <p className="text-slate-600">There are no pending inquiries at the moment.</p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-10 pb-20">
+              {inquiries.map((inquiry) => (
+                <div key={inquiry.id} className="group">
+                  {/* Timestamp divider */}
+                  <div className="flex justify-center mb-6">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100/80 backdrop-blur-sm px-4 py-1.5 rounded-full border border-slate-200/50">
+                      {formatTimestamp(inquiry.createdAt)}
+                    </span>
+                  </div>
+
+                  {/* Message Bubble */}
+                  <div className="flex flex-col items-start max-w-[90%] sm:max-w-[80%]">
+                    <div className="flex items-center gap-2 mb-1.5 ml-4">
+                      <span className="text-[11px] font-black text-emerald-600 uppercase tracking-tight">{inquiry.name}</span>
+                      <span className="text-[10px] font-medium text-slate-400">({inquiry.email})</span>
+                    </div>
+                    
+                    <div className="bg-white border border-slate-100 shadow-sm rounded-[1.5rem] rounded-bl-none p-6 relative">
+                      {/* Bubble Tail */}
+                      <div className="absolute bottom-0 -left-2 w-4 h-4 bg-white border-l border-b border-slate-100 transform -skew-x-[45deg] origin-bottom-right"></div>
+                      
+                      <div className="relative z-10">
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2 opacity-60">Subject: {inquiry.subject}</span>
+                        <p className="text-slate-900 text-sm leading-relaxed font-medium">
+                          {inquiry.message}
+                        </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-[10px] font-black text-black uppercase tracking-widest mb-1">Received</p>
-                      <p className="text-xs font-bold text-black">{formatTimestamp(inquiry.createdAt)}</p>
+
+                    {/* Actions */}
+                    <div className="flex gap-2 mt-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <a 
+                        href={`mailto:${inquiry.email}?subject=RE: ${inquiry.subject}&body=Hi ${inquiry.name},%0D%0A%0D%0A`}
+                        className="bg-emerald-600 text-white px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all flex items-center shadow-md shadow-emerald-100"
+                      >
+                        <i className="fas fa-reply mr-1.5"></i>
+                        Respond
+                      </a>
+                      <button 
+                        onClick={() => handleResolve(inquiry.id)}
+                        className="bg-white text-slate-400 border border-slate-200 px-4 py-2 rounded-full font-bold text-[10px] uppercase tracking-widest hover:text-red-500 hover:border-red-100 hover:bg-red-50 transition-all flex items-center"
+                      >
+                        <i className="fas fa-check mr-1.5"></i>
+                        Resolved
+                      </button>
                     </div>
                   </div>
-
-                  <div className="bg-slate-50/50 p-6 rounded-2xl border border-slate-100 mb-8">
-                    <p className="text-black whitespace-pre-wrap leading-relaxed">{inquiry.message}</p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-3">
-                    <a 
-                      href={`mailto:${inquiry.email}?subject=RE: ${inquiry.subject}&body=Hi ${inquiry.name},%0D%0A%0D%0A`}
-                      className="flex-1 sm:flex-none bg-slate-900 text-white px-8 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-primary-600 transition-all text-center shadow-lg shadow-slate-200"
-                    >
-                      <i className="fas fa-reply mr-2"></i>
-                      Respond
-                    </a>
-                    <button 
-                      onClick={() => handleResolve(inquiry.id)}
-                      className="flex-1 sm:flex-none bg-white text-emerald-600 border border-emerald-100 px-8 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-50 transition-all text-center"
-                    >
-                      <i className="fas fa-check mr-2"></i>
-                      Resolved
-                    </button>
-                  </div>
                 </div>
-              </Card>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
+        </div>
       </Container>
     </div>
   );

@@ -115,10 +115,11 @@ export const authService = {
             status: 'success',
             reference: paymentReference,
             userId: user.uid,
-            createdAt: Date.now(),
+            isRenewal: false,
           });
-        } catch (payErr) {
-          console.error("Payment record failed:", payErr);
+        } catch (payErr: any) {
+          console.error("CRITICAL: Payment record creation failed after successful Paystack transaction:", payErr);
+          // Optional: You could log this to a special 'failed_payments' collection or similar
         }
       }
 

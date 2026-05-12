@@ -137,10 +137,7 @@ const AdminDashboard: React.FC = () => {
         {/* Institution Breakdown */}
         {(isSuperAdmin || assignedInstitutions.length > 0) && institutionStats.length > 0 && (
           <div className="mb-12">
-            <h2 className="text-lg font-black text-slate-900 tracking-tight mb-4 flex items-center">
-              <span className="w-1.5 h-5 bg-primary-600 rounded-full mr-3"></span>
-              Institutions
-            </h2>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {institutionStats.map(inst => (
                 <Link key={inst.name} to={inst.name !== 'Unassigned' ? `/admin/institution/${encodeURIComponent(inst.name)}` : '#'}>
@@ -168,10 +165,7 @@ const AdminDashboard: React.FC = () => {
         <Card className="p-10 border-none shadow-2xl shadow-slate-200/60 bg-white rounded-[3rem] overflow-hidden">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
             <div>
-              <h2 className="text-2xl font-black text-slate-900 tracking-tight flex items-center">
-                <span className="w-1.5 h-6 bg-primary-600 rounded-full mr-3"></span>
-                Enrollment Trends
-              </h2>
+
               <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-1">Candidate registration metrics (Last 7 Days)</p>
             </div>
           </div>

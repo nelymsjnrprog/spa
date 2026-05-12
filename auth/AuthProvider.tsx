@@ -62,14 +62,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
               setProfile(data);
               // Default to 'student' if role is missing to prevent "Profile Not Resolved" screen
+              // Default to 'student' if role is missing to prevent "Profile Not Resolved" screen
               setRole(isSystemOwner ? "admin" : (data.role || "student"));
-
-              // --- Self-Healing: Sync 'paid' field with 'membershipStatus' ---
-              // If a user has 'paid: true' but 'membershipStatus' is not 'active',
-              // we automatically heal their profile in the background.
-              if (data.role === 'student' && (data as any).paid === true && data.membershipStatus !== 'active') {
-                updateDoc(docRef, { membershipStatus: 'active' }).catch(e => console.error("Self-healing failed:", e));
-              }
 
               // --- Single Session Enforcement ---
               // Only enforce for students to avoid locking out admins

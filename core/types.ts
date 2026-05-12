@@ -42,6 +42,7 @@ export interface PaymentRecord {
   status: 'success' | 'pending' | 'failed';
   reference: string;
   userId?: string;
+  isRenewal?: boolean;
   createdAt: number;
 }
 

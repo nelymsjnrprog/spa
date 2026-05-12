@@ -28,6 +28,7 @@ import AdminLogs from './admin/AdminLogs';
 import SupportCenter from './admin/SupportCenter';
 import LibraryManagement from './admin/LibraryManagement';
 import PaymentRegistry from './admin/PaymentRegistry';
+import RenewalRegistry from './admin/RenewalRegistry';
 import StudentDashboard from './student/Dashboard';
 import QuizRoom from './student/QuizRoom';
 import Results from './student/Results';
@@ -146,6 +147,13 @@ const App: React.FC = () => {
               </RoleGuard>
             </AuthGuard>
           } />
+          <Route path="/admin/renewals" element={
+            <AuthGuard>
+              <RoleGuard allowedRole="admin">
+                <RenewalRegistry />
+              </RoleGuard>
+            </AuthGuard>
+          } />
           <Route path="/admin/membership" element={
             <AuthGuard>
               <RoleGuard allowedRole="admin">
@@ -160,6 +168,7 @@ const App: React.FC = () => {
               </RoleGuard>
             </AuthGuard>
           } />
+
           <Route path="/admin/institution/:institutionName" element={
             <AuthGuard>
               <RoleGuard allowedRole="admin">

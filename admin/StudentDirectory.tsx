@@ -64,8 +64,16 @@ const StudentDirectory: React.FC = () => {
 
   const isPaid = (student: UserProfile): { paid: boolean; method: 'manual' | 'uid' | 'email' | 'none' } => {
     if (student.membershipStatus === 'active') return { paid: true, method: 'manual' };
-    if (paidUserIds.has(student.uid)) return { paid: true, method: 'uid' };
-    if (student.email && paidUserEmails.has(student.email.toLowerCase())) return { paid: true, method: 'email' };
+    
+    // Check for level-specific payment
+    const currentLevel = student.level || '100';
+    const hasLevelPayment = payments.some(p => 
+      p.status === 'success' && 
+      p.formLevel === currentLevel && 
+      (p.userId === student.uid || (student.email && p.email?.toLowerCase() === student.email.toLowerCase()))
+    );
+
+    if (hasLevelPayment) return { paid: true, method: 'uid' };
     return { paid: false, method: 'none' };
   };
 
@@ -140,15 +148,25 @@ const StudentDirectory: React.FC = () => {
           `Restored access for ${student.displayName}`);
       } else if (type === 'promote') {
         const next = (parseInt(student.level || '100') + 100).toString();
-        await userService.updateUserProfile(student.uid, { level: next });
+        await userService.updateUserProfile(student.uid, { 
+          level: next,
+          membershipStatus: 'pending',
+          paid: false
+        });
         await adminService.logAction(user!.uid, profile!.displayName, 'STUDENT_PROMOTED',
           `Promoted ${student.displayName} to Level ${next}`);
       } else if (type === 'mark_paid') {
-        await userService.updateUserProfile(student.uid, { membershipStatus: 'active' });
+        await userService.updateUserProfile(student.uid, { 
+          membershipStatus: 'active',
+          paid: true 
+        });
         await adminService.logAction(user!.uid, profile!.displayName, 'STUDENT_PAID_MANUAL',
           `Manually marked ${student.displayName} as PAID`);
       } else if (type === 'mark_unpaid') {
-        await userService.updateUserProfile(student.uid, { membershipStatus: 'pending' });
+        await userService.updateUserProfile(student.uid, { 
+          membershipStatus: 'pending',
+          paid: false
+        });
         await adminService.logAction(user!.uid, profile!.displayName, 'STUDENT_UNPAID_MANUAL',
           `Manually marked ${student.displayName} as UNPAID`);
       }

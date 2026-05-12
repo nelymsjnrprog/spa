@@ -138,7 +138,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
               level,
               program,
               'student',
-              transaction.reference,
+              transaction.reference || reference,
               currentLevelSettings?.price
             );
             
@@ -263,12 +263,7 @@ const AuthSlidePanel: React.FC<AuthSlidePanelProps> = ({ isOpen, onClose, initia
               <div className="mb-8">
                 <span className="text-sm font-black uppercase tracking-[0.2em] text-slate-900">{APP_CONFIG.name}</span>
               </div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-6 h-[2px] bg-[#1a732a]"></div>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a732a]">
-                  {mode === 'login' ? 'Student Access' : mode === 'signup' ? 'New Account' : 'Reset Password'}
-                </p>
-              </div>
+
             <p className="text-black font-medium text-sm">
                 {mode === 'login' ? 'Sign in to continue to your dashboard' : mode === 'signup' ? 'Fill in to create your academic portal' : 'We will send a recovery link to your email'}
             </p>

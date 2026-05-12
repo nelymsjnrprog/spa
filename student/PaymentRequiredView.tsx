@@ -69,7 +69,8 @@ const PaymentRequiredView: React.FC = () => {
               profile.email,
               profile.level || '100',
               levelSettings.price,
-              transaction.reference || reference
+              transaction.reference || reference,
+              true // This is a renewal payment
             );
           } catch (err: any) {
             setError(err.message || "Failed to activate membership after payment.");

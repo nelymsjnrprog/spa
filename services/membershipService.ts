@@ -1,6 +1,6 @@
 import { db } from "../core/firebase";
 import {
-  doc, getDoc, setDoc, onSnapshot, collection, addDoc, query, orderBy, limit, getDocs, where
+  doc, getDoc, setDoc, onSnapshot, collection, addDoc, query, orderBy, limit, getDocs, where, serverTimestamp
 } from "firebase/firestore";
 import { MembershipSettings, MembershipLevelSettings, PaymentRecord, UserProfile } from "../core/types";
 
@@ -96,8 +96,17 @@ export const membershipService = {
   /**
    * Record a successful payment
    */
-  async recordPayment(payment: Omit<PaymentRecord, 'id'>): Promise<string> {
-    const docRef = await addDoc(collection(db, "payments"), payment);
+  async recordPayment(payment: Omit<PaymentRecord, 'id' | 'createdAt'>): Promise<string> {
+    // If not explicitly set, try to infer if it's a renewal based on level > 100
+    const isRenewal = payment.isRenewal !== undefined 
+      ? payment.isRenewal 
+      : (payment.formLevel !== '100' && payment.formLevel !== 'Candidate');
+
+    const docRef = await addDoc(collection(db, "payments"), {
+      ...payment,
+      isRenewal,
+      createdAt: serverTimestamp()
+    });
     return docRef.id;
   },
 
@@ -111,7 +120,22 @@ export const membershipService = {
       limit(maxResults)
     );
     const snap = await getDocs(q);
-    return snap.docs.map(d => ({ id: d.id, ...d.data() } as PaymentRecord));
+    return snap.docs.map(d => {
+      const data = d.data();
+      // Handle both number and Timestamp
+      let createdAt = data.createdAt;
+      if (createdAt && typeof createdAt.toDate === 'function') {
+        createdAt = createdAt.toDate().getTime();
+      } else if (!createdAt) {
+        createdAt = Date.now();
+      }
+
+      return { 
+        ...data,
+        id: d.id, 
+        createdAt 
+      } as PaymentRecord;
+    });
   },
 
   /**
@@ -120,18 +144,21 @@ export const membershipService = {
    */
   checkAccess(profile: UserProfile | null, settings: MembershipSettings): boolean {
     if (!profile) return false;
-    if (profile.role === 'admin') return true; // Admins always have access
+    if (profile.role === 'admin') return true; 
     
-    // Strictly require 'active' status or 'paid' flag for students.
-    // Level-specific 'paymentRequired' setting only controls the signup gate, 
-    // not the post-signup access.
-    return profile.membershipStatus === 'active' || (profile as any).paid === true;
+    // 1. Manual override
+    if (profile.membershipStatus === 'active') return true;
+
+    // 2. We skip strict DB payment check here for performance in AuthProvider, 
+    // but the 'pending' status alone will lock the user.
+    // Promotion sets status to 'pending', which returns false here.
+    return false;
   },
 
   /**
    * Activate membership for an existing user 
    */
-  async activateMembership(userId: string, email: string, level: string, amount: number, reference: string): Promise<void> {
+  async activateMembership(userId: string, email: string, level: string, amount: number, reference: string, isRenewal: boolean = false): Promise<void> {
     const userRef = doc(db, "users", userId);
     
     // 1. Update user profile
@@ -148,6 +175,7 @@ export const membershipService = {
       status: 'success',
       reference: reference,
       userId: userId,
+      isRenewal: isRenewal,
       createdAt: Date.now(),
     });
   },

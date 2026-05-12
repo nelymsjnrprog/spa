@@ -151,6 +151,7 @@ export const Navbar: React.FC = () => {
                 <>
                   <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-2">Financials</div>
                   <SidebarLink to="/admin/payments" icon="fa-credit-card" label="Payment Registry" onClick={() => setSidebarOpen(false)} />
+                  <SidebarLink to="/admin/renewals" icon="fa-history" label="Renewal Registry" onClick={() => setSidebarOpen(false)} />
                 </>
               )}
             </>
